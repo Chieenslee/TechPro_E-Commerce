@@ -1,0 +1,57 @@
+@model TechPro.Models.ViewModels.CheckoutViewModel
+@{
+    var shipping = Model.Cart.SubTotal >= 500000 ? 0 : 30000;
+}
+
+<section class="store-page">
+    <div class="store-heading">
+        <div>
+            <p class="store-kicker">Checkout</p>
+            <h1>Thanh toán</h1>
+            <span>Kiểm tra thông tin giao hàng trước khi đặt mua</span>
+        </div>
+    </div>
+
+    <form class="checkout-layout" method="post" action="/checkout">
+        @Html.AntiForgeryToken()
+        <div class="checkout-form">
+            <h2>Thông tin nhận hàng</h2>
+            <label>Họ và tên</label>
+            <input asp-for="Order.ShippingFullName" name="ShippingFullName" required>
+            <label>Số điện thoại</label>
+            <input asp-for="Order.ShippingPhone" name="ShippingPhone" required>
+            <label>Địa chỉ</label>
+            <input asp-for="Order.ShippingAddress" name="ShippingAddress" required>
+            <div class="filter-grid">
+                <div>
+                    <label>Phường/Xã</label>
+                    <input asp-for="Order.ShippingWard" name="ShippingWard">
+                </div>
+                <div>
+                    <label>Quận/Huyện</label>
+                    <input asp-for="Order.ShippingDistrict" name="ShippingDistrict">
+                </div>
+            </div>
+            <label>Tỉnh/Thành phố</label>
+            <input asp-for="Order.ShippingProvince" name="ShippingProvince">
+            <label>Ghi chú</label>
+            <textarea asp-for="Order.Note" name="Note" rows="4"></textarea>
+            <label>Thanh toán</label>
+            <select asp-for="Order.PaymentMethod" name="PaymentMethod">
+                <option value="cod">Thanh toán khi nhận hàng</option>
+            </select>
+        </div>
+
+        <aside class="order-summary">
+            <h2>Đơn hàng</h2>
+            @foreach (var item in Model.Cart.Items)
+            {
+                <div><span>@item.ProductName x @item.Quantity</span><b>@item.TotalPrice.ToString("N0") đ</b></div>
+            }
+            <div><span>Tạm tính</span><b>@Model.Cart.SubTotal.ToString("N0") đ</b></div>
+            <div><span>Phí giao hàng</span><b>@shipping.ToString("N0") đ</b></div>
+            <div class="summary-total"><span>Tổng cộng</span><b>@(Model.Cart.SubTotal + shipping).ToString("N0") đ</b></div>
+            <button class="btn-primary" type="submit">Đặt hàng</button>
+        </aside>
+    </form>
+</section>

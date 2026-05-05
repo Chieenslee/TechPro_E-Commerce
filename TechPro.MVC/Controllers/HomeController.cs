@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using TechPro.Models;
 using TechPro.Models.ViewModels;
+using TechPro.Models.DTOs;
 using System.Text.Json;
 using System.Text;
 
@@ -19,54 +20,53 @@ namespace TechPro.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            // Nếu đã đăng nhập, redirect theo role
             if (User.Identity?.IsAuthenticated == true)
             {
                 var userRole = User.FindFirstValue(ClaimTypes.Role);
-                return userRole switch
+                var redirect = userRole switch
                 {
                     "SystemAdmin" => RedirectToAction("Index", "Chain"),
                     "Technician" => RedirectToAction("Index", "KyThuat"),
                     "Support" => RedirectToAction("Index", "TiepNhan"),
                     "StoreAdmin" => RedirectToAction("Index", "QuanLy"),
                     "Storekeeper" => RedirectToAction("Index", "StorekeeperDashboard"),
-                    _ => RedirectToAction("Index", "TiepNhan")
+                    _ => null
                 };
+
+                if (redirect != null)
+                {
+                    return redirect;
+                }
             }
 
-            // Tạo ViewModel với dữ liệu từ database hoặc config
-            var viewModel = new LandingPageViewModel
+            var client = _httpClientFactory.CreateClient("TechProAPI");
+            var viewModel = new StoreHomeViewModel
             {
-                DichVus = new List<DichVuViewModel>
-                {
-                    new() { Ten = "Thay màn hình", MoTa = "Màn hình zin chính hãng, bảo hành cảm ứng 12 tháng.", Icon = "phone" },
-                    new() { Ten = "Thay Pin chính hãng", MoTa = "Pin dung lượng chuẩn, kiểm tra độ chai pin miễn phí.", Icon = "battery-charging" },
-                    new() { Ten = "Cấp cứu dữ liệu", MoTa = "Khôi phục dữ liệu từ máy hỏng, treo logo, vỡ nát.", Icon = "box-seam" },
-                    new() { Ten = "Mở khóa iCloud", MoTa = "Xử lý phần mềm, mở khóa tài khoản an toàn.", Icon = "shield-check" },
-                    new() { Ten = "Sửa chữa phần cứng", MoTa = "Xử lý lỗi mainboard, IC nguồn, mất sóng chuyên sâu.", Icon = "cpu" },
-                    new() { Ten = "Vệ sinh & Bảo dưỡng", MoTa = "Vệ sinh máy miễn phí cho khách hàng sửa chữa.", Icon = "check-circle" },
-                    new() { Ten = "Ép kính công nghệ cao", MoTa = "Giữ nguyên màn hình gốc, tiết kiệm chi phí tối đa.", Icon = "wrench" },
-                    new() { Ten = "Phụ kiện chính hãng", MoTa = "Cung cấp cáp sạc, tai nghe, ốp lưng chất lượng cao.", Icon = "headphones" }
-                },
-                ChinhSaches = new List<ChinhSachViewModel>
-                {
-                    new() { TieuDe = "1 Đổi 1", MoTa = "Đổi mới linh kiện trong 30 ngày nếu có lỗi sản xuất." },
-                    new() { TieuDe = "Hoàn tiền 100%", MoTa = "Nếu khách hàng không hài lòng về chất lượng sửa chữa." },
-                    new() { TieuDe = "Bảo hành trọn đời", MoTa = "Dành cho dịch vụ thay pin cao cấp và dán cường lực." },
-                    new() { TieuDe = "Hỗ trợ từ xa", MoTa = "Tư vấn kỹ thuật online miễn phí trọn đời sản phẩm." }
-                },
-                ThongTinLienHe = new ThongTinLienHeViewModel
-                {
-                    DiaChi = "123 Đường Công Nghệ, Quận Hoàn Kiếm, TP. Hà Nội",
-                    Hotline = "1900 6868 (8:00 - 21:00)",
-                    Email = "support@techprocare.vn",
-                    EmailBusiness = "business@techprocare.vn"
-                }
+                Categories = await GetOrEmpty<List<CategoryDto>>(client, "api/categories?rootOnly=true"),
+                Brands = await GetOrEmpty<List<BrandDto>>(client, "api/brands"),
+                FeaturedProducts = await GetOrEmpty<List<ProductListDto>>(client, "api/products/featured?limit=8"),
+                BestSellers = await GetOrEmpty<List<ProductListDto>>(client, "api/products/bestsellers?limit=8"),
+                NewArrivals = await GetOrEmpty<List<ProductListDto>>(client, "api/products/new-arrivals?limit=8"),
+                FlashSales = await GetOrEmpty<List<FlashSaleDto>>(client, "api/flashsales/active")
             };
 
+            ViewBag.Title = "Thiết bị điện tử chính hãng";
+            ViewBag.MetaDescription = "TechPro - Website bán điện thoại, laptop, tablet, tai nghe và phụ kiện chính hãng.";
             return View(viewModel);
+        }
+
+        private static async Task<T> GetOrEmpty<T>(HttpClient client, string uri) where T : new()
+        {
+            try
+            {
+                return await client.GetFromJsonAsync<T>(uri) ?? new T();
+            }
+            catch
+            {
+                return new T();
+            }
         }
 
         [HttpGet]

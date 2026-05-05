@@ -1,0 +1,111 @@
+@model TechPro.Models.ViewModels.ProductDetailViewModel
+@{
+    var product = Model.Product;
+    var primary = product.Images.FirstOrDefault(i => i.IsPrimary)?.Url
+        ?? product.Images.OrderBy(i => i.SortOrder).FirstOrDefault()?.Url
+        ?? product.PrimaryImage
+        ?? "/images/placeholder.webp";
+}
+
+<section class="product-detail">
+    <div class="product-media">
+        <img class="product-main-image" id="mainProductImage" src="@primary" alt="@product.Name">
+        @if (product.Images.Count > 1)
+        {
+            <div class="product-thumbs">
+                @foreach (var image in product.Images)
+                {
+                    <button type="button" onclick="document.getElementById('mainProductImage').src='@image.Url'">
+                        <img src="@image.Url" alt="@(image.AltText ?? product.Name)">
+                    </button>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="product-info">
+        <div class="product-meta">@product.BrandName / @product.CategoryName</div>
+        <h1>@product.Name</h1>
+        <p>@product.ShortDescription</p>
+        <div class="product-rating">
+            <span class="stars">
+                @for (var i = 1; i <= 5; i++)
+                {
+                    <i class="bi bi-star@(product.AverageRating >= i ? "-fill" : "")"></i>
+                }
+            </span>
+            <span>@product.ReviewCount đánh giá</span>
+            <span>@product.SoldCount đã bán</span>
+        </div>
+        <div class="detail-price">
+            <span>@product.Price.ToString("N0") đ</span>
+            @if (product.ComparePrice.HasValue && product.ComparePrice.Value > product.Price)
+            {
+                <del>@product.ComparePrice.Value.ToString("N0") đ</del>
+                <b>-@product.DiscountPercent?.ToString("0")%</b>
+            }
+        </div>
+
+        @if (product.Variants.Any())
+        {
+            <div class="variant-box">
+                <label>Phiên bản</label>
+                <select id="variantId">
+                    <option value="">Mặc định</option>
+                    @foreach (var variant in product.Variants)
+                    {
+                        <option value="@variant.Id">@variant.VariantType: @variant.VariantValue @(variant.PriceModifier != 0 ? $"({variant.PriceModifier:N0} đ)" : "")</option>
+                    }
+                </select>
+            </div>
+        }
+
+        <div class="buy-row">
+            <input id="qty" type="number" min="1" max="@Math.Max(product.Stock, 1)" value="1">
+            <button class="btn-primary" type="button" onclick="TechPro.addToCart(@product.Id, document.getElementById('variantId')?.value || null, Number(document.getElementById('qty').value || 1))">
+                <i class="bi bi-bag-plus"></i> Thêm vào giỏ
+            </button>
+            <a class="btn-outline" href="/cart">Xem giỏ hàng</a>
+        </div>
+
+        <div class="service-strip">
+            <span><i class="bi bi-shield-check"></i> Bảo hành chính hãng</span>
+            <span><i class="bi bi-truck"></i> Giao hàng nhanh</span>
+            <span><i class="bi bi-arrow-repeat"></i> Đổi trả linh hoạt</span>
+        </div>
+    </div>
+</section>
+
+<section class="section product-tabs">
+    <div class="tab-panel">
+        <h2>Mô tả sản phẩm</h2>
+        <p>@(string.IsNullOrWhiteSpace(product.Description) ? product.ShortDescription : product.Description)</p>
+    </div>
+    @if (product.Specifications.Any())
+    {
+        <div class="tab-panel">
+            <h2>Thông số kỹ thuật</h2>
+            <div class="spec-list">
+                @foreach (var spec in product.Specifications)
+                {
+                    <div><span>@spec.SpecKey</span><b>@spec.SpecValue</b></div>
+                }
+            </div>
+        </div>
+    }
+</section>
+
+@if (Model.RelatedProducts.Any())
+{
+    <section class="section">
+        <div class="section-header">
+            <h2 class="section-title">Sản phẩm <span>liên quan</span></h2>
+        </div>
+        <div class="product-grid">
+            @foreach (var item in Model.RelatedProducts)
+            {
+                <partial name="_ProductCard" model="item" />
+            }
+        </div>
+    </section>
+}
