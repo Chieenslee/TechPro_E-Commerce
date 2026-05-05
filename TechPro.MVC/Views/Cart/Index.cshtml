@@ -53,9 +53,18 @@
             </div>
             <aside class="order-summary">
                 <h2>Tóm tắt đơn hàng</h2>
+                <div class="voucher-box">
+                    <label for="voucherCode">Mã giảm giá</label>
+                    <div>
+                        <input id="voucherCode" placeholder="TECHPRO5">
+                        <button type="button" onclick="TechPro.applyVoucher()">Áp dụng</button>
+                    </div>
+                    <small>Gợi ý: TECHPRO5 giảm 5%, FREESHIP miễn phí giao hàng.</small>
+                </div>
                 <div><span>Tạm tính</span><b>@Model.SubTotal.ToString("N0") đ</b></div>
-                <div><span>Phí giao hàng</span><b>@shipping.ToString("N0") đ</b></div>
-                <div class="summary-total"><span>Tổng cộng</span><b>@total.ToString("N0") đ</b></div>
+                <div><span>Phí giao hàng</span><b id="shippingAmount" data-value="@shipping">@shipping.ToString("N0") đ</b></div>
+                <div><span>Giảm giá</span><b id="discountAmount">0 đ</b></div>
+                <div class="summary-total"><span>Tổng cộng</span><b id="cartTotal" data-subtotal="@Model.SubTotal" data-shipping="@shipping">@total.ToString("N0") đ</b></div>
                 <a class="btn-primary" href="/checkout">Thanh toán</a>
             </aside>
         </div>

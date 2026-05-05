@@ -7,6 +7,21 @@
         ?? "/images/placeholder.webp";
 }
 
+<section class="section" id="recentlyViewedSection" hidden>
+    <div class="section-header">
+        <h2 class="section-title">Sản phẩm <span>đã xem</span></h2>
+        <a class="section-link" href="/products">Xem thêm <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="product-grid" id="recentlyViewedGrid"></div>
+</section>
+
+@section Scripts {
+    <script>
+        window.TechPro?.trackViewed(@product.Id);
+        window.TechPro?.renderRecentlyViewed('recentlyViewedGrid', @product.Id);
+    </script>
+}
+
 <section class="product-detail">
     <div class="product-media">
         <img class="product-main-image" id="mainProductImage" src="@primary" alt="@product.Name">

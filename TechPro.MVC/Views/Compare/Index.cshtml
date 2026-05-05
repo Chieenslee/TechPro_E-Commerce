@@ -1,0 +1,22 @@
+<section class="store-page">
+    <div class="store-heading">
+        <div>
+            <p class="store-kicker">Compare</p>
+            <h1>So sánh sản phẩm</h1>
+            <span>Chọn tối đa 4 sản phẩm để so sánh nhanh</span>
+        </div>
+        <a class="btn-outline" href="/products">Chọn thêm</a>
+    </div>
+
+    <div class="compare-table-wrap" id="compareTableWrap"></div>
+    <div class="empty-state" id="compareEmpty" hidden>
+        <i class="bi bi-columns-gap"></i>
+        <h2>Chưa có sản phẩm để so sánh</h2>
+        <p>Bấm “So sánh” trên card sản phẩm để thêm vào danh sách.</p>
+        <a class="btn-primary" href="/products">Xem sản phẩm</a>
+    </div>
+</section>
+
+@section Scripts {
+    <script>window.TechPro?.renderComparePage();</script>
+}

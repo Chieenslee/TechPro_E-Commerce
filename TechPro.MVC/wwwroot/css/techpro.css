@@ -401,6 +401,8 @@ body{background:var(--bg);color:var(--text)}
 .cp-home .product-card__rating{margin-bottom:7px}
 .cp-home .product-card__price{gap:6px;margin-bottom:8px}
 .cp-home .product-card__footer{gap:6px}
+.product-card__promo{display:flex;gap:5px;flex-wrap:wrap;margin:6px 0 7px}
+.product-card__promo span{background:#e0f7ff;color:#0369a1;border:1px solid #bae6fd;border-radius:5px;padding:2px 5px;font-size:.66rem;font-weight:800}
 .product-card__wish{background:#fff;color:#94a3b8;border:1px solid #e2f4fb}
 .product-card__wish:hover,.product-card__wish.active{color:#ef4444;background:#fff}
 .product-card__body{padding:10px}
@@ -414,6 +416,24 @@ body{background:var(--bg);color:var(--text)}
 .badge-hot,.badge-sale{background:#ff6b35;color:#fff}
 .btn-cart{padding:8px;border-radius:8px;font-size:.78rem}
 .btn-view{background:#f3fbff;border-color:#d8edf8;color:#0284c7;border-radius:8px;padding:8px 10px}
+.btn-compare{width:100%;margin-top:7px;border:1px solid #d8edf8;background:#fff;color:#0369a1;border-radius:8px;padding:7px;font-size:.76rem;font-weight:800;cursor:pointer}
+.btn-compare:hover,.btn-compare.active{background:#e0f7ff;border-color:#7dd3fc}
+.voucher-box{display:block!important;background:#f3fbff;border:1px solid #d8edf8;border-radius:10px;padding:12px}
+.voucher-box label{display:block;color:#075985;font-size:.78rem;font-weight:900;margin-bottom:8px}
+.voucher-box div{display:grid!important;grid-template-columns:1fr auto;gap:8px}
+.voucher-box input{min-width:0;border:1px solid #bae6fd;border-radius:8px;padding:10px;background:#fff;color:#0f172a}
+.voucher-box button{border:0;background:#119fe3;color:#fff;border-radius:8px;padding:0 12px;font-weight:800;cursor:pointer}
+.voucher-box small{display:block;color:#64748b;margin-top:8px;line-height:1.35}
+.compare-bar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);width:min(920px,calc(100% - 24px));z-index:500;background:#fff;border:1px solid #aee4fb;border-radius:12px;box-shadow:0 18px 50px rgba(14,116,144,.22);display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:12px}
+.compare-bar strong{display:block;color:#075985}
+.compare-bar span{display:block;color:#64748b;font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:600px}
+.compare-bar button{width:36px;height:36px;border:1px solid #d8edf8;background:#f8fdff;color:#0369a1;border-radius:8px;cursor:pointer}
+.compare-table-wrap{overflow:auto;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow)}
+.compare-table{width:100%;border-collapse:collapse;min-width:760px}
+.compare-table th,.compare-table td{border-bottom:1px solid #e2f4fb;border-right:1px solid #e2f4fb;padding:12px;text-align:center;vertical-align:top}
+.compare-table th:first-child,.compare-table td:first-child{width:150px;text-align:left;color:#075985;font-weight:900;background:#f3fbff}
+.compare-table th img{width:110px;height:110px;object-fit:contain;margin:0 auto 8px}
+.compare-table th a{display:block;color:#0f172a;font-size:.9rem;line-height:1.35}
 .cp-accessory-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
 .cp-accessory-grid a{display:flex;align-items:center;gap:10px;background:#f8fdff;border:1px solid #d8edf8;border-radius:9px;padding:12px;color:#075985;font-weight:700}
 .cp-accessory-grid i{font-size:1.4rem;color:#0ea5e9}
