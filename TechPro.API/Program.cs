@@ -4,6 +4,7 @@ using TechPro.API.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using Scalar.AspNetCore;
+using TechPro.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,13 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 builder.Services.AddSignalR();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromDays(7);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 builder.Services.AddScoped<TechPro.API.Services.SmartDiagnosisService>();
 builder.Services.AddScoped<TechPro.API.Services.AuditLogService>();
 builder.Services.Configure<TechPro.API.Services.SmsOptions>(builder.Configuration.GetSection("Sms"));
@@ -54,12 +62,11 @@ builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer((document, context, ct) =>
     {
-        document.Info.Title = "TechPro API";
-        document.Info.Version = "v1";
+        document.Info.Title = "TechPro E-Commerce API";
+        document.Info.Version = "v2";
         document.Info.Description =
-            "API backend TechPro. " +
-            "Mọi request phải kèm header X-Caller-Email. " +
-            "Roles: SystemAdmin | StoreAdmin | Support | Technician | Storekeeper";
+            "TechPro E-Commerce API. Bán thiết bị điện tử. " +
+            "Roles: SystemAdmin | StoreAdmin | Customer";
         return Task.CompletedTask;
     });
 });
@@ -96,7 +103,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseCors("MvcOnly"); // Chỉ MVC origin mới được gọi API
+app.UseCors("MvcOnly");
+app.UseSession();
 
 app.UseAuthentication();
 
@@ -134,6 +142,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<TechPro.API.Hubs.TicketHub>("/ticketHub");
+app.MapHub<TechPro.API.Hubs.ShopHub>("/shopHub");
 
 var summaries = new[]
 {

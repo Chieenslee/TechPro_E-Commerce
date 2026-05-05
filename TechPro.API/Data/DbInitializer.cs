@@ -8,277 +8,124 @@ namespace TechPro.API.Data
     {
         public static async Task SeedAsync(UserManager<NguoiDung> userManager, RoleManager<IdentityRole> roleManager, TechProDbContext context)
         {
-            // 1. Tạo Roles
-            string[] roles = { "SystemAdmin", "StoreAdmin", "Technician", "Support", "Storekeeper" };
-            foreach (var roleName in roles)
+            // 1. Roles
+            string[] roles = { "SystemAdmin", "StoreAdmin", "Technician", "Support", "Storekeeper", "Customer" };
+            foreach (var r in roles)
+                if (!await roleManager.RoleExistsAsync(r))
+                    await roleManager.CreateAsync(new IdentityRole(r));
+
+            // 2. Admin user
+            if (await userManager.FindByEmailAsync("admin@techpro.com") == null)
             {
-                if (!await roleManager.RoleExistsAsync(roleName))
-                {
-                    await roleManager.CreateAsync(new IdentityRole(roleName));
-                }
+                var admin = new NguoiDung { UserName = "admin@techpro.com", Email = "admin@techpro.com", TenDayDu = "TechPro Admin", EmailConfirmed = true };
+                var r = await userManager.CreateAsync(admin, "Admin@123");
+                if (r.Succeeded) await userManager.AddToRoleAsync(admin, "SystemAdmin");
             }
 
-            // 2. Tạo Cửa hàng (3 cửa hàng demo)
-            var demoStores = new[]
+            // 3. Demo customer
+            if (await userManager.FindByEmailAsync("customer@techpro.com") == null)
             {
-                new CuaHang { Id = "STORE-001", TenCuaHang = "TechPro Care HK", DiaChi = "123 Đường Công Nghệ, Hoàn Kiếm, HN", TrangThai = "active", Hotline = "1900 6868", AdminEmail = "admin.hk@techpro.com" },
-                new CuaHang { Id = "STORE-002", TenCuaHang = "TechPro Care CG", DiaChi = "456 Xuân Thủy, Cầu Giấy, HN", TrangThai = "active", Hotline = "1900 6869", AdminEmail = "admin.cg@techpro.com" },
-                new CuaHang { Id = "STORE-003", TenCuaHang = "TechPro Care SG", DiaChi = "789 Nguyễn Huệ, Quận 1, TPHCM", TrangThai = "active", Hotline = "1900 6870", AdminEmail = "admin.sg@techpro.com" }
-            };
-
-            var existingStoreIds = await context.CuaHangs.Select(c => c.Id).ToListAsync();
-            foreach (var s in demoStores)
-            {
-                if (!existingStoreIds.Contains(s.Id))
-                {
-                    context.CuaHangs.Add(s);
-                }
-            }
-            await context.SaveChangesAsync();
-
-            // Lấy lại danh sách store để chắc chắn
-            var existingStores = await context.CuaHangs.Select(c => c.Id).ToListAsync();
-            
-            // 3. Tạo Users với mật khẩu: demo123
-            var users = new List<(string Email, string Name, string Role, string? TenantId)>
-            {
-                ("sysadmin@techpro.com", "Admin Toàn Hệ Thống", "SystemAdmin", null)
-            };
-
-            // Mỗi store tạo 4 nhân viên cơ bản
-            foreach (var store in existingStores)
-            {
-                string suffix = store.Replace("STORE-00", "");
-                users.Add(($"admin{suffix}@techpro.com", $"Quản Lý {store}", "StoreAdmin", store));
-                users.Add(($"support{suffix}@techpro.com", $"Lễ Tân {store}", "Support", store));
-                users.Add(($"kho{suffix}@techpro.com", $"Thủ Kho {store}", "Storekeeper", store));
-                users.Add(($"tech{suffix}@techpro.com", $"Kỹ Thuật Viên 1 {store}", "Technician", store));
-                users.Add(($"tech{suffix}_2@techpro.com", $"Kỹ Thuật Viên 2 {store}", "Technician", store));
+                var cust = new NguoiDung { UserName = "customer@techpro.com", Email = "customer@techpro.com", TenDayDu = "Nguyễn Văn A", EmailConfirmed = true };
+                var r = await userManager.CreateAsync(cust, "Customer@123");
+                if (r.Succeeded) await userManager.AddToRoleAsync(cust, "Customer");
             }
 
-            foreach (var userData in users)
+            // 4. Brands
+            if (!await context.ProductBrands.AnyAsync())
             {
-                var existingUser = await userManager.FindByEmailAsync(userData.Email);
-                if (existingUser == null)
+                var brands = new List<ProductBrand>
                 {
-                    var user = new NguoiDung
-                    {
-                        UserName = userData.Email,
-                        Email = userData.Email,
-                        TenDayDu = userData.Name,
-                        TenantId = userData.TenantId,
-                        EmailConfirmed = true
-                    };
-
-                    var result = await userManager.CreateAsync(user, "demo123");
-                    if (result.Succeeded)
-                    {
-                        await userManager.AddToRoleAsync(user, userData.Role);
-                    }
-                }
-                else
-                {
-                    var currentRoles = await userManager.GetRolesAsync(existingUser);
-                    if (!currentRoles.Contains(userData.Role) || currentRoles.Count != 1)
-                    {
-                        if (currentRoles.Count > 0)
-                            await userManager.RemoveFromRolesAsync(existingUser, currentRoles);
-                        await userManager.AddToRoleAsync(existingUser, userData.Role);
-                    }
-
-                    if (existingUser.TenantId != userData.TenantId)
-                    {
-                        existingUser.TenantId = userData.TenantId;
-                        await userManager.UpdateAsync(existingUser);
-                    }
-                }
-            }
-
-            var rand = new Random();
-            var tenantList = await context.CuaHangs.Select(c => c.Id).ToListAsync();
-            string[] tenants = tenantList.ToArray();
-
-            // 4. Seed Kho linh kiện (100)
-            var existingPartIds = await context.KhoLinhKiens.Select(k => k.Id).ToListAsync();
-            if (existingPartIds.Count < 100)
-            {
-                var items = new List<KhoLinhKien>();
-                for (int i = 1; i <= 100; i++)
-                {
-                    var partId = $"PK-{i:D4}";
-                    if (!existingPartIds.Contains(partId))
-                    {
-                        items.Add(new KhoLinhKien
-                        {
-                            Id = partId,
-                            TenLinhKien = $"Linh kiện cao cấp {i}",
-                            DanhMuc = (i % 4 == 0) ? "Màn hình" : (i % 4 == 1 ? "Pin" : (i % 4 == 2 ? "Mainboard" : "Camera")),
-                            DanhSachModelTuongThich = $"iPhone {10 + (i % 6)}",
-                            GiaBan = 500000 + rand.Next(50000, 4000000),
-                            SoLuongTon = rand.Next(5, 50),
-                            TenantId = tenants[rand.Next(tenants.Length)]
-                        });
-                    }
-                }
-                if (items.Any())
-                {
-                    context.KhoLinhKiens.AddRange(items);
-                    await context.SaveChangesAsync();
-                }
-            }
-
-            // 5. Seed PhieuSuaChua (100)
-            if (context.PhieuSuaChuas.Count() < 100)
-            {
-                var statuses = new[] { "pending", "repairing", "waiting_parts", "done", "delivered" };
-                
-                var tickets = new List<PhieuSuaChua>();
-                for (int i = 1; i <= 100; i++)
-                {
-                    string ticketId = $"RX-2026-X{i:D3}";
-                    if (!context.PhieuSuaChuas.Any(p => p.Id == ticketId))
-                    {
-                        tickets.Add(new PhieuSuaChua
-                        {
-                            Id = ticketId,
-                            TenKhachHang = $"Khách hàng VIP {i}",
-                            SoDienThoai = $"09{rand.Next(10000000, 99999999)}",
-                            TenThietBi = $"iPhone {10 + (i % 6)} Pro Max",
-                            SerialNumber = $"SN-{100000 + i * 7}",
-                            TrangThai = statuses[i % statuses.Length],
-                            NgayNhan = DateTime.UtcNow.AddHours(-rand.Next(1, 240)), // Rải rác trong 10 ngày
-                            MoTaLoi = $"Mô tả lỗi của khách hàng {i} về màn hình hoặc pin.",
-                            TenantId = tenants[rand.Next(tenants.Length)],
-                            KetQuaKiemTra = i % 3 == 0 ? "Phát hiện vô nước" : "Lỗi do người dùng",
-                            CoBaoHanh = i % 5 == 0,
-                            TongTien = 1000000 + rand.Next(100000, 5000000)
-                        });
-                    }
-                }
-                if (tickets.Any())
-                {
-                    context.PhieuSuaChuas.AddRange(tickets);
-                    await context.SaveChangesAsync();
-                }
-            }
-
-            // Lấy lại danh sách phiếu để tạo Note & Scratch...
-            var allTicketIds = await context.PhieuSuaChuas.Select(p => p.Id).ToListAsync();
-
-            // 6. Seed TicketNotes (100)
-            if (context.TicketNotes.Count() < 100 && allTicketIds.Count > 0)
-            {
-                var notes = new List<TicketNote>();
-                for (int i = 1; i <= 100; i++)
-                {
-                    notes.Add(new TicketNote
-                    {
-                        PhieuSuaChuaId = allTicketIds[rand.Next(allTicketIds.Count)],
-                        UserName = (i % 2 == 0) ? "Support" : "Technician",
-                        Message = $"Ghi chú cập nhật tiến độ {i}",
-                        CreatedAt = DateTime.UtcNow.AddMinutes(-rand.Next(1, 1000))
-                    });
-                }
-                context.TicketNotes.AddRange(notes);
+                    new() { Name = "Apple", Slug = "apple", Country = "USA", LogoUrl = "/images/brands/apple.svg", SortOrder = 1 },
+                    new() { Name = "Samsung", Slug = "samsung", Country = "South Korea", LogoUrl = "/images/brands/samsung.svg", SortOrder = 2 },
+                    new() { Name = "Sony", Slug = "sony", Country = "Japan", LogoUrl = "/images/brands/sony.svg", SortOrder = 3 },
+                    new() { Name = "Dell", Slug = "dell", Country = "USA", LogoUrl = "/images/brands/dell.svg", SortOrder = 4 },
+                    new() { Name = "ASUS", Slug = "asus", Country = "Taiwan", LogoUrl = "/images/brands/asus.svg", SortOrder = 5 },
+                    new() { Name = "LG", Slug = "lg", Country = "South Korea", LogoUrl = "/images/brands/lg.svg", SortOrder = 6 },
+                };
+                context.ProductBrands.AddRange(brands);
                 await context.SaveChangesAsync();
             }
 
-            // 7. Seed ScratchMarks (100)
-            if (context.ScratchMarks.Count() < 100 && allTicketIds.Count > 0)
+            // 5. Categories
+            if (!await context.ProductCategories.AnyAsync())
             {
-                var marks = new List<ScratchMark>();
-                for (int i = 1; i <= 100; i++)
+                var cats = new List<ProductCategory>
                 {
-                    marks.Add(new ScratchMark
-                    {
-                        PhieuSuaChuaId = allTicketIds[rand.Next(allTicketIds.Count)],
-                        X = rand.NextDouble() * 100,
-                        Y = rand.NextDouble() * 100,
-                        CreatedAt = DateTime.UtcNow.AddMinutes(-i * 5),
-                        CreatedByName = "Technician"
-                    });
-                }
-                context.ScratchMarks.AddRange(marks);
+                    new() { Name = "Điện Thoại", Slug = "dien-thoai", Icon = "bi bi-phone", SortOrder = 1 },
+                    new() { Name = "Laptop", Slug = "laptop", Icon = "bi bi-laptop", SortOrder = 2 },
+                    new() { Name = "Tablet", Slug = "tablet", Icon = "bi bi-tablet", SortOrder = 3 },
+                    new() { Name = "Tai Nghe", Slug = "tai-nghe", Icon = "bi bi-headphones", SortOrder = 4 },
+                    new() { Name = "Đồng Hồ Thông Minh", Slug = "dong-ho-thong-minh", Icon = "bi bi-smartwatch", SortOrder = 5 },
+                    new() { Name = "Phụ Kiện", Slug = "phu-kien", Icon = "bi bi-bag", SortOrder = 6 },
+                };
+                context.ProductCategories.AddRange(cats);
                 await context.SaveChangesAsync();
             }
 
-            // 8. Seed RevenueDaily (60 days per tenant)
-            if (context.RevenueDailies.Count() < 180) // 3 stores * 60 days
+            // 6. Products (if not seeded yet)
+            if (!await context.Products.AnyAsync())
             {
-                var list = new List<RevenueDaily>();
-                foreach (var t in tenants)
-                {
-                    for (int i = 0; i < 60; i++)
-                    {
-                        var day = DateTime.UtcNow.Date.AddDays(-i);
-                        if (!context.RevenueDailies.Any(r => r.TenantId == t && r.Ngay == day))
-                        {
-                            list.Add(new RevenueDaily
-                            {
-                                Ngay = day,
-                                DoanhThu = 5_000_000 + rand.Next(2_000_000, 20_000_000),
-                                TenantId = t
-                            });
-                        }
-                    }
-                }
-                if (list.Any())
-                {
-                    context.RevenueDailies.AddRange(list);
-                    await context.SaveChangesAsync();
-                }
-            }
+                var brands = await context.ProductBrands.ToDictionaryAsync(b => b.Slug, b => b.Id);
+                var cats = await context.ProductCategories.ToDictionaryAsync(c => c.Slug, c => c.Id);
 
-            // 9. Seed ThietBiBan (100)
-            if (context.ThietBiBans.Count() < 100)
-            {
-                var devices = new List<ThietBiBan>();
-                for (int i = 1; i <= 100; i++)
+                var products = new List<Product>
                 {
-                    string serial = $"SER-{202600 + i}";
-                    if (!context.ThietBiBans.Any(d => d.SerialNumber == serial))
-                    {
-                        devices.Add(new ThietBiBan
-                        {
-                            SerialNumber = serial,
-                            Model = $"MacBook Pro M{1 + (i % 3)}",
-                            NgayMua = DateTime.UtcNow.Date.AddDays(-rand.Next(1, 365)),
-                            ThoiHanBaoHanhThang = 12 + (i % 12),
-                            TenKhachHang = $"Khách hàng mua máy {i}",
-                            TenantId = tenants[rand.Next(tenants.Length)]
-                        });
-                    }
-                }
-                if (devices.Any())
-                {
-                    context.ThietBiBans.AddRange(devices);
-                    await context.SaveChangesAsync();
-                }
-            }
+                    new() { Name = "iPhone 15 Pro Max", Slug = "iphone-15-pro-max", ShortDescription = "Chip A17 Pro, Camera 48MP, Titanium", Price = 34990000, ComparePrice = 38990000, Stock = 50, CategoryId = cats["dien-thoai"], BrandId = brands["apple"], IsFeatured = true, IsBestSeller = true, IsNew = true, AverageRating = 4.9, ReviewCount = 312, SoldCount = 1240 },
+                    new() { Name = "iPhone 15", Slug = "iphone-15", ShortDescription = "Chip A16, Dynamic Island, USB-C", Price = 22990000, ComparePrice = 24990000, Stock = 80, CategoryId = cats["dien-thoai"], BrandId = brands["apple"], IsFeatured = true, IsBestSeller = true, AverageRating = 4.8, ReviewCount = 528, SoldCount = 2100 },
+                    new() { Name = "Samsung Galaxy S24 Ultra", Slug = "samsung-galaxy-s24-ultra", ShortDescription = "Snapdragon 8 Gen 3, S Pen, Camera 200MP", Price = 31990000, ComparePrice = 35990000, Stock = 45, CategoryId = cats["dien-thoai"], BrandId = brands["samsung"], IsFeatured = true, IsNew = true, AverageRating = 4.8, ReviewCount = 204, SoldCount = 890 },
+                    new() { Name = "Samsung Galaxy S24+", Slug = "samsung-galaxy-s24-plus", ShortDescription = "Snapdragon 8 Gen 3, 6.7 inch, 50MP", Price = 24990000, ComparePrice = 27990000, Stock = 60, CategoryId = cats["dien-thoai"], BrandId = brands["samsung"], IsBestSeller = true, AverageRating = 4.7, ReviewCount = 167, SoldCount = 734 },
+                    new() { Name = "MacBook Pro 14\" M3 Pro", Slug = "macbook-pro-14-m3-pro", ShortDescription = "Apple M3 Pro, 18GB RAM, 512GB SSD, Liquid Retina XDR", Price = 52990000, ComparePrice = 57990000, Stock = 25, CategoryId = cats["laptop"], BrandId = brands["apple"], IsFeatured = true, IsBestSeller = true, IsNew = true, AverageRating = 4.9, ReviewCount = 98, SoldCount = 342 },
+                    new() { Name = "MacBook Air M2", Slug = "macbook-air-m2", ShortDescription = "Apple M2, 8GB RAM, 256GB SSD, thiết kế siêu mỏng", Price = 28990000, ComparePrice = 31990000, Stock = 40, CategoryId = cats["laptop"], BrandId = brands["apple"], IsFeatured = true, AverageRating = 4.8, ReviewCount = 215, SoldCount = 876 },
+                    new() { Name = "Dell XPS 15 OLED", Slug = "dell-xps-15-oled", ShortDescription = "Intel Core i7-13700H, 16GB, 512GB, OLED 3.5K", Price = 45990000, ComparePrice = 49990000, Stock = 15, CategoryId = cats["laptop"], BrandId = brands["dell"], IsNew = true, AverageRating = 4.7, ReviewCount = 54, SoldCount = 128 },
+                    new() { Name = "ASUS ROG Zephyrus G14", Slug = "asus-rog-zephyrus-g14", ShortDescription = "AMD Ryzen 9, RTX 4060, 16GB, 1TB, 144Hz", Price = 38990000, ComparePrice = 42990000, Stock = 20, CategoryId = cats["laptop"], BrandId = brands["asus"], IsFeatured = true, AverageRating = 4.8, ReviewCount = 87, SoldCount = 267 },
+                    new() { Name = "iPad Pro M4 11\"", Slug = "ipad-pro-m4-11", ShortDescription = "Apple M4, OLED, 256GB, Wi-Fi + 5G", Price = 27990000, ComparePrice = 30990000, Stock = 35, CategoryId = cats["tablet"], BrandId = brands["apple"], IsFeatured = true, IsNew = true, AverageRating = 4.9, ReviewCount = 76, SoldCount = 310 },
+                    new() { Name = "Samsung Galaxy Tab S9+", Slug = "samsung-galaxy-tab-s9-plus", ShortDescription = "Snapdragon 8 Gen 2, AMOLED 12.4\", S Pen", Price = 21990000, ComparePrice = 24990000, Stock = 28, CategoryId = cats["tablet"], BrandId = brands["samsung"], AverageRating = 4.7, ReviewCount = 63, SoldCount = 189 },
+                    new() { Name = "Sony WH-1000XM5", Slug = "sony-wh-1000xm5", ShortDescription = "Chống ồn tốt nhất thế giới, 30 giờ pin, LDAC", Price = 8490000, ComparePrice = 9990000, Stock = 100, CategoryId = cats["tai-nghe"], BrandId = brands["sony"], IsFeatured = true, IsBestSeller = true, AverageRating = 4.9, ReviewCount = 445, SoldCount = 1820 },
+                    new() { Name = "Apple AirPods Pro 2", Slug = "airpods-pro-2", ShortDescription = "ANC, Adaptive Audio, MagSafe, USB-C", Price = 6490000, ComparePrice = 7490000, Stock = 120, CategoryId = cats["tai-nghe"], BrandId = brands["apple"], IsBestSeller = true, AverageRating = 4.8, ReviewCount = 389, SoldCount = 1540 },
+                    new() { Name = "Apple Watch Series 9", Slug = "apple-watch-series-9", ShortDescription = "Chip S9, Double Tap, Always-On Retina, GPS", Price = 11990000, ComparePrice = 13490000, Stock = 60, CategoryId = cats["dong-ho-thong-minh"], BrandId = brands["apple"], IsFeatured = true, IsNew = true, AverageRating = 4.8, ReviewCount = 201, SoldCount = 678 },
+                    new() { Name = "Samsung Galaxy Watch 6 Classic", Slug = "samsung-galaxy-watch-6-classic", ShortDescription = "Bezel quay, 43mm, BioActive Sensor, 2 ngày pin", Price = 8990000, ComparePrice = 10490000, Stock = 45, CategoryId = cats["dong-ho-thong-minh"], BrandId = brands["samsung"], AverageRating = 4.6, ReviewCount = 124, SoldCount = 412 },
+                    new() { Name = "Apple MagSafe Charger", Slug = "apple-magsafe-charger", ShortDescription = "15W sạc nhanh không dây cho iPhone 12 trở lên", Price = 890000, ComparePrice = 1190000, Stock = 200, CategoryId = cats["phu-kien"], BrandId = brands["apple"], IsBestSeller = true, AverageRating = 4.5, ReviewCount = 632, SoldCount = 3200 },
+                    new() { Name = "Sony WF-1000XM5", Slug = "sony-wf-1000xm5", ShortDescription = "TWS chống ồn, LDAC Hi-Res, 8 giờ pin", Price = 6290000, ComparePrice = 7490000, Stock = 75, CategoryId = cats["tai-nghe"], BrandId = brands["sony"], IsNew = true, AverageRating = 4.8, ReviewCount = 178, SoldCount = 520 },
+                };
 
-            // 10. Seed LichHen (60)
-            if (context.LichHens.Count() < 60)
-            {
-                var bookings = new List<LichHen>();
-                for (int i = 1; i <= 60; i++)
+                context.Products.AddRange(products);
+                await context.SaveChangesAsync();
+
+                // Add images & specs for first product (iPhone 15 Pro Max) as example
+                var p1 = await context.Products.FirstAsync(p => p.Slug == "iphone-15-pro-max");
+                context.ProductImages.AddRange(
+                    new ProductImage { ProductId = p1.Id, Url = "https://cdn.techpro.vn/iphone15promax-black.webp", AltText = "iPhone 15 Pro Max Black Titanium", IsPrimary = true, SortOrder = 0 },
+                    new ProductImage { ProductId = p1.Id, Url = "https://cdn.techpro.vn/iphone15promax-natural.webp", AltText = "iPhone 15 Pro Max Natural Titanium", SortOrder = 1 }
+                );
+                context.ProductVariants.AddRange(
+                    new ProductVariant { ProductId = p1.Id, VariantType = "Storage", VariantValue = "256GB", PriceModifier = 0, Stock = 20, ColorHex = "#1C1C1E", SortOrder = 0 },
+                    new ProductVariant { ProductId = p1.Id, VariantType = "Storage", VariantValue = "512GB", PriceModifier = 3000000, Stock = 20, SortOrder = 1 },
+                    new ProductVariant { ProductId = p1.Id, VariantType = "Storage", VariantValue = "1TB", PriceModifier = 7000000, Stock = 10, SortOrder = 2 }
+                );
+                context.ProductSpecifications.AddRange(
+                    new ProductSpecification { ProductId = p1.Id, SpecKey = "Chip", SpecValue = "Apple A17 Pro", GroupName = "Hiệu năng", SortOrder = 0 },
+                    new ProductSpecification { ProductId = p1.Id, SpecKey = "RAM", SpecValue = "8GB", GroupName = "Hiệu năng", SortOrder = 1 },
+                    new ProductSpecification { ProductId = p1.Id, SpecKey = "Màn hình", SpecValue = "6.7\" Super Retina XDR ProMotion 120Hz", GroupName = "Màn hình", SortOrder = 2 },
+                    new ProductSpecification { ProductId = p1.Id, SpecKey = "Camera sau", SpecValue = "48MP + 12MP + 12MP (Telephoto 5x)", GroupName = "Camera", SortOrder = 3 },
+                    new ProductSpecification { ProductId = p1.Id, SpecKey = "Pin", SpecValue = "4422 mAh, sạc 27W", GroupName = "Pin", SortOrder = 4 },
+                    new ProductSpecification { ProductId = p1.Id, SpecKey = "Chất liệu", SpecValue = "Titanium Grade 5", GroupName = "Thiết kế", SortOrder = 5 }
+                );
+
+                // Flash sale: iPhone 15 với giá giảm
+                var iphone15 = await context.Products.FirstAsync(p => p.Slug == "iphone-15");
+                context.FlashSales.Add(new FlashSale
                 {
-                    bookings.Add(new LichHen
-                    {
-                        HoTen = $"Khách đặt lịch VIP {i}",
-                        SoDienThoai = $"09{rand.Next(10000000, 99999999)}",
-                        ThietBi = $"iPad Pro M{1 + (i % 4)}",
-                        ChiNhanh = $"TechPro Care {(i % 3 == 0 ? "HK" : (i % 3 == 1 ? "CG" : "SG"))}",
-                        NgayHen = DateTime.UtcNow.Date.AddDays(rand.Next(-5, 10)),
-                        GioHen = $"{8 + rand.Next(0, 8)}:00",
-                        MoTaLoi = $"Mô tả lỗi cần kiểm tra {i}",
-                        TenantId = tenants[rand.Next(tenants.Length)],
-                        CreatedAt = DateTime.UtcNow.AddDays(-rand.Next(1, 10))
-                    });
-                }
-                context.LichHens.AddRange(bookings);
+                    ProductId = iphone15.Id,
+                    SalePrice = 19990000,
+                    StartTime = DateTime.UtcNow.AddMinutes(-30),
+                    EndTime = DateTime.UtcNow.AddHours(6),
+                    Quantity = 30,
+                    Sold = 8,
+                    IsActive = true
+                });
+
                 await context.SaveChangesAsync();
             }
         }
     }
 }
-

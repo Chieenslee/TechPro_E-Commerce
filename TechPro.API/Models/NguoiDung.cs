@@ -20,7 +20,7 @@ namespace TechPro.API.Models
         [NotMapped]
         public string Role { get; set; } = "store_admin";
 
-        [StringLength(50)]
+        [StringLength(255)]
         public string? AvatarUrl { get; set; }
 
         [StringLength(50)]
@@ -29,8 +29,15 @@ namespace TechPro.API.Models
         [ForeignKey("TenantId")]
         public virtual CuaHang? CuaHang { get; set; }
 
-        // Navigation properties
+        // Legacy: Repair management navigation
         public virtual ICollection<PhieuSuaChua> PhieuSuaChuas { get; set; } = new List<PhieuSuaChua>();
+
+        // E-Commerce navigation
+        public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+        public virtual ICollection<Wishlist> Wishlists { get; set; } = new List<Wishlist>();
+        public virtual CustomerProfile? CustomerProfile { get; set; }
+        public virtual ICollection<ProductReview> Reviews { get; set; } = new List<ProductReview>();
+        public virtual ICollection<ShippingAddress> ShippingAddresses { get; set; } = new List<ShippingAddress>();
     }
 }
 

@@ -1,774 +1,144 @@
-@using System.Security.Claims
-<!DOCTYPE html>
 @{
-    var langCookie = Context.Request.Cookies["tp_lang"] ?? "vi";
-    var htmlLang = langCookie.Equals("en", StringComparison.OrdinalIgnoreCase) ? "en" : "vi";
-    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+    var cartCount = ViewBag.CartCount ?? 0;
+    var currentUser = ViewBag.CurrentUser as string;
 }
-<html lang="@htmlLang">
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - TechPro</title>
-    
-    <!-- Google Fonts -->
+    <meta name="description" content="@(ViewBag.MetaDescription ?? "TechPro - Thiết bị điện tử chính hãng, giá tốt nhất")">
+    <title>@(ViewBag.Title != null ? ViewBag.Title + " | TechPro" : "TechPro – Công Nghệ Đỉnh Cao")</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Bootstrap 5.3.3 CSS (Latest) -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    
-    <!-- Bootstrap Icons 1.11.3 (Latest) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
-    
-    <!-- Toastr CSS (Latest) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
-    
-    <!-- Lucide Icons (Latest) -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    
-    <!-- Chart.js 4.4.3 (Latest) -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-    
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/features.css" asp-append-version="true" />
-    <style>
-        :root {
-            --sidebar-width: 256px;
-            --header-height: 64px;
-        }
-        
-        body {
-            font-family: "Inter", "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f8fafc;
-            color: #0f172a;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        
-        /* Layout Container */
-        .layout-container {
-            min-height: 100vh;
-            background-color: #f8fafc;
-            color: #0f172a;
-            display: flex;
-            font-family: "Inter", "Manrope", sans-serif;
-        }
-        
-        /* Sidebar Styles */
-        .sidebar {
-            width: var(--sidebar-width);
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            z-index: 40;
-            background-color: #ffffff;
-            border-right: 1px solid #e2e8f0;
-            color: #475569;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease-in-out;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-        
-        .sidebar.show {
-            transform: translateX(0);
-        }
-        
-        .sidebar-overlay {
-            position: fixed;
-            inset: 0;
-            background-color: rgba(15, 23, 42, 0.5);
-            backdrop-filter: blur(4px);
-            z-index: 30;
-            transition: opacity 0.3s;
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .sidebar-overlay.show {
-            opacity: 1;
-            pointer-events: all;
-        }
-        
-        .sidebar-header {
-            height: var(--header-height);
-            display: flex;
-            align-items: center;
-            padding: 0 1.5rem;
-            border-bottom: 1px solid #f1f5f9;
-        }
-        
-        .sidebar-nav {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1.5rem 0.75rem;
-        }
-        
-        .sidebar-nav .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.625rem 0.75rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: all 0.2s;
-            border-radius: 0.375rem;
-            color: #475569;
-            margin: 0.125rem 0;
-        }
-        
-        .sidebar-nav .nav-link:hover {
-            background-color: #f1f5f9;
-            color: #0f172a;
-        }
-        
-        .sidebar-nav .nav-link.active {
-            background-color: #eff6ff;
-            color: #1d4ed8;
-            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-        }
-        
-        .sidebar-nav .nav-link.active.system-admin {
-            background-color: #f1f5f9;
-            color: #0f172a;
-        }
-        
-        .sidebar-nav .nav-link .icon {
-            width: 20px;
-            height: 20px;
-            stroke-width: 2;
-            flex-shrink: 0;
-        }
-        
-        .sidebar-nav .nav-link.active .icon {
-            color: #2563eb;
-        }
-        
-        .sidebar-nav .nav-link.active.system-admin .icon {
-            color: #0f172a;
-        }
-        
-        .sidebar-nav .nav-link:not(.active) .icon {
-            color: #94a3b8;
-        }
-        
-        .sidebar-nav .nav-link:hover:not(.active) .icon {
-            color: #475569;
-        }
-        
-        .sidebar-footer {
-            padding: 1rem;
-            border-top: 1px solid #f1f5f9;
-        }
-        
-        .sidebar-footer .logout-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            width: 100%;
-            padding: 0.5rem 0.75rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #475569;
-            background: none;
-            border: none;
-            border-radius: 0.375rem;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-        
-        .sidebar-footer .logout-btn:hover {
-            color: #dc2626;
-            background-color: #fef2f2;
-        }
-        
-        .sidebar-footer .logout-btn .icon {
-            width: 18px;
-            height: 18px;
-            stroke-width: 2;
-        }
-        
-        /* Main Content Area */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-width: 0;
-            background-color: #f8fafc;
-            transition: all 0.3s;
-            margin-left: 0;
-        }
-        
-        /* Header Styles */
-        .header {
-            height: var(--header-height);
-            background-color: #ffffff;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 1rem;
-            position: sticky;
-            top: 0;
-            z-index: 20;
-        }
-        
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .mobile-menu-btn {
-            display: block;
-            padding: 0.5rem;
-            color: #475569;
-            background: none;
-            border: none;
-            border-radius: 0.375rem;
-            transition: background-color 0.2s;
-            cursor: pointer;
-        }
-        
-        .mobile-menu-btn:hover {
-            background-color: #f1f5f9;
-        }
-        
-        .mobile-menu-btn .icon {
-            width: 24px;
-            height: 24px;
-        }
-        
-        .mobile-title {
-            display: none;
-            font-weight: 700;
-            font-size: 1.125rem;
-            color: #1e293b;
-        }
-        
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            width: 100%;
-            justify-content: flex-end;
-        }
-        
-        /* Search Bar */
-        .search-container {
-            display: none;
-            position: relative;
-            width: 16rem;
-        }
-        
-        .search-container.lg {
-            width: 20rem;
-        }
-        
-        .search-input {
-            width: 100%;
-            padding: 0.5rem 1rem 0.5rem 2.5rem;
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            color: #1e293b;
-            font-size: 0.875rem;
-            border-radius: 0.375rem;
-            transition: all 0.2s;
-        }
-        
-        .search-input::placeholder {
-            color: #94a3b8;
-        }
-        
-        .search-input:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 1px #3b82f6;
-            outline: none;
-        }
-        
-        .search-icon {
-            position: absolute;
-            left: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-        }
-        
-        .search-icon .icon {
-            width: 18px;
-            height: 18px;
-        }
-        
-        /* Notifications Button */
-        .notification-btn {
-            position: relative;
-            padding: 0.5rem;
-            color: #64748b;
-            background: none;
-            border: none;
-            border-radius: 9999px;
-            transition: background-color 0.2s;
-            cursor: pointer;
-        }
-        
-        .notification-btn:hover {
-            background-color: #f1f5f9;
-        }
-        
-        .notification-btn .icon {
-            width: 20px;
-            height: 20px;
-        }
-        
-        .notification-dot {
-            position: absolute;
-            top: 0.375rem;
-            right: 0.375rem;
-            width: 0.5rem;
-            height: 0.5rem;
-            background-color: #ef4444;
-            border-radius: 9999px;
-            border: 2px solid #ffffff;
-        }
-        
-        /* User Profile */
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding-left: 1rem;
-            border-left: 1px solid #e2e8f0;
-        }
-        
-        .user-info {
-            text-align: right;
-            display: none;
-        }
-        
-        .user-name {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #1e293b;
-            line-height: 1;
-        }
-        
-        .user-role {
-            font-size: 0.75rem;
-            color: #64748b;
-            margin-top: 0.25rem;
-            text-transform: capitalize;
-        }
-        
-        .user-avatar {
-            position: relative;
-        }
-        
-        .user-avatar img {
-            width: 2.25rem;
-            height: 2.25rem;
-            object-fit: cover;
-            border-radius: 9999px;
-            border: 1px solid #e2e8f0;
-            background-color: #f1f5f9;
-        }
-        
-        .user-status-dot {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 0.625rem;
-            height: 0.625rem;
-            background-color: #22c55e;
-            border-radius: 9999px;
-            border: 2px solid #ffffff;
-        }
-        
-        /* Content Wrapper */
-        .content-wrapper {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem;
-        }
-        
-        .content-inner {
-            width: 100%;
-            max-width: 100%;
-            margin: 0 auto;
-        }
-        
-        /* Menu Section Label */
-        .menu-section-label {
-            padding: 0 0.75rem;
-            margin-bottom: 0.5rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        
-        /* Branding */
-        .sidebar-brand {
-            display: flex;
-            align-items: center;
-            gap: 0.625rem;
-        }
-        
-        .brand-icon {
-            padding: 0.375rem;
-            border-radius: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .brand-icon.system-admin {
-            background-color: #0f172a;
-        }
-        
-        .brand-icon.store-admin {
-            background-color: #2563eb;
-        }
-        
-        .brand-icon .icon {
-            width: 1.25rem;
-            height: 1.25rem;
-            color: #ffffff;
-            stroke-width: 2.5;
-        }
-        
-        .brand-text {
-            color: #0f172a;
-            font-weight: 700;
-            font-size: 1.125rem;
-            letter-spacing: -0.025em;
-        }
-        
-        .brand-text .brand-role {
-            color: #0f172a;
-        }
-        
-        .brand-text .brand-role.store-admin {
-            color: #2563eb;
-        }
-        
-        @@media (min-width: 768px) {
-            .search-container {
-                display: flex;
-            }
-            
-            .user-info {
-                display: block;
-            }
-        }
-        
-        @@media (min-width: 1024px) {
-            .content-wrapper {
-                padding: 1.5rem;
-            }
-        }
-        
-        @@media (max-width: 1023.98px) {
-            .mobile-title {
-                display: block;
-            }
-            
-            .header {
-                padding: 0 1rem;
-            }
-        }
-    </style>
-    @await RenderSectionAsync("Styles", required: false)
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="~/css/techpro.css" asp-append-version="true" />
+    @RenderSection("Styles", required: false)
 </head>
 <body>
-    @if (User.Identity?.IsAuthenticated == true)
-    {
-        <div class="layout-container">
-            <!-- Mobile Overlay -->
-            <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
-            
-            <!-- Sidebar -->
-            @await Html.PartialAsync("_ThanhBen")
-            
-            <!-- Main Content Area -->
-            <div class="main-content">
-                <!-- Header -->
-                <header class="header">
-                    <div class="header-left">
-                        <button class="mobile-menu-btn" onclick="toggleSidebar()">
-                            <i data-lucide="menu" class="icon"></i>
+    <!-- Navbar -->
+    <nav class="tp-navbar" id="mainNavbar">
+        <div class="tp-navbar__inner">
+            <!-- Logo -->
+            <a href="/" class="tp-navbar__logo">
+                <span class="logo-icon"><i class="bi bi-cpu-fill"></i></span>
+                <span class="logo-text">Tech<span class="logo-accent">Pro</span></span>
+            </a>
+
+            <!-- Search Bar -->
+            <div class="tp-navbar__search" id="searchBar">
+                <i class="bi bi-search search-icon"></i>
+                <input type="text" id="navSearch" placeholder="Tìm điện thoại, laptop, tai nghe..." autocomplete="off">
+                <div class="search-suggestions" id="searchSuggestions"></div>
+            </div>
+
+            <!-- Actions -->
+            <div class="tp-navbar__actions">
+                <a href="/Wishlist" class="action-btn" title="Yêu thích">
+                    <i class="bi bi-heart"></i>
+                </a>
+                <a href="/Cart" class="action-btn cart-btn" title="Giỏ hàng">
+                    <i class="bi bi-bag"></i>
+                    <span class="cart-badge" id="cartBadge">@cartCount</span>
+                </a>
+                @if (currentUser != null)
+                {
+                    <div class="user-menu">
+                        <button class="action-btn user-btn">
+                            <i class="bi bi-person-circle"></i>
                         </button>
-                        <span class="mobile-title">Warranty Center</span>
+                        <div class="user-dropdown">
+                            <a href="/Account/Profile"><i class="bi bi-person"></i> Tài khoản</a>
+                            <a href="/Orders"><i class="bi bi-box-seam"></i> Đơn hàng</a>
+                            <a href="/Account/Points"><i class="bi bi-star"></i> Điểm thưởng</a>
+                            <hr>
+                            <a href="/Account/Logout"><i class="bi bi-box-arrow-right"></i> Đăng xuất</a>
+                        </div>
                     </div>
-                    
-                    <div class="header-right">
-                        <!-- Search Bar -->
-                        <form action="/Search" method="get" class="search-container lg m-0 p-0 border-0 bg-transparent">
-                            <input 
-                                type="text" 
-                                name="searchTerm"
-                                placeholder="Tìm kiếm mã phiếu / SĐT..." 
-                                class="search-input"
-                                value="@(ViewBag.SearchTerm ?? "")"
-                            />
-                            <button type="submit" title="Tìm kiếm" class="search-icon bg-transparent border-0 d-flex align-items-center justify-content-center p-0 m-0 text-slate-400 hover-lift" style="cursor: pointer; height: 100%; outline: none;">
-                                <i data-lucide="search" class="icon"></i>
-                            </button>
-                        </form>
-                        
-                        <!-- Notifications -->
-                        <div class="dropdown">
-                            <button class="notification-btn" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i data-lucide="bell" class="icon"></i>
-                                <span class="notification-dot" id="notificationBadge" style="display: none;">0</span>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end p-0" style="width: 350px; max-height: 400px; overflow-y: auto;" aria-labelledby="notificationDropdown">
-                                <li class="dropdown-header d-flex justify-content-between align-items-center px-3 py-2 bg-light">
-                                    <span class="fw-bold">Thông báo</span>
-                                    <button class="btn btn-sm btn-link p-0 text-decoration-none" onclick="markAllAsRead(); return false;" style="font-size: 0.75rem;">Đánh dấu tất cả đã đọc</button>
-                                </li>
-                                <li><hr class="dropdown-divider my-0"></li>
-                                <li id="notificationList" class="list-unstyled mb-0">
-                                    <div class="text-center py-3 text-muted">
-                                        <i class="bi bi-inbox fs-4 d-block mb-2"></i>
-                                        <small>Đang tải...</small>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <!-- Language -->
-                        <div class="dropdown">
-                            <button class="notification-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Language">
-                                <i class="bi bi-translate"></i>
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-slate-200 mt-2 rounded-3" style="min-width: 160px;">
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center gap-2"
-                                       href="/Language/Set?culture=vi&returnUrl=@Uri.EscapeDataString(returnUrl)">
-                                        <span class="fw-semibold">Tiếng Việt</span>
-                                        @if (htmlLang == "vi") { <i class="bi bi-check2 ms-auto text-success"></i> }
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item d-flex align-items-center gap-2"
-                                       href="/Language/Set?culture=en&returnUrl=@Uri.EscapeDataString(returnUrl)">
-                                        <span class="fw-semibold">English</span>
-                                        @if (htmlLang == "en") { <i class="bi bi-check2 ms-auto text-success"></i> }
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                        
-                        <!-- User Profile -->
-                        <div class="user-profile dropdown" style="cursor: pointer;" data-bs-toggle="dropdown" aria-expanded="false">
-                            <div class="user-info">
-                                <div class="user-name">@User.Identity?.Name</div>
-                                <div class="user-role">@(User.FindFirst(ClaimTypes.Role)?.Value ?? "support")</div>
-                            </div>
-                            <div class="user-avatar">
-                                <img 
-                                    src="https://ui-avatars.com/api/?name=@(Uri.EscapeDataString(User.Identity?.Name ?? ""))&background=2563eb&color=fff" 
-                                    alt="@User.Identity?.Name" 
-                                />
-                                <span class="user-status-dot"></span>
-                            </div>
-                        </div>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-slate-200 mt-2 rounded-3" style="min-width: 220px;">
-                            <li>
-                                <a class="dropdown-item d-flex align-items-center py-2 text-slate-700 hover-bg-slate-100" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
-                                    <i class="bi bi-key-fill text-slate-400 me-3 fs-5"></i> 
-                                    <span class="fw-medium">Đổi mật khẩu</span>
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider my-1 border-slate-200"></li>
-                            <li>
-                                <form asp-controller="Account" asp-action="Logout" method="post" id="logoutFormNavbar" class="m-0 p-0">
-                                    <button type="submit" class="dropdown-item d-flex align-items-center py-2 text-danger hover-bg-red-50 w-100 text-start border-0 bg-transparent">
-                                        <i class="bi bi-box-arrow-right text-danger me-3 fs-5"></i> 
-                                        <span class="fw-medium">Đăng xuất</span>
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
-                </header>
-                
-                <!-- Content -->
-                <main class="content-wrapper">
-                    <div class="content-inner">
-                        @RenderBody()
-                    </div>
-                </main>
-            </div>
-        </div>
-    }
-    else
-    {
-        <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050;">
-            <div class="dropdown">
-                <button class="btn btn-light border shadow-sm rounded-pill px-3" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-translate me-2"></i>@(htmlLang == "en" ? "English" : "Tiếng Việt")
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                    <li>
-                        <a class="dropdown-item d-flex align-items-center gap-2"
-                           href="/Language/Set?culture=vi&returnUrl=@Uri.EscapeDataString(returnUrl)">
-                            <span class="fw-semibold">Tiếng Việt</span>
-                            @if (htmlLang == "vi") { <i class="bi bi-check2 ms-auto text-success"></i> }
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item d-flex align-items-center gap-2"
-                           href="/Language/Set?culture=en&returnUrl=@Uri.EscapeDataString(returnUrl)">
-                            <span class="fw-semibold">English</span>
-                            @if (htmlLang == "en") { <i class="bi bi-check2 ms-auto text-success"></i> }
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        @RenderBody()
-    }
-
-    <!-- jQuery 3.7.1 (Latest) -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    
-    <!-- Bootstrap 5.3.3 JS Bundle (Latest) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Toastr JS (Latest) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-    
-    <!-- SignalR 8.0.11 (Latest) -->
-    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@8.0.11/dist/browser/signalr.min.js"></script>
-    
-    <!-- jsPDF & html2canvas for PDF Export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
-    <!-- SheetJS for Excel Export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/js/notifications.js" asp-append-version="true"></script>
-    <script src="~/js/features.js" asp-append-version="true"></script>
-    
-    <script>
-        // Initialize Lucide icons
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof lucide !== 'undefined') {
-                lucide.createIcons();
-            }
-        });
-        
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
-            if (sidebar && overlay) {
-                sidebar.classList.toggle('show');
-                overlay.classList.toggle('show');
-            }
-        }
-        
-        // Toastr configuration
-        toastr.options = {
-            "closeButton": true,
-            "debug": false,
-            "newestOnTop": true,
-            "progressBar": true,
-            "positionClass": "toast-top-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "3000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        };
-    </script>
-    <!-- Change Password Modal -->
-    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered font-inter">
-            <div class="modal-content rounded-4 border-0 shadow-lg">
-                <div class="modal-header bg-slate-50 border-bottom border-slate-200 rounded-top-4 py-3">
-                    <h5 class="modal-title fw-bold text-slate-800 d-flex align-items-center">
-                        <i class="bi bi-shield-lock-fill text-indigo-600 me-2"></i> Đổi mật khẩu bảo mật
-                    </h5>
-                    <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <form id="changePasswordForm" onsubmit="submitChangePassword(event)">
-                        @Html.AntiForgeryToken()
-                        <div class="mb-3">
-                            <label class="form-label text-slate-700 fw-medium small mb-1">Mật khẩu hiện tại</label>
-                            <input type="password" name="oldPassword" class="form-control rounded-3 border-slate-300 shadow-none focus-ring" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label text-slate-700 fw-medium small mb-1">Mật khẩu mới</label>
-                            <input type="password" name="newPassword" class="form-control rounded-3 border-slate-300 shadow-none focus-ring" required>
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label text-slate-700 fw-medium small mb-1">Xác nhận mật khẩu mới</label>
-                            <input type="password" name="confirmPassword" class="form-control rounded-3 border-slate-300 shadow-none focus-ring" required>
-                        </div>
-                        <div class="d-flex justify-content-end gap-2">
-                            <button type="button" class="btn btn-light rounded-3 text-slate-600 border-slate-200" data-bs-dismiss="modal">Hủy</button>
-                            <button type="submit" class="btn btn-indigo rounded-3 text-white px-4 hover-lift" id="btnChangePwdSubmit" style="background-color: #4f46e5; border-color: #4f46e5;">
-                                Lưu mật khẩu
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        async function submitChangePassword(e) {
-            e.preventDefault();
-            const form = document.getElementById('changePasswordForm');
-            const formData = new FormData(form);
-            const btnSubmit = document.getElementById('btnChangePwdSubmit');
-
-            btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Đang xử lý...';
-            btnSubmit.disabled = true;
-
-            try {
-                const response = await fetch('/Account/ChangePassword', {
-                    method: 'POST',
-                    body: formData,
-                    headers: { 'RequestVerificationToken': formData.get('__RequestVerificationToken') }
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    toastr.success(result.message);
-                    const modalEl = document.getElementById('changePasswordModal');
-                    const modal = bootstrap.Modal.getInstance(modalEl);
-                    modal.hide();
-                    form.reset();
-                } else {
-                    toastr.error(result.message);
                 }
-            } catch (error) {
-                toastr.error('Có lỗi xảy ra, vui lòng thử lại.');
-                console.error(error);
-            } finally {
-                btnSubmit.innerHTML = 'Lưu mật khẩu';
-                btnSubmit.disabled = false;
-            }
-        }
-    </script>
-    
-    @await RenderSectionAsync("Scripts", required: false)
+                else
+                {
+                    <a href="/Account/Login" class="btn-login">Đăng nhập</a>
+                }
+                <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="bi bi-list"></i></button>
+            </div>
+        </div>
+
+        <!-- Category Nav -->
+        <div class="tp-navbar__cats">
+            <div class="cats-inner">
+                <a href="/products?categorySlug=dien-thoai"><i class="bi bi-phone"></i> Điện Thoại</a>
+                <a href="/products?categorySlug=laptop"><i class="bi bi-laptop"></i> Laptop</a>
+                <a href="/products?categorySlug=tablet"><i class="bi bi-tablet"></i> Tablet</a>
+                <a href="/products?categorySlug=tai-nghe"><i class="bi bi-headphones"></i> Tai Nghe</a>
+                <a href="/products?categorySlug=dong-ho-thong-minh"><i class="bi bi-smartwatch"></i> Đồng Hồ</a>
+                <a href="/products?categorySlug=phu-kien"><i class="bi bi-bag"></i> Phụ Kiện</a>
+                <a href="/flash-sale" class="flash-link"><i class="bi bi-lightning-charge-fill"></i> Flash Sale</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-overlay" id="mobileOverlay"></div>
+
+    <!-- Main Content -->
+    <main class="tp-main">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="tp-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <i class="bi bi-cpu-fill"></i> Tech<span>Pro</span>
+                </div>
+                <p>Thiết bị điện tử chính hãng.<br>Công nghệ đỉnh cao – Giá tốt nhất.</p>
+                <div class="footer-social">
+                    <a href="#"><i class="bi bi-facebook"></i></a>
+                    <a href="#"><i class="bi bi-instagram"></i></a>
+                    <a href="#"><i class="bi bi-youtube"></i></a>
+                    <a href="#"><i class="bi bi-tiktok"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h4>Sản phẩm</h4>
+                <a href="/products?categorySlug=dien-thoai">Điện thoại</a>
+                <a href="/products?categorySlug=laptop">Laptop</a>
+                <a href="/products?categorySlug=tablet">Tablet</a>
+                <a href="/products?categorySlug=tai-nghe">Tai nghe</a>
+                <a href="/flash-sale">Flash Sale</a>
+            </div>
+            <div class="footer-links">
+                <h4>Hỗ trợ</h4>
+                <a href="/orders">Tra cứu đơn hàng</a>
+                <a href="/returns">Đổi trả hàng</a>
+                <a href="/warranty">Bảo hành</a>
+                <a href="/contact">Liên hệ</a>
+            </div>
+            <div class="footer-contact">
+                <h4>Liên hệ</h4>
+                <p><i class="bi bi-geo-alt"></i> 123 Nguyễn Huệ, Q.1, TP.HCM</p>
+                <p><i class="bi bi-telephone"></i> 1900 6868</p>
+                <p><i class="bi bi-envelope"></i> support@techpro.vn</p>
+                <p><i class="bi bi-clock"></i> 8:00 - 22:00 mỗi ngày</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 TechPro. Bảo lưu mọi quyền.</p>
+            <div class="payment-logos">
+                <span>VNPAY</span><span>MOMO</span><span>ZALOPAY</span><span>COD</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chatbot FAB -->
+    <button class="chatbot-fab" id="chatbotFab" title="Tư vấn AI">
+        <i class="bi bi-robot"></i>
+    </button>
+
+    <script src="~/js/techpro.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>
