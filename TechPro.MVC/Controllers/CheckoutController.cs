@@ -2,24 +2,18 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TechPro.Models.DTOs;
 using TechPro.Models.ViewModels;
+using TechPro.Services;
 
 namespace TechPro.Controllers;
 
-[Authorize]
+[AllowAnonymous]
 [Route("checkout")]
 public class CheckoutController : Controller
 {
-    private readonly IHttpClientFactory _httpClientFactory;
-
-    public CheckoutController(IHttpClientFactory httpClientFactory)
-    {
-        _httpClientFactory = httpClientFactory;
-    }
-
     [HttpGet("")]
-    public async Task<IActionResult> Index()
+    public IActionResult Index()
     {
-        var cart = await GetCart();
+        var cart = GetCart();
         if (!cart.Items.Any())
         {
             return RedirectToAction("Index", "Cart");
@@ -31,18 +25,17 @@ public class CheckoutController : Controller
 
     [HttpPost("")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Place(PlaceOrderDto order)
+    public IActionResult Place(PlaceOrderDto order)
     {
-        var client = _httpClientFactory.CreateClient("TechProAPI");
-        var response = await client.PostAsJsonAsync("api/orders/place", order);
-        if (!response.IsSuccessStatusCode)
+        var cart = GetCart();
+        if (!cart.Items.Any())
         {
-            ModelState.AddModelError(string.Empty, "Không thể đặt hàng. Vui lòng kiểm tra giỏ hàng và thông tin giao hàng.");
-            return View("Index", new CheckoutViewModel { Cart = await GetCart(), Order = order });
+            return RedirectToAction("Index", "Cart");
         }
 
-        var result = await response.Content.ReadFromJsonAsync<OrderPlacedResult>();
-        return RedirectToAction(nameof(Success), new { code = result?.OrderCode });
+        var orderCode = $"TP-DEMO-{DateTime.Now:yyyyMMddHHmmss}";
+        StorefrontSessionCart.Clear(HttpContext.Session);
+        return RedirectToAction(nameof(Success), new { code = orderCode });
     }
 
     [HttpGet("success")]
@@ -53,21 +46,8 @@ public class CheckoutController : Controller
         return View();
     }
 
-    private async Task<CartDto> GetCart()
+    private CartDto GetCart()
     {
-        var client = _httpClientFactory.CreateClient("TechProAPI");
-        try
-        {
-            return await client.GetFromJsonAsync<CartDto>("api/cart") ?? new CartDto();
-        }
-        catch
-        {
-            return new CartDto();
-        }
-    }
-
-    private sealed class OrderPlacedResult
-    {
-        public string? OrderCode { get; set; }
+        return StorefrontSessionCart.GetCart(HttpContext.Session);
     }
 }

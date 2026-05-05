@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TechPro.Models.DTOs;
+using TechPro.Services;
 
 namespace TechPro.Controllers;
 
@@ -28,6 +29,12 @@ public class FlashSaleController : Controller
         {
             // Keep storefront available even when the external database is offline.
         }
+
+        if (!sales.Any())
+        {
+            sales = StorefrontDemoData.FlashSales();
+        }
+
         ViewBag.Title = "Flash Sale";
         return View(sales);
     }

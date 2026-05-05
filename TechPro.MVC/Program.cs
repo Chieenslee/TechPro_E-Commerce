@@ -58,6 +58,13 @@ namespace TechPro
 
             builder.Services.AddControllersWithViews();
             // SignalR was previously used for internal chat UI; keeping disabled for now.
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromDays(7);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
             
             // Auto-translate HTML (VI -> EN) using Gemini + cache
             builder.Services.AddSingleton<HtmlTranslationService>();
@@ -75,6 +82,7 @@ namespace TechPro
             app.UseStaticFiles();
 
             app.UseRouting();
+            app.UseSession();
             
             // Translate full HTML responses when tp_lang=en
             app.UseMiddleware<HtmlAutoTranslateMiddleware>();

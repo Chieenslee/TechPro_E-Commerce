@@ -4,6 +4,7 @@ using System.Security.Claims;
 using TechPro.Models;
 using TechPro.Models.ViewModels;
 using TechPro.Models.DTOs;
+using TechPro.Services;
 using System.Text.Json;
 using System.Text;
 
@@ -54,6 +55,17 @@ namespace TechPro.Controllers
 
             ViewBag.Title = "Thiết bị điện tử chính hãng";
             ViewBag.MetaDescription = "TechPro - Website bán điện thoại, laptop, tablet, tai nghe và phụ kiện chính hãng.";
+            if (!viewModel.Categories.Any() && !viewModel.FeaturedProducts.Any())
+            {
+                var demoProducts = StorefrontDemoData.Products();
+                viewModel.Categories = StorefrontDemoData.Categories();
+                viewModel.Brands = StorefrontDemoData.Brands();
+                viewModel.FeaturedProducts = demoProducts.Where(p => p.IsFeatured).ToList();
+                viewModel.BestSellers = demoProducts.Where(p => p.IsBestSeller).ToList();
+                viewModel.NewArrivals = demoProducts.Where(p => p.IsNew).ToList();
+                viewModel.FlashSales = StorefrontDemoData.FlashSales();
+            }
+
             return View(viewModel);
         }
 

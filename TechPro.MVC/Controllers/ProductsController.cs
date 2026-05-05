@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TechPro.Models.DTOs;
 using TechPro.Models.ViewModels;
+using TechPro.Services;
 
 namespace TechPro.Controllers;
 
@@ -23,18 +24,24 @@ public class ProductsController : Controller
         query.PageSize = query.PageSize <= 0 ? 20 : Math.Min(query.PageSize, 48);
 
         var client = _httpClientFactory.CreateClient("TechProAPI");
-        var products = await GetOrDefault<PagedResult<ProductListDto>>(client, $"api/products{BuildProductQuery(query)}")
-            ?? new PagedResult<ProductListDto> { Page = query.Page, PageSize = query.PageSize };
-        var categories = await GetOrDefault<List<CategoryDto>>(client, "api/categories?rootOnly=true") ?? new();
-        var brands = await GetOrDefault<List<BrandDto>>(client, "api/brands") ?? new();
+        var products = await GetOrDefault<PagedResult<ProductListDto>>(client, $"api/products{BuildProductQuery(query)}");
+        var categories = await GetOrDefault<List<CategoryDto>>(client, "api/categories?rootOnly=true");
+        var brands = await GetOrDefault<List<BrandDto>>(client, "api/brands");
+
+        if (products == null || (!products.Items.Any() && categories == null && brands == null))
+        {
+            products = StorefrontDemoData.Query(query);
+            categories = StorefrontDemoData.Categories();
+            brands = StorefrontDemoData.Brands();
+        }
 
         ViewBag.Title = "Sản phẩm";
         return View(new ProductCatalogViewModel
         {
             Query = query,
-            Products = products,
-            Categories = categories,
-            Brands = brands
+            Products = products ?? new PagedResult<ProductListDto> { Page = query.Page, PageSize = query.PageSize },
+            Categories = categories ?? new(),
+            Brands = brands ?? new()
         });
     }
 
@@ -43,12 +50,20 @@ public class ProductsController : Controller
     {
         var client = _httpClientFactory.CreateClient("TechProAPI");
         var product = await GetOrDefault<ProductDetailDto>(client, $"api/products/{Uri.EscapeDataString(slug)}");
+        product ??= StorefrontDemoData.ProductBySlug(slug);
         if (product == null)
         {
             return NotFound();
         }
 
         var related = await GetOrDefault<List<ProductListDto>>(client, $"api/products/{product.Id}/related?limit=8") ?? new();
+        if (!related.Any())
+        {
+            related = StorefrontDemoData.Products()
+                .Where(p => p.Id != product.Id && (p.CategoryName == product.CategoryName || p.BrandName == product.BrandName))
+                .Take(8)
+                .ToList();
+        }
 
         ViewBag.Title = product.MetaTitle ?? product.Name;
         ViewBag.MetaDescription = product.MetaDescription ?? product.ShortDescription;

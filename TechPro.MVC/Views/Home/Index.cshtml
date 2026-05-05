@@ -1,136 +1,206 @@
 @model TechPro.Models.ViewModels.StoreHomeViewModel
 @{
     ViewBag.Title = "Thiết bị điện tử chính hãng";
+    var allProducts = Model.FeaturedProducts
+        .Concat(Model.BestSellers)
+        .Concat(Model.NewArrivals)
+        .GroupBy(p => p.Id)
+        .Select(g => g.First())
+        .ToList();
+    var phones = allProducts.Where(p => p.CategoryName.Contains("Dien thoai", StringComparison.OrdinalIgnoreCase)).Take(5).ToList();
+    var laptops = allProducts.Where(p => p.CategoryName.Contains("Laptop", StringComparison.OrdinalIgnoreCase)).Take(5).ToList();
+    var accessories = allProducts.Where(p => p.CategoryName.Contains("Tai nghe", StringComparison.OrdinalIgnoreCase) || p.CategoryName.Contains("Phu kien", StringComparison.OrdinalIgnoreCase)).Take(5).ToList();
+    var watches = allProducts.Where(p => p.CategoryName.Contains("Dong ho", StringComparison.OrdinalIgnoreCase)).Take(5).ToList();
 }
 
-<section class="hero">
-    <div class="hero-grid">
-        <div>
-            <div class="hero-badge"><i class="bi bi-lightning-charge-fill"></i> Công nghệ mới, giá tốt mỗi ngày</div>
-            <h1>Thiết bị điện tử <span>chính hãng</span> cho mọi nhu cầu</h1>
-            <p class="hero-desc">Mua điện thoại, laptop, tablet, tai nghe và phụ kiện tại TechPro với ưu đãi rõ ràng, bảo hành minh bạch và giao hàng nhanh.</p>
-            <div class="hero-cta">
-                <a href="/products" class="btn-primary">Mua ngay</a>
-                <a href="/flash-sale" class="btn-outline">Xem Flash Sale</a>
-            </div>
-            <div class="hero-stats">
-                <div class="stat-item"><span class="stat-num">100%</span><span class="stat-label">Chính hãng</span></div>
-                <div class="stat-item"><span class="stat-num">24h</span><span class="stat-label">Giao nhanh</span></div>
-                <div class="stat-item"><span class="stat-num">12+</span><span class="stat-label">Tháng bảo hành</span></div>
-            </div>
-        </div>
-        <div class="hero-visual">
-            <div class="orbit orbit-1"><span class="orbit-dot"></span></div>
-            <div class="orbit orbit-2"><span class="orbit-dot"></span></div>
-            <div class="hero-phone">
-                <i class="bi bi-phone phone-screen"></i>
-                <span class="phone-label">TECHPRO STORE</span>
-            </div>
-        </div>
-    </div>
-</section>
-
-@if (Model.Categories.Any())
-{
-    <section class="section">
-        <div class="section-header">
-            <h2 class="section-title">Danh mục <span>nổi bật</span></h2>
-            <a class="section-link" href="/products">Tất cả sản phẩm <i class="bi bi-arrow-right"></i></a>
-        </div>
-        <div class="cat-grid">
-            @foreach (var category in Model.Categories.Take(8))
+<div class="cp-home">
+    <section class="cp-hero-layout">
+        <aside class="cp-category-rail">
+            @foreach (var category in Model.Categories.Take(10))
             {
-                <a class="cat-card" href="/products?categorySlug=@category.Slug">
+                <a href="/products?categorySlug=@category.Slug">
                     <i class="bi bi-@(string.IsNullOrWhiteSpace(category.Icon) ? "cpu" : category.Icon)"></i>
-                    <h3>@category.Name</h3>
-                    <span>@category.ProductCount sản phẩm</span>
+                    <span>@category.Name</span>
+                    <i class="bi bi-chevron-right"></i>
                 </a>
             }
-        </div>
-    </section>
-}
+        </aside>
 
-@if (Model.FlashSales.Any())
-{
-    var firstSale = Model.FlashSales.First();
-    <section class="flash-sale-section">
-        <div class="flash-header">
-            <div class="flash-title"><i class="bi bi-lightning-charge-fill"></i> Flash Sale</div>
-            <div class="countdown">
-                <div class="countdown-block"><div class="countdown-num" data-cd="home-h">00</div><div class="countdown-label">Giờ</div></div>
-                <div class="countdown-sep">:</div>
-                <div class="countdown-block"><div class="countdown-num" data-cd="home-m">00</div><div class="countdown-label">Phút</div></div>
-                <div class="countdown-sep">:</div>
-                <div class="countdown-block"><div class="countdown-num" data-cd="home-s">00</div><div class="countdown-label">Giây</div></div>
+        <div class="cp-main-banner">
+            <div class="cp-banner-copy">
+                <span>TechPro May Sale</span>
+                <h1>Thiết bị điện tử chính hãng</h1>
+                <p>Ưu đãi điện thoại, laptop, tablet và phụ kiện với giao diện xanh nhạt, sạch và dễ mua.</p>
+                <div class="cp-banner-actions">
+                    <a href="/products" class="btn-primary">Mua ngay</a>
+                    <a href="/flash-sale" class="btn-outline">Xem ưu đãi</a>
+                </div>
+            </div>
+            <div class="cp-banner-device">
+                <i class="bi bi-phone"></i>
+                <strong>Sale đến 30%</strong>
+                <small>Trả góp 0% - Giao nhanh 24h</small>
             </div>
         </div>
-        <div class="product-grid">
-            @foreach (var sale in Model.FlashSales.Take(4))
+
+        <aside class="cp-news-rail">
+            <a href="/flash-sale">
+                <strong>Flash Sale hôm nay</strong>
+                <span>Giá tốt cho điện thoại và laptop</span>
+            </a>
+            <a href="/Home/Warranty">
+                <strong>Tra cứu bảo hành</strong>
+                <span>Kiểm tra serial nhanh chóng</span>
+            </a>
+            <a href="/products?categorySlug=phu-kien">
+                <strong>Phụ kiện chất lượng</strong>
+                <span>Sạc, tai nghe, cáp và balo</span>
+            </a>
+            <a href="/cart">
+                <strong>Giỏ hàng của bạn</strong>
+                <span>Thanh toán COD tiện lợi</span>
+            </a>
+        </aside>
+    </section>
+
+    <section class="cp-promo-strip">
+        <a href="/products?categorySlug=dien-thoai"><i class="bi bi-phone"></i> Điện thoại giảm sâu</a>
+        <a href="/products?categorySlug=laptop"><i class="bi bi-laptop"></i> Laptop văn phòng</a>
+        <a href="/products?categorySlug=tai-nghe"><i class="bi bi-headphones"></i> Tai nghe chống ồn</a>
+        <a href="/products?categorySlug=phu-kien"><i class="bi bi-usb-c"></i> Phụ kiện tiện ích</a>
+    </section>
+
+    @if (Model.FlashSales.Any())
+    {
+        var firstSale = Model.FlashSales.First();
+        <section class="cp-section cp-flash">
+            <div class="cp-section-head">
+                <h2><i class="bi bi-lightning-charge-fill"></i> Flash Sale</h2>
+                <div class="countdown">
+                    <div class="countdown-block"><div class="countdown-num" data-cd="home-h">00</div><div class="countdown-label">Giờ</div></div>
+                    <div class="countdown-sep">:</div>
+                    <div class="countdown-block"><div class="countdown-num" data-cd="home-m">00</div><div class="countdown-label">Phút</div></div>
+                    <div class="countdown-sep">:</div>
+                    <div class="countdown-block"><div class="countdown-num" data-cd="home-s">00</div><div class="countdown-label">Giây</div></div>
+                </div>
+            </div>
+            <div class="cp-product-row">
+                @foreach (var sale in Model.FlashSales.Take(5))
+                {
+                    var product = sale.Product;
+                    product.Price = sale.SalePrice;
+                    product.ComparePrice = sale.OriginalPrice;
+                    <partial name="_ProductCard" model="product" />
+                }
+            </div>
+        </section>
+        @section Scripts {
+            <script>window.TechPro?.startCountdown('@firstSale.EndTime.ToString("O")', 'home');</script>
+        }
+    }
+
+    <section class="cp-section">
+        <div class="cp-section-head">
+            <h2>Điện thoại nổi bật</h2>
+            <div class="cp-tabs">
+                <a href="/products?brandSlug=apple">Apple</a>
+                <a href="/products?brandSlug=samsung">Samsung</a>
+                <a href="/products?sortBy=sold">Bán chạy</a>
+                <a href="/products?categorySlug=dien-thoai">Xem tất cả</a>
+            </div>
+        </div>
+        <div class="cp-section-grid">
+            <a class="cp-side-ad" href="/products?categorySlug=dien-thoai">
+                <span>REDMI / iPHONE</span>
+                <strong>Sale từ 1.3 triệu</strong>
+                <small>Mua ngay</small>
+            </a>
+            <div class="cp-product-row">
+                @foreach (var product in (phones.Any() ? phones : allProducts).Take(5))
+                {
+                    <partial name="_ProductCard" model="product" />
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="cp-accessory-band">
+        <div class="cp-section-head">
+            <h2>Phụ kiện chất lượng</h2>
+            <a href="/products?categorySlug=phu-kien">Xem thêm <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="cp-accessory-grid">
+            <a href="/products?categorySlug=phu-kien"><i class="bi bi-battery-charging"></i><span>Sạc dự phòng</span></a>
+            <a href="/products?categorySlug=tai-nghe"><i class="bi bi-headphones"></i><span>Tai nghe</span></a>
+            <a href="/products?categorySlug=phu-kien"><i class="bi bi-usb-drive"></i><span>Cáp sạc</span></a>
+            <a href="/products?categorySlug=phu-kien"><i class="bi bi-mouse"></i><span>Chuột</span></a>
+            <a href="/products?categorySlug=phu-kien"><i class="bi bi-keyboard"></i><span>Bàn phím</span></a>
+            <a href="/products?categorySlug=phu-kien"><i class="bi bi-router"></i><span>Thiết bị mạng</span></a>
+        </div>
+    </section>
+
+    <section class="cp-section">
+        <div class="cp-section-head">
+            <h2>Laptop bán chạy</h2>
+            <div class="cp-tabs">
+                <a href="/products?categorySlug=laptop">Laptop</a>
+                <a href="/products?brandSlug=apple">MacBook</a>
+                <a href="/products?brandSlug=dell">Dell</a>
+                <a href="/products?sortBy=price_asc">Giá tốt</a>
+            </div>
+        </div>
+        <div class="cp-section-grid">
+            <a class="cp-side-ad cp-side-ad-blue" href="/products?categorySlug=laptop">
+                <span>Top laptop</span>
+                <strong>Giảm thêm 1 triệu</strong>
+                <small>Mua ngay</small>
+            </a>
+            <div class="cp-product-row">
+                @foreach (var product in (laptops.Any() ? laptops : allProducts).Take(5))
+                {
+                    <partial name="_ProductCard" model="product" />
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="cp-section">
+        <div class="cp-section-head">
+            <h2>Đồng hồ & phụ kiện</h2>
+            <div class="cp-tabs">
+                <a href="/products?categorySlug=dong-ho-thong-minh">Đồng hồ</a>
+                <a href="/products?categorySlug=tai-nghe">Tai nghe</a>
+                <a href="/products?categorySlug=phu-kien">Phụ kiện</a>
+            </div>
+        </div>
+        <div class="cp-product-row cp-product-row-six">
+            @foreach (var product in watches.Concat(accessories).Concat(allProducts).GroupBy(p => p.Id).Select(g => g.First()).Take(6))
             {
-                var product = sale.Product;
-                product.Price = sale.SalePrice;
-                product.ComparePrice = sale.OriginalPrice;
                 <partial name="_ProductCard" model="product" />
             }
         </div>
     </section>
-    @section Scripts {
-        <script>window.TechPro?.startCountdown('@firstSale.EndTime.ToString("O")', 'home');</script>
-    }
-}
 
-<section class="section">
-    <div class="section-header">
-        <h2 class="section-title">Sản phẩm <span>nổi bật</span></h2>
-        <a class="section-link" href="/products?sortBy=sold">Xem thêm <i class="bi bi-arrow-right"></i></a>
-    </div>
-    <div class="product-grid">
-        @foreach (var product in Model.FeaturedProducts)
-        {
-            <partial name="_ProductCard" model="product" />
-        }
-    </div>
-</section>
-
-<section class="section">
-    <div class="section-header">
-        <h2 class="section-title">Bán chạy <span>tuần này</span></h2>
-        <a class="section-link" href="/products?sortBy=sold">Xem thêm <i class="bi bi-arrow-right"></i></a>
-    </div>
-    <div class="product-grid">
-        @foreach (var product in Model.BestSellers)
-        {
-            <partial name="_ProductCard" model="product" />
-        }
-    </div>
-</section>
-
-<section class="section">
-    <div class="section-header">
-        <h2 class="section-title">Hàng <span>mới về</span></h2>
-        <a class="section-link" href="/products?sortBy=newest">Xem thêm <i class="bi bi-arrow-right"></i></a>
-    </div>
-    <div class="product-grid">
-        @foreach (var product in Model.NewArrivals)
-        {
-            <partial name="_ProductCard" model="product" />
-        }
-    </div>
-</section>
-
-@if (Model.Brands.Any())
-{
-    <section class="section">
-        <div class="section-header">
-            <h2 class="section-title">Thương hiệu <span>phổ biến</span></h2>
+    <section class="cp-video-grid">
+        <div class="cp-section-head">
+            <h2>Review sản phẩm</h2>
+            <a href="/products">Xem tất cả</a>
         </div>
-        <div class="brands-strip">
-            @foreach (var brand in Model.Brands)
+        <div class="cp-videos">
+            @foreach (var product in allProducts.Take(4))
             {
-                <a class="brand-chip" href="/products?brandSlug=@brand.Slug">
-                    <i class="bi bi-award"></i> @brand.Name
+                <a href="/products/@product.Slug" class="cp-video-card">
+                    <img src="@(product.PrimaryImage ?? "/images/demo_devices/phone_front.jpg")" alt="@product.Name">
+                    <i class="bi bi-play-fill"></i>
+                    <strong>@product.Name</strong>
                 </a>
             }
         </div>
     </section>
-}
+
+    <section class="cp-bottom-banners">
+        <a href="/products?sortBy=sold">Ưu đãi thanh toán</a>
+        <a href="/products?categorySlug=phu-kien">Combo phụ kiện</a>
+        <a href="/Home/Warranty">Bảo hành chính hãng</a>
+    </section>
+</div>
