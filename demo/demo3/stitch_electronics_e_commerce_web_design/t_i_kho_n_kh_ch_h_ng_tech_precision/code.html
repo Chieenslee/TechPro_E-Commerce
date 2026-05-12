@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Customer Dashboard - TechPro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#281400",
+                        "on-primary-fixed-variant": "#39475f",
+                        "inverse-surface": "#e1e3e4",
+                        "on-secondary-fixed": "#121c28",
+                        "on-primary-container": "#74829d",
+                        "secondary-fixed-dim": "#bdc7d8",
+                        "on-secondary-container": "#afb9c9",
+                        "on-secondary": "#27313e",
+                        "surface-dim": "#111415",
+                        "on-secondary-fixed-variant": "#3e4755",
+                        "surface-container-low": "#191c1d",
+                        "on-surface-variant": "#c5c6cd",
+                        "surface-tint": "#b9c7e4",
+                        "surface-container-highest": "#323536",
+                        "on-tertiary-fixed-variant": "#5d4124",
+                        "surface": "#111415",
+                        "outline": "#8f9097",
+                        "surface-bright": "#373a3b",
+                        "on-error-container": "#ffdad6",
+                        "primary": "#b9c7e4",
+                        "surface-container-lowest": "#0c0f10",
+                        "secondary": "#bdc7d8",
+                        "tertiary-fixed-dim": "#e7bf99",
+                        "inverse-primary": "#515f78",
+                        "error": "#ffb4ab",
+                        "on-error": "#690005",
+                        "on-background": "#e1e3e4",
+                        "on-primary-fixed": "#0d1c32",
+                        "surface-container": "#1d2021",
+                        "secondary-fixed": "#d9e3f4",
+                        "background": "#111415",
+                        "on-tertiary-fixed": "#2b1701",
+                        "on-primary": "#233148",
+                        "error-container": "#93000a",
+                        "primary-fixed-dim": "#b9c7e4",
+                        "outline-variant": "#44474d",
+                        "tertiary-fixed": "#ffdcbd",
+                        "surface-container-high": "#282a2b",
+                        "inverse-on-surface": "#2e3132",
+                        "primary-fixed": "#d6e3ff",
+                        "primary-container": "#0a192f",
+                        "secondary-container": "#404a57",
+                        "on-tertiary": "#432b10",
+                        "on-surface": "#e1e3e4",
+                        "surface-variant": "#323536",
+                        "on-tertiary-container": "#9d7b5a",
+                        "tertiary": "#e7bf99"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "md": "24px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "64px",
+                        "sm": "12px",
+                        "base": "8px",
+                        "lg": "48px",
+                        "gutter": "24px",
+                        "xl": "80px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "0.02em", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.background'); color: theme('colors.on-background'); }
+        .glass-panel { background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.15); }
+        .tech-shadow { box-shadow: 0 4px 24px rgba(185, 199, 228, 0.1); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+<!-- TopNavBar -->
+<header class="bg-surface/95 dark:bg-surface/95 backdrop-blur-md font-body-md text-body-md fixed top-0 w-full border-b border-white/10 shadow-sm z-50">
+<div class="max-w-[1440px] mx-auto px-margin-desktop flex items-center justify-between h-20">
+<!-- Brand -->
+<div class="font-headline-md text-headline-md font-bold tracking-tighter text-primary">TechPro</div>
+<!-- Search -->
+<div class="hidden md:flex flex-1 max-w-md mx-gutter relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container border border-white/10 rounded-DEFAULT py-2 pl-10 pr-4 text-on-surface focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 tracking-wider" placeholder="Search devices..." type="text"/>
+</div>
+<!-- Navigation Links -->
+<nav class="hidden lg:flex items-center gap-md">
+<a class="text-on-surface-variant hover:text-on-surface hover:opacity-80 transition-opacity transition-all duration-200 ease-in-out" href="#">Phones</a>
+<a class="text-on-surface-variant hover:text-on-surface hover:opacity-80 transition-opacity transition-all duration-200 ease-in-out" href="#">Laptops</a>
+<a class="text-on-surface-variant hover:text-on-surface hover:opacity-80 transition-opacity transition-all duration-200 ease-in-out" href="#">Tablets</a>
+<a class="text-on-surface-variant hover:text-on-surface hover:opacity-80 transition-opacity transition-all duration-200 ease-in-out" href="#">Audio</a>
+<a class="text-on-surface-variant hover:text-on-surface hover:opacity-80 transition-opacity transition-all duration-200 ease-in-out" href="#">Accessories</a>
+<a class="text-on-surface-variant hover:text-on-surface hover:opacity-80 transition-opacity transition-all duration-200 ease-in-out" href="#">Smart Home</a>
+</nav>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-sm">
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2"><span class="material-symbols-outlined" data-icon="shopping_cart">shopping_cart</span></button>
+<button class="text-primary border-b-2 border-primary pb-1 p-2"><span class="material-symbols-outlined" data-icon="person" data-weight="fill" style="font-variation-settings: 'FILL' 1;">person</span></button>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2"><span class="material-symbols-outlined" data-icon="support_agent">support_agent</span></button>
+</div>
+</div>
+</header>
+<div class="flex-1 pt-20 flex">
+<!-- Side Dashboard Navigation -->
+<aside class="w-64 border-r border-white/10 bg-surface hidden lg:flex flex-col py-lg px-md min-h-screen sticky top-20">
+<h2 class="font-label-md text-label-md uppercase tracking-widest text-primary mb-md px-sm">Quản lý hồ sơ cá nhân</h2>
+<nav class="flex flex-col gap-sm">
+<a class="flex items-center gap-sm px-sm py-2 bg-white/5 text-primary rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined text-sm">person</span>
+<span class="font-body-md text-body-md">Profile</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-DEFAULT transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">receipt_long</span>
+<span class="font-body-md text-body-md">Quản lý đơn hàng</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-DEFAULT transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">favorite</span>
+<span class="font-body-md text-body-md">Sản phẩm yêu thích</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-2 text-on-surface-variant hover:text-on-surface hover:bg-white/5 rounded-DEFAULT transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">location_on</span>
+<span class="font-body-md text-body-md">Sổ địa chỉ</span>
+</a>
+<div class="my-sm border-t border-white/10"></div>
+<a class="flex items-center gap-sm px-sm py-2 text-error hover:text-error-container hover:bg-error/10 rounded-DEFAULT transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">logout</span>
+<span class="font-body-md text-body-md">Logout</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-lg grid gap-xl">
+<!-- Dashboard Header & Profile Overview -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<div class="col-span-1 md:col-span-12">
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-sm">Dashboard</h1>
+</div>
+<div class="col-span-1 md:col-span-8 glass-panel rounded-xl p-md tech-shadow flex items-center gap-lg">
+<div class="w-24 h-24 rounded-full border-2 border-primary/30 overflow-hidden flex-shrink-0">
+<div class="w-full h-full bg-surface-container flex items-center justify-center bg-cover bg-center" data-alt="A professional headshot of a person looking forward against a clean, modern dark background. The lighting is crisp and highlights the subject's features clearly. The aesthetic matches a high-tech corporate profile image." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDsf4APjKLjIth74Qt9yskPmX2ALUOVGz0HRF00aTZLWginjnJ3w0_HFveHIosDIL7rtKxUeIcDzMj6w0mI3QuGdIFfLsEhGdYOwjYVGvFi379oj90u3lk_iLm-Jo2iO3XCdpi3lHcyqCh8n260XhrppRZlnM6smc7aYk9L1B04GhO7kId2AgTp_DxyvaI6pXwuUiwxj-BP1MRtaY1lyuH6Ht0S_3h657MTSHsIt3HXm4WbyuhZe3qnZUrYRKdAlxHQI50LjOHxLwHW');"></div>
+</div>
+<div class="flex-1">
+<h2 class="font-headline-md text-headline-md text-on-surface">Alex Mercer</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs">alex.mercer@techpro.com</p>
+<div class="flex items-center gap-sm mt-sm">
+<span class="inline-flex items-center gap-xs px-2 py-1 bg-primary/10 border border-primary/20 rounded font-label-sm text-label-sm text-primary uppercase">
+<span class="material-symbols-outlined text-[14px]">stars</span> Platinum Member
+                            </span>
+<span class="font-body-md text-body-md text-on-surface-variant border-l border-white/10 pl-sm">Loyalty Points: <strong class="text-on-surface">12,450</strong></span>
+</div>
+</div>
+<button class="hidden md:flex border border-outline text-on-surface px-4 py-2 rounded-DEFAULT hover:bg-white/5 transition-colors font-label-md text-label-md">Edit Profile</button>
+</div>
+<!-- Saved Address Quick View -->
+<div class="col-span-1 md:col-span-4 glass-panel rounded-xl p-md tech-shadow flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-sm">
+<h3 class="font-body-lg text-body-lg text-on-surface flex items-center gap-xs"><span class="material-symbols-outlined text-sm">home_pin</span> Default Address</h3>
+<button class="text-primary hover:underline font-label-sm text-label-sm">Manage</button>
+</div>
+<p class="font-body-md text-body-md text-on-surface font-medium">Home</p>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs leading-relaxed">
+                            Apt 4B, 128 Tech Boulevard<br/>
+                            Cyber District, Neo City 90210
+                        </p>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mt-sm"><span class="material-symbols-outlined text-[16px] align-middle mr-xs">phone_iphone</span> +1 (555) 019-8234</p>
+</div>
+</section>
+<!-- Recent Orders -->
+<section>
+<div class="flex justify-between items-end mb-md">
+<h2 class="font-headline-md text-headline-md text-on-surface">Lịch sử mua hàng (Recent Orders)</h2>
+<a class="font-label-md text-label-md text-primary hover:underline" href="#">View All</a>
+</div>
+<div class="glass-panel rounded-xl overflow-hidden tech-shadow">
+<table class="w-full text-left">
+<thead class="bg-surface-container/50 border-b border-white/10">
+<tr>
+<th class="py-3 px-md font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Order ID</th>
+<th class="py-3 px-md font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Date</th>
+<th class="py-3 px-md font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Status</th>
+<th class="py-3 px-md font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Total</th>
+<th class="py-3 px-md font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-white/5 font-body-md text-body-md text-on-surface">
+<tr class="hover:bg-white/[0.02] transition-colors">
+<td class="py-4 px-md font-mono text-sm tracking-wider">#TP-2024-8932</td>
+<td class="py-4 px-md text-on-surface-variant">Oct 24, 2024</td>
+<td class="py-4 px-md">
+<span class="inline-flex items-center gap-xs text-primary"><span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> Processing</span>
+</td>
+<td class="py-4 px-md font-medium">$2,499.00</td>
+<td class="py-4 px-md text-right">
+<button class="text-primary hover:text-primary-fixed border border-primary/20 px-3 py-1 rounded text-sm transition-colors">Detail</button>
+</td>
+</tr>
+<tr class="hover:bg-white/[0.02] transition-colors">
+<td class="py-4 px-md font-mono text-sm tracking-wider">#TP-2024-8501</td>
+<td class="py-4 px-md text-on-surface-variant">Sep 12, 2024</td>
+<td class="py-4 px-md">
+<span class="inline-flex items-center gap-xs text-secondary"><span class="w-2 h-2 rounded-full bg-secondary"></span> Delivered</span>
+</td>
+<td class="py-4 px-md font-medium">$129.99</td>
+<td class="py-4 px-md text-right">
+<button class="text-on-surface-variant hover:text-on-surface border border-outline/30 px-3 py-1 rounded text-sm transition-colors">Detail</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Wishlist Preview -->
+<section>
+<div class="flex justify-between items-end mb-md">
+<h2 class="font-headline-md text-headline-md text-on-surface">Sản phẩm yêu thích (Wishlist)</h2>
+<a class="font-label-md text-label-md text-primary hover:underline" href="#">View All</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Product Card 1 -->
+<div class="glass-panel rounded-lg p-sm group relative overflow-hidden">
+<div class="aspect-square bg-surface-container rounded mb-sm relative flex items-center justify-center p-sm">
+<button class="absolute top-2 right-2 text-primary z-10"><span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">favorite</span></button>
+<img alt="Smartphone" class="object-contain h-full w-full group-hover:scale-105 transition-transform duration-300" data-alt="A sleek, modern smartphone floating in a dark, minimalist environment. The phone features an edge-to-edge display and a premium metallic finish. Subtle, high-tech cyan lighting accents the device's contours against the deep blue-black background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsa5ZHbjDj6D7qUvcVxGCYNiOyjb-Q8zUTTtKu8gI0Kg-UcJztDCo7PWpbMIvzhxi5-x0JtR4ali2KwMskPeO-9_MRj-8Imsdwlr5rcrOhwx-P7hEQuVXwL5wh6mWjHnz10f-S4PO3ooQmLHszcn-aXyRDN2XnAOXg9BrjQhUxkBskEb-gw0kZlWbP8wCeJrkpeBMPGM1kqlqoRQU2EkK3zDv1I7BjloJbfkc6r0bkvnFlJ5ScVx5jgAfP16n76FQVblnOtEPVEUI6"/>
+</div>
+<div class="px-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Phone</span>
+<h3 class="font-body-md text-body-md text-on-surface truncate">Quantum Pro X</h3>
+<div class="flex items-center justify-between mt-xs">
+<span class="font-body-lg text-body-lg font-medium text-on-surface">$999</span>
+<button class="text-primary hover:bg-primary/10 p-1 rounded transition-colors"><span class="material-symbols-outlined">add_shopping_cart</span></button>
+</div>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="glass-panel rounded-lg p-sm group relative overflow-hidden">
+<div class="aspect-square bg-surface-container rounded mb-sm relative flex items-center justify-center p-sm">
+<button class="absolute top-2 right-2 text-primary z-10"><span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">favorite</span></button>
+<img alt="Headphones" class="object-contain h-full w-full group-hover:scale-105 transition-transform duration-300" data-alt="High-end over-ear wireless headphones resting on a dark reflective surface. The design is minimalist and industrial, featuring matte black textures with brushed aluminum accents. Soft studio lighting highlights the precision engineering of the earcups." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYYI619vZpQTYrogEpp3bGFn45NdyxI_6ZjiBPWnz9dMU8VHCJHJL0TYi4pmMmk8VbYAII7fCM9FNbtKAUSVhSEQ3DQ2OfO2w-wHBucA6c--6vVH-QY9fq86HOxHtOAf0VKn15VP61eRzk-zuPBdMYg9UMPPKgZ4xp3b2U_UFJSVwhLs2Ptvpr2BvGJNkBwd-8rqC3KAzRv0t595NiZBN2DlJBQSW4Y7huu4FDav6fN20YVjTmtNPjybPcW2lqD9-3R-FrWHn30sjW"/>
+</div>
+<div class="px-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Audio</span>
+<h3 class="font-body-md text-body-md text-on-surface truncate">Sonic ANC Buds</h3>
+<div class="flex items-center justify-between mt-xs">
+<span class="font-body-lg text-body-lg font-medium text-on-surface">$249</span>
+<button class="text-primary hover:bg-primary/10 p-1 rounded transition-colors"><span class="material-symbols-outlined">add_shopping_cart</span></button>
+</div>
+</div>
+</div>
+<!-- Product Card 3 -->
+<div class="glass-panel rounded-lg p-sm group relative overflow-hidden">
+<div class="aspect-square bg-surface-container rounded mb-sm relative flex items-center justify-center p-sm">
+<button class="absolute top-2 right-2 text-primary z-10"><span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">favorite</span></button>
+<img alt="Tablet" class="object-contain h-full w-full group-hover:scale-105 transition-transform duration-300" data-alt="A thin, powerful tablet computer displayed at a slight angle in a dark, atmospheric setting. The screen is off, reflecting a subtle, precise linear light source. The metallic chassis looks premium and cutting-edge against the deep tech black background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrXmuz93Jr2VsMP7cqI8MjVmL924lXo0iZQUmbnyYFnR3WjS83hfNnNB63dHS6QqKXLkAuaSnajg7x2JgaB1DEis8H_FQR4oFNCIEGImJ4RK07I8ltTnVRkyz7KtBTDV1TgSbgz7yto_cb9cmWt0qT0hv3X8tw61AzLjqpk9QI3C5elKtqVrGeKoJTmE6sDuFIXB46_cDf0rUqkEa7LEr4hVIZ3Or_jf3CGydVdbZ4B5BW_hxdwV9V9BWWcH1vPoadB4486OeByWZI"/>
+</div>
+<div class="px-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Tablet</span>
+<h3 class="font-body-md text-body-md text-on-surface truncate">Slate Ultra 12"</h3>
+<div class="flex items-center justify-between mt-xs">
+<span class="font-body-lg text-body-lg font-medium text-on-surface">$799</span>
+<button class="text-primary hover:bg-primary/10 p-1 rounded transition-colors"><span class="material-symbols-outlined">add_shopping_cart</span></button>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-surface-container-lowest font-body-md text-body-md w-full border-t border-white/5">
+<div class="max-w-[1440px] mx-auto px-margin-desktop py-lg grid grid-cols-12 gap-gutter">
+<div class="col-span-12 md:col-span-4">
+<div class="font-headline-sm text-headline-sm font-bold text-on-surface mb-sm">TechPro</div>
+<p class="text-on-surface-variant text-sm">© 2024 TechPro. Engineering Excellence.</p>
+</div>
+<div class="col-span-12 md:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-md">
+<div class="flex flex-col gap-sm">
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Warranty</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Returns</a>
+</div>
+<div class="flex flex-col gap-sm">
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Shipping</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Privacy</a>
+</div>
+<div class="flex flex-col gap-sm">
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Support</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors duration-150" href="#">Contact</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

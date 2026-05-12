@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TechPro - Comparison Matrix</title>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed-variant": "#3e4755",
+                    "on-tertiary-container": "#9d7b5a",
+                    "background": "#111415",
+                    "primary-fixed": "#d6e3ff",
+                    "surface-container-low": "#191c1d",
+                    "on-error-container": "#ffdad6",
+                    "inverse-on-surface": "#2e3132",
+                    "surface-container-high": "#282a2b",
+                    "secondary-fixed-dim": "#bdc7d8",
+                    "secondary-fixed": "#d9e3f4",
+                    "secondary-container": "#404a57",
+                    "primary-fixed-dim": "#b9c7e4",
+                    "on-tertiary-fixed-variant": "#5d4124",
+                    "on-tertiary": "#432b10",
+                    "error": "#ffb4ab",
+                    "surface-variant": "#323536",
+                    "outline-variant": "#44474d",
+                    "surface-container-lowest": "#0c0f10",
+                    "primary": "#b9c7e4",
+                    "on-background": "#e1e3e4",
+                    "on-secondary-fixed": "#121c28",
+                    "on-primary-fixed-variant": "#39475f",
+                    "tertiary-fixed": "#ffdcbd",
+                    "surface-bright": "#373a3b",
+                    "primary-container": "#0a192f",
+                    "error-container": "#93000a",
+                    "surface-tint": "#b9c7e4",
+                    "inverse-surface": "#e1e3e4",
+                    "on-secondary-container": "#afb9c9",
+                    "tertiary": "#e7bf99",
+                    "on-tertiary-fixed": "#2b1701",
+                    "surface-container-highest": "#323536",
+                    "surface-container": "#1d2021",
+                    "on-surface": "#e1e3e4",
+                    "on-secondary": "#27313e",
+                    "tertiary-fixed-dim": "#e7bf99",
+                    "surface": "#111415",
+                    "on-primary-fixed": "#0d1c32",
+                    "inverse-primary": "#515f78",
+                    "on-surface-variant": "#c5c6cd",
+                    "surface-dim": "#111415",
+                    "secondary": "#bdc7d8",
+                    "on-primary-container": "#74829d",
+                    "on-error": "#690005",
+                    "on-primary": "#233148",
+                    "tertiary-container": "#281400",
+                    "outline": "#8f9097"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "sm": "12px",
+                    "margin-mobile": "16px",
+                    "md": "24px",
+                    "margin-desktop": "64px",
+                    "gutter": "24px",
+                    "xs": "4px",
+                    "xl": "80px",
+                    "lg": "48px",
+                    "base": "8px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-xl": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "body-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "500"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "letterSpacing": "0.01em", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased selection:bg-primary/30 selection:text-primary">
+<!-- TopNavBar -->
+<nav class="bg-surface-container/80 backdrop-blur-xl docked full-width top-0 sticky z-50 border-b border-outline-variant/30 shadow-sm">
+<div class="flex justify-between items-center w-full px-margin-desktop h-20 max-w-[1440px] mx-auto">
+<div class="font-headline-md text-headline-md font-bold tracking-tight text-primary">
+                TechPro
+            </div>
+<div class="hidden md:flex items-center gap-gutter">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors duration-200" href="#">Products</a>
+<a class="font-body-md text-body-md text-primary border-b-2 border-primary pb-2 font-bold" href="#">Compare</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors duration-200" href="#">VIP Lounge</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors duration-200" href="#">Support</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors duration-200" href="#">News</a>
+</div>
+<div class="flex items-center gap-sm">
+<button class="p-2 rounded-full hover:bg-surface-variant/50 transition-all duration-200 text-on-surface-variant hover:text-on-surface scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined">shopping_cart</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-variant/50 transition-all duration-200 text-on-surface-variant hover:text-on-surface scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-variant/50 transition-all duration-200 text-on-surface-variant hover:text-on-surface scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Main Content: Comparison Matrix -->
+<main class="max-w-[1440px] mx-auto px-margin-desktop py-xl">
+<!-- Header -->
+<div class="mb-lg flex flex-col md:flex-row justify-between items-end gap-md">
+<div>
+<h1 class="font-headline-xl text-headline-xl text-on-background mb-xs">Comparison Matrix</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Evaluate specifications side-by-side to determine the optimal configuration for your technical requirements.</p>
+</div>
+<div class="flex items-center gap-sm">
+<span class="flex items-center gap-2 font-label-sm text-label-sm text-on-surface-variant">
+<span class="w-3 h-3 rounded-full bg-tertiary inline-block"></span> Highlighted differences
+                </span>
+</div>
+</div>
+<!-- Matrix Container -->
+<div class="rounded-xl border border-outline-variant/30 bg-surface-container overflow-hidden shadow-lg shadow-primary-container/10">
+<!-- Device Headers Row -->
+<div class="grid grid-cols-4 divide-x divide-outline-variant/30 border-b border-outline-variant/30 bg-surface-container-high">
+<!-- Empty Top Left -->
+<div class="p-md flex flex-col justify-end">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Technical Specifications</span>
+</div>
+<!-- Device 1 -->
+<div class="p-md flex flex-col items-center text-center relative group bg-surface-container hover:bg-surface-container-high transition-colors duration-300">
+<button class="absolute top-sm right-sm text-outline hover:text-error transition-colors p-1 rounded-full hover:bg-surface-variant">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+<div class="w-32 h-32 mb-4 rounded-lg overflow-hidden border border-outline-variant/20 bg-surface">
+<img alt="Device 1" class="w-full h-full object-cover" data-alt="A high-end, sleek black electronic device floating against a pure, deep tech dark background. The device has sharp, minimalist edges and a subtle metallic sheen. Cool, cyan ambient lighting highlights its premium build quality. The aesthetic is extremely modern, pristine, and engineered to perfection." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6s8J4hTfV4DYcQj7ql25eiJrx0i_AoJsO1PSULbUcy84XMyfbaX6w_Mb1CZTiIz9QNr9Jt9v2QI5gGvDU54HSRx5ixtj6HXMStx7ccq3lBbUfaQsJffCgUnyzs8H4OZ27PUCvcFqoMYWQ-5ZdwJofkasoFsZmTtlNZ-8sYOkbLSyxJiVQRzkZoVdMCzG337oJiq3HCLJ2oPk6TqgHuWhZ1s-qocCrEbGMdiBLBWkzXjrksr6G1F26iethTPyippiOlJ7FQQV5JPwQ"/>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">TechPro X1</h3>
+<p class="font-label-md text-label-md text-primary mb-4">$1,299</p>
+<button class="w-full py-2 rounded-lg bg-primary/10 text-primary border border-primary/30 font-label-md text-label-md hover:bg-primary hover:text-on-primary transition-all duration-200">Add to Cart</button>
+</div>
+<!-- Device 2 -->
+<div class="p-md flex flex-col items-center text-center relative group bg-surface-container hover:bg-surface-container-high transition-colors duration-300">
+<button class="absolute top-sm right-sm text-outline hover:text-error transition-colors p-1 rounded-full hover:bg-surface-variant">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+<div class="w-32 h-32 mb-4 rounded-lg overflow-hidden border border-outline-variant/20 bg-surface relative">
+<div class="absolute inset-0 bg-gradient-to-tr from-tertiary/20 to-transparent z-10 pointer-events-none"></div>
+<img alt="Device 2" class="w-full h-full object-cover grayscale opacity-80 mix-blend-luminosity" data-alt="A sophisticated silver electronics component shot from a dynamic angle in a dark, minimalist studio setting. The surface reflects sharp, linear light strips, emphasizing its precisely machined aluminum chassis. The overall tone is cool, highly technical, and completely devoid of organic elements, focusing purely on engineering." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTmel9CxouI94X4MaiijEt6cz2F8bXDvjgnEztdqRutMQch0s5a58JZOwuSR2Jlwt00_aDn_gExS6gcOhp3Xop1DY3XXKVPeVGcx2MpFxGK52trfEGQs4c5YWv1hAjG2iZiLWm8r3R3o6Mp2ZDzrPmCFwm4Vg57kusv7L3ZpmjAOY_PrTyjlB7JjdeBeZ2Xom76sepWrE-jyWbCSuRzkoiN0dr9H4WjCR3AW2edN1sn-oepKM0Sw6XdAyTHpbHYh-SUO0W0f1AGFMZ"/>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-1">TechPro Ultra</h3>
+<p class="font-label-md text-label-md text-primary mb-4">$1,899</p>
+<button class="w-full py-2 rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-fixed transition-all duration-200 shadow-[0_0_15px_rgba(185,199,228,0.2)]">Add to Cart</button>
+</div>
+<!-- Device 3 -->
+<div class="p-md flex flex-col items-center text-center relative group bg-surface-container hover:bg-surface-container-high transition-colors duration-300">
+<button class="absolute top-sm right-sm text-outline hover:text-error transition-colors p-1 rounded-full hover:bg-surface-variant">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+<div class="w-32 h-32 mb-4 rounded-lg border border-outline-variant/30 border-dashed flex items-center justify-center bg-surface hover:bg-surface-variant transition-colors cursor-pointer text-on-surface-variant hover:text-primary">
+<div class="flex flex-col items-center">
+<span class="material-symbols-outlined mb-2 text-[32px]">add</span>
+<span class="font-label-sm text-label-sm">Add Device</span>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface-variant mb-1 opacity-50">Empty Slot</h3>
+<p class="font-label-md text-label-md text-transparent mb-4">-</p>
+<div class="w-full py-2"></div> <!-- Spacer for alignment -->
+</div>
+</div>
+<!-- Specs Body -->
+<div class="flex flex-col divide-y divide-outline-variant/20 bg-surface">
+<!-- Category: Core Performance -->
+<div class="bg-surface-container-low px-md py-sm">
+<h4 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">memory</span> Core Performance
+                    </h4>
+</div>
+<!-- Row: Processor -->
+<div class="grid grid-cols-4 divide-x divide-outline-variant/20 hover:bg-surface-variant/20 transition-colors">
+<div class="p-md font-body-md text-body-md text-on-surface flex items-center">Processor (CPU)</div>
+<div class="p-md font-body-md text-body-md text-on-surface-variant flex flex-col justify-center">
+<span>Quantum Core i7</span>
+<span class="font-label-sm text-label-sm text-outline mt-1">8-Core, 3.2GHz</span>
+</div>
+<div class="p-md font-body-md text-body-md text-tertiary bg-tertiary/5 flex flex-col justify-center border-l-2 border-l-tertiary">
+<span class="font-bold">Quantum Core i9 X-Series</span>
+<span class="font-label-sm text-label-sm opacity-80 mt-1">16-Core, 4.5GHz</span>
+</div>
+<div class="p-md font-body-md text-body-md text-on-surface-variant/50 flex items-center justify-center">-</div>
+</div>
+<!-- Row: RAM -->
+<div class="grid grid-cols-4 divide-x divide-outline-variant/20 hover:bg-surface-variant/20 transition-colors">
+<div class="p-md font-body-md text-body-md text-on-surface flex items-center">Memory (RAM)</div>
+<div class="p-md font-body-md text-body-md text-on-surface-variant flex items-center">16GB LPDDR5</div>
+<div class="p-md font-body-md text-body-md text-tertiary bg-tertiary/5 flex items-center border-l-2 border-l-tertiary font-bold">32GB LPDDR5X</div>
+<div class="p-md font-body-md text-body-md text-on-surface-variant/50 flex items-center justify-center">-</div>
+</div>
+<!-- Category: Graphics & Display -->
+<div class="bg-surface-container-low px-md py-sm">
+<h4 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">tv</span> Graphics &amp; Display
+                    </h4>
+</div>
+<!-- Row: GPU -->
+<div class="grid grid-cols-4 divide-x divide-outline-variant/20 hover:bg-surface-variant/20 transition-colors">
+<div class="p-md font-body-md text-body-md text-on-surface flex items-center">Graphics (GPU)</div>
+<div class="p-md font-body-md text-body-md text-on-surface-variant flex flex-col justify-center">
+<span>Neural Engine V1</span>
+<span class="font-label-sm text-label-sm text-outline mt-1">Integrated 8GB</span>
+</div>
+<div class="p-md font-body-md text-body-md text-tertiary bg-tertiary/5 flex flex-col justify-center border-l-2 border-l-tertiary">
+<span class="font-bold">Neural Engine V2 Pro</span>
+<span class="font-label-sm text-label-sm opacity-80 mt-1">Dedicated 16GB GDDR6</span>
+</div>
+<div class="p-md font-body-md text-body-md text-on-surface-variant/50 flex items-center justify-center">-</div>
+</div>
+<!-- Row: Screen -->
+<div class="grid grid-cols-4 divide-x divide-outline-variant/20 hover:bg-surface-variant/20 transition-colors">
+<div class="p-md font-body-md text-body-md text-on-surface flex items-center">Display Technology</div>
+<div class="p-md font-body-md text-body-md text-on-surface-variant flex items-center gap-2">
+                        14" Retina Liquid
+                        <span class="px-2 py-0.5 rounded border border-outline-variant/50 font-label-sm text-label-sm text-outline uppercase text-[10px]">60Hz</span>
+</div>
+<div class="p-md font-body-md text-body-md text-tertiary bg-tertiary/5 flex items-center gap-2 border-l-2 border-l-tertiary font-bold">
+                        16" OLED ProMotion
+                        <span class="px-2 py-0.5 rounded border border-tertiary/50 font-label-sm text-label-sm text-tertiary uppercase text-[10px]">120Hz</span>
+</div>
+<div class="p-md font-body-md text-body-md text-on-surface-variant/50 flex items-center justify-center">-</div>
+</div>
+<!-- Category: Power & Connectivity -->
+<div class="bg-surface-container-low px-md py-sm">
+<h4 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">battery_charging_full</span> Power &amp; Connectivity
+                    </h4>
+</div>
+<!-- Row: Battery -->
+<div class="grid grid-cols-4 divide-x divide-outline-variant/20 hover:bg-surface-variant/20 transition-colors">
+<div class="p-md font-body-md text-body-md text-on-surface flex items-center">Battery Capacity</div>
+<div class="p-md font-body-md text-body-md text-on-surface-variant flex items-center">70Wh (Up to 15 hrs)</div>
+<div class="p-md font-body-md text-body-md text-tertiary bg-tertiary/5 flex items-center border-l-2 border-l-tertiary font-bold">100Wh (Up to 22 hrs)</div>
+<div class="p-md font-body-md text-body-md text-on-surface-variant/50 flex items-center justify-center">-</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest full-width border-t border-outline-variant/20 flat no shadows">
+<div class="w-full py-12 px-margin-desktop flex flex-col md:flex-row justify-between items-center max-w-[1440px] mx-auto">
+<div class="font-headline-md text-headline-md font-bold text-primary mb-6 md:mb-0">
+                TechPro
+            </div>
+<div class="flex flex-wrap justify-center gap-md mb-6 md:mb-0">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Hardware Specs</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Shipping Logic</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">RMA Portal</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Security Protocol</a>
+</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">
+                © 2024 TechPro Engineering. Precision Built.
+            </div>
+</div>
+</footer>
+</body></html>

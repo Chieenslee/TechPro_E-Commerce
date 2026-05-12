@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TechPro - Sign Up</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-highest": "#323536",
+                        "tertiary-fixed": "#ffdcbd",
+                        "on-error": "#690005",
+                        "primary-fixed": "#d6e3ff",
+                        "on-primary-container": "#74829d",
+                        "surface-dim": "#111415",
+                        "on-primary-fixed-variant": "#39475f",
+                        "tertiary-container": "#281400",
+                        "surface-container-lowest": "#0c0f10",
+                        "on-secondary": "#27313e",
+                        "on-tertiary-fixed": "#2b1701",
+                        "secondary-container": "#404a57",
+                        "on-tertiary": "#432b10",
+                        "on-primary-fixed": "#0d1c32",
+                        "error": "#ffb4ab",
+                        "surface-tint": "#b9c7e4",
+                        "on-surface": "#e1e3e4",
+                        "on-secondary-container": "#afb9c9",
+                        "secondary-fixed": "#d9e3f4",
+                        "background": "#111415",
+                        "outline": "#8f9097",
+                        "secondary": "#bdc7d8",
+                        "inverse-on-surface": "#2e3132",
+                        "on-secondary-fixed-variant": "#3e4755",
+                        "on-background": "#e1e3e4",
+                        "surface-container-high": "#282a2b",
+                        "primary": "#b9c7e4",
+                        "surface": "#111415",
+                        "surface-container": "#1d2021",
+                        "secondary-fixed-dim": "#bdc7d8",
+                        "primary-fixed-dim": "#b9c7e4",
+                        "on-secondary-fixed": "#121c28",
+                        "outline-variant": "#44474d",
+                        "on-error-container": "#ffdad6",
+                        "on-tertiary-container": "#9d7b5a",
+                        "surface-variant": "#323536",
+                        "inverse-surface": "#e1e3e4",
+                        "on-tertiary-fixed-variant": "#5d4124",
+                        "error-container": "#93000a",
+                        "primary-container": "#0a192f",
+                        "inverse-primary": "#515f78",
+                        "on-surface-variant": "#c5c6cd",
+                        "surface-container-low": "#191c1d",
+                        "surface-bright": "#373a3b",
+                        "on-primary": "#233148",
+                        "tertiary-fixed-dim": "#e7bf99",
+                        "tertiary": "#e7bf99"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "12px",
+                        "xl": "80px",
+                        "base": "8px",
+                        "md": "24px",
+                        "xs": "4px",
+                        "lg": "48px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "64px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                        "headline-xl": ["48px", {"lineHeight": "56px", "letterSpacing": "0.02em", "fontWeight": "700"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .btn-glow {
+            box-shadow: 0 0 20px rgba(185, 199, 228, 0.2);
+        }
+        .input-glow:focus {
+            box-shadow: 0 0 0 1px #b9c7e4, 0 0 10px rgba(185, 199, 228, 0.2);
+            border-color: #b9c7e4;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex items-center justify-center p-margin-mobile md:p-margin-desktop overflow-x-hidden relative">
+<!-- Abstract Tech Background Elements -->
+<div class="absolute inset-0 overflow-hidden pointer-events-none z-0">
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary-container/30 blur-[120px]"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-surface-container-high/50 blur-[100px]"></div>
+<div class="absolute top-[40%] right-[20%] w-[20%] h-[20%] rounded-full bg-secondary-container/20 blur-[80px]"></div>
+</div>
+<!-- Main Container -->
+<main class="w-full max-w-[1200px] flex flex-col md:flex-row rounded-xl overflow-hidden glass-panel z-10 shadow-2xl shadow-primary-container/10 border-outline-variant/30">
+<!-- Left Side: Brand Imagery/Messaging (Hidden on Mobile) -->
+<section class="hidden md:flex md:w-1/2 bg-surface-container-lowest/50 relative p-lg flex-col justify-between border-r border-outline-variant/20 overflow-hidden">
+<!-- Decorative Tech Background Image -->
+<div class="absolute inset-0 opacity-20 z-0 bg-cover bg-center" data-alt="A highly detailed close-up of a futuristic circuit board with glowing cyan traces on a deep black substrate. The image is macro photography, emphasizing precision engineering and microscopic technological details. The lighting is dramatic, with deep shadows and vibrant cyan highlights creating a high-tech, premium aesthetic suitable for a deep tech brand." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDc-d1Q9kco7ElwcAaLujlsuKmKdwiF0eUjMP3OoA2lFsDQRLCwquuPSnbF8XE0lCLJ8LshEj-mgcqJEeb2R1vehmEferO2CjOuOvs4OTwsqqLE-u9pIv1b4840Rmp2PQVW4ZqXbFH1kRh2b7d5fQeK3-CjWuEvViLpXYqyYSSuDHnrQED_ydQfisZfk7xYx1XyXfTOKJHMHIeTPvaC63-fTPm042HD5WqRReRUxmLJGQrZ1LGkTLstLh4EZGgbZs_pPmTOCJkHwhyi');"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-xs mb-xl">
+<span class="material-symbols-outlined text-primary text-[32px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">memory</span>
+<span class="font-headline-lg text-headline-lg text-primary tracking-tight">TechPro</span>
+</div>
+<div class="space-y-md">
+<h1 class="font-headline-xl text-headline-xl text-on-surface leading-tight">
+                        Initialize Your<br/>
+<span class="text-primary">Command Sequence</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md">
+                        Establish your secure connection to the most advanced engineering and precision hardware ecosystem.
+                    </p>
+</div>
+</div>
+<div class="relative z-10 glass-panel p-md rounded-lg mt-xl">
+<div class="flex items-center gap-sm mb-base">
+<span class="material-symbols-outlined text-secondary text-[24px]">verified_user</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">End-to-End Encryption</h3>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                    Your data is secured with military-grade protocols, ensuring absolute precision and reliability in every transaction.
+                </p>
+</div>
+</section>
+<!-- Right Side: Sign Up Form -->
+<section class="w-full md:w-1/2 p-lg md:p-xl bg-surface-container/80 backdrop-blur-md relative z-10 flex flex-col justify-center">
+<div class="md:hidden flex items-center gap-xs mb-lg justify-center">
+<span class="material-symbols-outlined text-primary text-[28px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">memory</span>
+<span class="font-headline-md text-headline-md text-primary tracking-tight">TechPro</span>
+</div>
+<div class="mb-lg">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Create Account</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Deploy your credentials to gain system access.</p>
+</div>
+<!-- SSO Buttons -->
+<div class="flex flex-col sm:flex-row gap-sm mb-lg">
+<button class="flex-1 flex items-center justify-center gap-sm py-sm px-md rounded border border-outline-variant text-on-surface hover:bg-surface-variant/50 transition-colors font-label-md text-label-md">
+<svg class="w-5 h-5" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path></svg>
+                    Google ID
+                </button>
+<button class="flex-1 flex items-center justify-center gap-sm py-sm px-md rounded border border-outline-variant text-on-surface hover:bg-surface-variant/50 transition-colors font-label-md text-label-md">
+<svg class="w-5 h-5" fill="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.19 14.28c-.46.75-1.07 1.48-1.8 1.48s-1.03-.43-1.93-.43c-.88 0-1.2.43-1.91.43-.72 0-1.34-.73-1.8-1.48-1.55-2.33-2.18-5.32-.98-7.25.6-1.01 1.57-1.63 2.65-1.63.76 0 1.45.47 2.02.47.57 0 1.34-.54 2.15-.54 1.05.02 1.94.44 2.5 1.15-2.13 1.25-1.78 4.27.35 5.17-.43 1-1 1.93-1.25 2.63zM13.88 5.76c.44-.57.74-1.35.66-2.12-.66.03-1.48.45-1.93 1.03-.4.5-.75 1.29-.65 2.05.74.05 1.48-.38 1.92-.96z"></path></svg>
+                    Apple ID
+                </button>
+</div>
+<!-- Divider -->
+<div class="flex items-center mb-lg">
+<div class="flex-1 border-t border-outline-variant/30"></div>
+<span class="px-md font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Or execute manual setup</span>
+<div class="flex-1 border-t border-outline-variant/30"></div>
+</div>
+<!-- Form -->
+<form class="space-y-md">
+<div class="space-y-base">
+<label class="block font-label-md text-label-md text-on-surface" for="fullname">Full Name</label>
+<div class="relative">
+<span class="absolute left-sm top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant">person</span>
+<input class="w-full bg-surface border border-outline-variant rounded py-sm pl-[40px] pr-sm text-on-surface focus:outline-none input-glow transition-all font-body-md text-body-md tracking-wide" id="fullname" placeholder="Enter designated identity" type="text"/>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
+<div class="space-y-base">
+<label class="block font-label-md text-label-md text-on-surface" for="email">Email Vector</label>
+<div class="relative">
+<span class="absolute left-sm top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant">mail</span>
+<input class="w-full bg-surface border border-outline-variant rounded py-sm pl-[40px] pr-sm text-on-surface focus:outline-none input-glow transition-all font-body-md text-body-md tracking-wide" id="email" placeholder="system@domain.com" type="email"/>
+</div>
+</div>
+<div class="space-y-base">
+<label class="block font-label-md text-label-md text-on-surface" for="phone">Comms Link (Phone)</label>
+<div class="relative">
+<span class="absolute left-sm top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant">call</span>
+<input class="w-full bg-surface border border-outline-variant rounded py-sm pl-[40px] pr-sm text-on-surface focus:outline-none input-glow transition-all font-body-md text-body-md tracking-wide" id="phone" placeholder="+1 (000) 000-0000" type="tel"/>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-md">
+<div class="space-y-base">
+<label class="block font-label-md text-label-md text-on-surface" for="password">Encryption Key (Password)</label>
+<div class="relative">
+<span class="absolute left-sm top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant">lock</span>
+<input class="w-full bg-surface border border-outline-variant rounded py-sm pl-[40px] pr-sm text-on-surface focus:outline-none input-glow transition-all font-body-md text-body-md tracking-wide" id="password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<div class="space-y-base">
+<label class="block font-label-md text-label-md text-on-surface" for="confirm-password">Verify Encryption Key</label>
+<div class="relative">
+<span class="absolute left-sm top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant">lock_reset</span>
+<input class="w-full bg-surface border border-outline-variant rounded py-sm pl-[40px] pr-sm text-on-surface focus:outline-none input-glow transition-all font-body-md text-body-md tracking-wide" id="confirm-password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+</div>
+<!-- Terms & Conditions -->
+<div class="flex items-start gap-sm pt-base">
+<div class="flex items-center h-5">
+<input class="w-4 h-4 bg-surface border-outline-variant rounded text-primary focus:ring-primary focus:ring-offset-surface-container" id="terms" type="checkbox"/>
+</div>
+<label class="font-body-md text-body-md text-on-surface-variant text-[14px]" for="terms">
+                        I acknowledge and accept the <a class="text-primary hover:underline" href="#">System Protocols</a> and <a class="text-primary hover:underline" href="#">Data Handling Directives</a>.
+                    </label>
+</div>
+<!-- Submit Action -->
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-sm rounded mt-lg btn-glow hover:bg-primary-fixed transition-colors flex items-center justify-center gap-xs" type="submit">
+<span>Initialize Account</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</form>
+<div class="mt-lg text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                    System access already established? 
+                    <a class="text-primary font-label-md text-label-md hover:underline ml-xs" href="#">Authenticate Here</a>
+</p>
+</div>
+</section>
+</main>
+</body></html>

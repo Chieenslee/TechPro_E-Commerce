@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Checkout - TechPro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-container": "#281400",
+                      "on-primary-fixed-variant": "#39475f",
+                      "inverse-surface": "#e1e3e4",
+                      "on-secondary-fixed": "#121c28",
+                      "on-primary-container": "#74829d",
+                      "secondary-fixed-dim": "#bdc7d8",
+                      "on-secondary-container": "#afb9c9",
+                      "on-secondary": "#27313e",
+                      "surface-dim": "#111415",
+                      "on-secondary-fixed-variant": "#3e4755",
+                      "surface-container-low": "#191c1d",
+                      "on-surface-variant": "#c5c6cd",
+                      "surface-tint": "#b9c7e4",
+                      "surface-container-highest": "#323536",
+                      "on-tertiary-fixed-variant": "#5d4124",
+                      "surface": "#111415",
+                      "outline": "#8f9097",
+                      "surface-bright": "#373a3b",
+                      "on-error-container": "#ffdad6",
+                      "primary": "#b9c7e4",
+                      "surface-container-lowest": "#0c0f10",
+                      "secondary": "#bdc7d8",
+                      "tertiary-fixed-dim": "#e7bf99",
+                      "inverse-primary": "#515f78",
+                      "error": "#ffb4ab",
+                      "on-error": "#690005",
+                      "on-background": "#e1e3e4",
+                      "on-primary-fixed": "#0d1c32",
+                      "surface-container": "#1d2021",
+                      "secondary-fixed": "#d9e3f4",
+                      "background": "#111415",
+                      "on-tertiary-fixed": "#2b1701",
+                      "on-primary": "#233148",
+                      "error-container": "#93000a",
+                      "primary-fixed-dim": "#b9c7e4",
+                      "outline-variant": "#44474d",
+                      "tertiary-fixed": "#ffdcbd",
+                      "surface-container-high": "#282a2b",
+                      "inverse-on-surface": "#2e3132",
+                      "primary-fixed": "#d6e3ff",
+                      "primary-container": "#0a192f",
+                      "secondary-container": "#404a57",
+                      "on-tertiary": "#432b10",
+                      "on-surface": "#e1e3e4",
+                      "surface-variant": "#323536",
+                      "on-tertiary-container": "#9d7b5a",
+                      "tertiary": "#e7bf99",
+                      "cyan": {
+                          "500": "#06b6d4"
+                      }
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "md": "24px",
+                      "margin-mobile": "16px",
+                      "margin-desktop": "64px",
+                      "sm": "12px",
+                      "base": "8px",
+                      "lg": "48px",
+                      "gutter": "24px",
+                      "xl": "80px",
+                      "xs": "4px"
+              },
+              "fontFamily": {
+                      "headline-xl": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-xl": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.03em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #050B14;
+            color: #e1e3e4;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .tech-shadow {
+            box-shadow: 0 4px 24px -4px rgba(185, 199, 228, 0.1);
+        }
+        .cta-glow {
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+        }
+    </style>
+</head>
+<body class="font-body-md min-h-screen flex flex-col antialiased">
+<!-- Minimal Header -->
+<header class="w-full bg-surface-container-lowest border-b border-white/10 z-50 py-sm">
+<div class="max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop flex items-center justify-between">
+<div class="font-headline-md text-headline-md font-bold tracking-tighter text-primary">
+                TechPro
+            </div>
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-[20px]" data-icon="lock">lock</span>
+<span class="font-label-md text-label-md uppercase tracking-widest text-on-surface-variant">Secure Checkout</span>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow w-full max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-lg">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Checkout Forms -->
+<div class="lg:col-span-8 space-y-md">
+<!-- Section 1: Customer Information -->
+<section class="glass-panel rounded-xl p-md tech-shadow">
+<div class="flex items-center gap-3 mb-sm border-b border-white/10 pb-sm">
+<span class="material-symbols-outlined text-primary" data-icon="person">person</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Customer Information</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-sm">
+<div class="space-y-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase">Full Name</label>
+<input class="w-full bg-surface border border-outline-variant rounded-DEFAULT px-sm py-sm text-on-surface focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-colors" placeholder="Enter your full name" type="text"/>
+</div>
+<div class="space-y-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase">Phone Number</label>
+<input class="w-full bg-surface border border-outline-variant rounded-DEFAULT px-sm py-sm text-on-surface focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-colors tracking-wide" placeholder="Enter phone number" type="tel"/>
+</div>
+<div class="space-y-xs md:col-span-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase">Email Address</label>
+<input class="w-full bg-surface border border-outline-variant rounded-DEFAULT px-sm py-sm text-on-surface focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-colors tracking-wide" placeholder="Enter your email" type="email"/>
+</div>
+</div>
+</section>
+<!-- Section 2: Shipping Address -->
+<section class="glass-panel rounded-xl p-md tech-shadow">
+<div class="flex items-center gap-3 mb-sm border-b border-white/10 pb-sm">
+<span class="material-symbols-outlined text-primary" data-icon="location_on">location_on</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Shipping Address</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-sm">
+<div class="space-y-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase">City / Province</label>
+<select class="w-full bg-surface border border-outline-variant rounded-DEFAULT px-sm py-sm text-on-surface focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-colors appearance-none">
+<option>Select City</option>
+<option>Ho Chi Minh City</option>
+<option>Hanoi</option>
+</select>
+</div>
+<div class="space-y-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase">District</label>
+<select class="w-full bg-surface border border-outline-variant rounded-DEFAULT px-sm py-sm text-on-surface focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-colors appearance-none">
+<option>Select District</option>
+</select>
+</div>
+<div class="space-y-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase">Ward</label>
+<select class="w-full bg-surface border border-outline-variant rounded-DEFAULT px-sm py-sm text-on-surface focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-colors appearance-none">
+<option>Select Ward</option>
+</select>
+</div>
+<div class="space-y-xs md:col-span-3">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase">Detailed Address</label>
+<input class="w-full bg-surface border border-outline-variant rounded-DEFAULT px-sm py-sm text-on-surface focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none transition-colors" placeholder="House number, street name..." type="text"/>
+</div>
+</div>
+</section>
+<!-- Section 3: Shipping Method -->
+<section class="glass-panel rounded-xl p-md tech-shadow">
+<div class="flex items-center gap-3 mb-sm border-b border-white/10 pb-sm">
+<span class="material-symbols-outlined text-primary" data-icon="local_shipping">local_shipping</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Shipping Method</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-sm">
+<label class="relative flex cursor-pointer rounded-lg border border-outline-variant bg-surface p-sm focus:outline-none hover:bg-surface-bright transition-colors has-[:checked]:border-cyan-500 has-[:checked]:bg-cyan-500/10">
+<input checked="" class="peer sr-only" name="shipping" type="radio" value="standard"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Standard Shipping</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-1">3-5 business days</span>
+</div>
+<span class="material-symbols-outlined text-cyan-500 absolute top-sm right-sm opacity-0 peer-checked:opacity-100 transition-opacity" data-icon="check_circle">check_circle</span>
+</label>
+<label class="relative flex cursor-pointer rounded-lg border border-outline-variant bg-surface p-sm focus:outline-none hover:bg-surface-bright transition-colors has-[:checked]:border-cyan-500 has-[:checked]:bg-cyan-500/10">
+<input class="peer sr-only" name="shipping" type="radio" value="express"/>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Express 2H</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-1">Delivery within 2 hours</span>
+</div>
+<span class="material-symbols-outlined text-cyan-500 absolute top-sm right-sm opacity-0 peer-checked:opacity-100 transition-opacity" data-icon="check_circle">check_circle</span>
+</label>
+</div>
+</section>
+<!-- Section 4: Payment Methods -->
+<section class="glass-panel rounded-xl p-md tech-shadow">
+<div class="flex items-center gap-3 mb-sm border-b border-white/10 pb-sm">
+<span class="material-symbols-outlined text-primary" data-icon="payments">payments</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">Payment Methods</h2>
+</div>
+<div class="space-y-sm">
+<label class="relative flex items-center cursor-pointer rounded-lg border border-outline-variant bg-surface p-sm focus:outline-none hover:bg-surface-bright transition-colors has-[:checked]:border-cyan-500 has-[:checked]:bg-cyan-500/10">
+<input checked="" class="peer sr-only" name="payment" type="radio" value="cod"/>
+<span class="material-symbols-outlined text-on-surface-variant mr-3" data-icon="money">money</span>
+<span class="font-label-md text-label-md text-on-surface flex-grow">Cash on Delivery (COD)</span>
+<span class="material-symbols-outlined text-cyan-500 opacity-0 peer-checked:opacity-100 transition-opacity" data-icon="check_circle">check_circle</span>
+</label>
+<label class="relative flex items-center cursor-pointer rounded-lg border border-outline-variant bg-surface p-sm focus:outline-none hover:bg-surface-bright transition-colors has-[:checked]:border-cyan-500 has-[:checked]:bg-cyan-500/10">
+<input class="peer sr-only" name="payment" type="radio" value="credit"/>
+<span class="material-symbols-outlined text-on-surface-variant mr-3" data-icon="credit_card">credit_card</span>
+<span class="font-label-md text-label-md text-on-surface flex-grow">Credit / Debit Card</span>
+<div class="flex gap-2 mr-3">
+<span class="text-xs bg-surface-bright px-1 border border-outline-variant rounded">VISA</span>
+<span class="text-xs bg-surface-bright px-1 border border-outline-variant rounded">MC</span>
+</div>
+<span class="material-symbols-outlined text-cyan-500 opacity-0 peer-checked:opacity-100 transition-opacity" data-icon="check_circle">check_circle</span>
+</label>
+<label class="relative flex items-center cursor-pointer rounded-lg border border-outline-variant bg-surface p-sm focus:outline-none hover:bg-surface-bright transition-colors has-[:checked]:border-cyan-500 has-[:checked]:bg-cyan-500/10">
+<input class="peer sr-only" name="payment" type="radio" value="qr"/>
+<span class="material-symbols-outlined text-on-surface-variant mr-3" data-icon="qr_code">qr_code</span>
+<span class="font-label-md text-label-md text-on-surface flex-grow">QR Code Transfer (VNPay, Momo)</span>
+<span class="material-symbols-outlined text-cyan-500 opacity-0 peer-checked:opacity-100 transition-opacity" data-icon="check_circle">check_circle</span>
+</label>
+</div>
+</section>
+</div>
+<!-- Right Column: Order Summary (Sticky) -->
+<div class="lg:col-span-4">
+<div class="sticky top-md glass-panel rounded-xl p-md tech-shadow flex flex-col h-fit">
+<h2 class="font-headline-md text-headline-md text-on-surface border-b border-white/10 pb-sm mb-sm">Order Summary</h2>
+<!-- Product List -->
+<div class="space-y-sm mb-md flex-grow overflow-y-auto max-h-[409px] pr-2">
+<!-- Item 1 -->
+<div class="flex gap-3">
+<div class="w-16 h-16 bg-surface border border-outline-variant rounded-DEFAULT overflow-hidden shrink-0">
+<img alt="Smartphone" class="w-full h-full object-cover" data-alt="A sleek, modern smartphone resting on a minimalist dark surface. The device features a high-gloss glass back reflecting ambient cool white light. The overall aesthetic is high-tech, precise, and premium, utilizing deep black and sharp silver tones to emphasize engineering excellence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnOiVwl0T-U2bzMAdRh2El01m2BWLfK7UcBtSfxeFV7w5gDVCSjX-5T9I7JLMinqdQfVWO4cw9NMCi8mAjlrgP-e_LuiITVz_Bpt9zPZGeVcqeiSyBDhwANV9vb-W_g90aiwPM5RWcgKMe7HIFEZmbsvgBKN-dyZoxH_efPqpi0hyvF9LQw-4WvaOQwrobtoN2wFtzHq9gGDng-S1r7LtLN6HpMqc3RxNuQZC_pJBDBivCsYGoSYy78KJTzGHvIEeKzQgF2nMc2lvP"/>
+</div>
+<div class="flex-grow flex flex-col justify-between">
+<div>
+<h3 class="font-label-md text-label-md text-on-surface line-clamp-1">TECH_PRO X1 Smartphone</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">256GB / Space Black</span>
+</div>
+<div class="flex justify-between items-center mt-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Qty: 1</span>
+<span class="font-label-md text-label-md text-primary font-medium">$999.00</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Discount Code -->
+<div class="flex gap-2 mb-md">
+<input class="flex-grow bg-surface border border-outline-variant rounded-DEFAULT px-sm py-2 text-on-surface focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none uppercase text-sm tracking-widest" placeholder="DISCOUNT CODE" type="text"/>
+<button class="bg-surface-bright border border-outline-variant hover:bg-white/10 text-on-surface px-4 py-2 rounded-DEFAULT font-label-md text-label-md transition-colors">APPLY</button>
+</div>
+<!-- Price Breakdown -->
+<div class="space-y-2 border-t border-white/10 pt-sm mb-md">
+<div class="flex justify-between">
+<span class="font-body-md text-body-md text-on-surface-variant">Subtotal</span>
+<span class="font-body-md text-body-md text-on-surface">$999.00</span>
+</div>
+<div class="flex justify-between">
+<span class="font-body-md text-body-md text-on-surface-variant">Shipping Fee</span>
+<span class="font-body-md text-body-md text-on-surface">Calculated next step</span>
+</div>
+<div class="flex justify-between text-cyan-500">
+<span class="font-body-md text-body-md">Discount</span>
+<span class="font-body-md text-body-md">-$0.00</span>
+</div>
+</div>
+<!-- Total -->
+<div class="border-t border-white/10 pt-sm mb-md flex justify-between items-center">
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Total</span>
+<span class="font-headline-lg text-headline-lg text-primary">$999.00</span>
+</div>
+<!-- CTA -->
+<button class="w-full bg-cyan-500 hover:bg-cyan-400 text-surface-container-lowest font-label-md text-label-md font-bold uppercase tracking-widest py-4 rounded-DEFAULT transition-all cta-glow flex items-center justify-center gap-2 mt-auto">
+<span class="material-symbols-outlined" data-icon="lock">lock</span>
+                        PLACE ORDER
+                    </button>
+<p class="font-label-sm text-label-sm text-on-surface-variant text-center mt-sm">
+                        By placing your order, you agree to our Terms and Policies.
+                    </p>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full bg-surface-container-lowest border-t border-white/5 py-lg mt-auto">
+<div class="max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-1 md:grid-cols-12 gap-gutter text-center md:text-left">
+<div class="md:col-span-4 flex flex-col justify-center md:justify-start">
+<div class="font-headline-sm text-headline-sm font-bold text-on-surface mb-2">TechPro</div>
+<div class="font-body-md text-body-md text-on-surface-variant">Engineering Excellence.</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant mt-4">© 2024 TechPro. All rights reserved.</div>
+</div>
+<div class="md:col-span-8 flex flex-wrap justify-center md:justify-end items-center gap-x-6 gap-y-2">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Warranty</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Returns</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Shipping</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Support</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-primary transition-colors" href="#">Contact</a>
+</div>
+</div>
+</footer>
+</body></html>

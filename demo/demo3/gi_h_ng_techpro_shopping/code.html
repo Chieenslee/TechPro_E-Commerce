@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TechPro - Shopping Cart</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error": "#ffb4ab",
+                        "tertiary-container": "#281400",
+                        "primary": "#b9c7e4",
+                        "secondary-fixed-dim": "#bdc7d8",
+                        "secondary-fixed": "#d9e3f4",
+                        "surface-variant": "#323536",
+                        "on-primary-fixed": "#0d1c32",
+                        "on-background": "#e1e3e4",
+                        "on-surface-variant": "#c5c6cd",
+                        "on-surface": "#e1e3e4",
+                        "on-secondary-fixed": "#121c28",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-container": "#74829d",
+                        "primary-fixed-dim": "#b9c7e4",
+                        "secondary-container": "#404a57",
+                        "tertiary": "#e7bf99",
+                        "tertiary-fixed": "#ffdcbd",
+                        "surface-container-low": "#191c1d",
+                        "primary-fixed": "#d6e3ff",
+                        "surface-container": "#1d2021",
+                        "primary-container": "#0a192f",
+                        "on-error": "#690005",
+                        "outline": "#8f9097",
+                        "on-tertiary-container": "#9d7b5a",
+                        "on-tertiary": "#432b10",
+                        "surface": "#111415",
+                        "on-secondary-container": "#afb9c9",
+                        "inverse-surface": "#e1e3e4",
+                        "on-primary": "#233148",
+                        "surface-tint": "#b9c7e4",
+                        "surface-container-lowest": "#0c0f10",
+                        "secondary": "#bdc7d8",
+                        "on-primary-fixed-variant": "#39475f",
+                        "on-secondary": "#27313e",
+                        "surface-container-highest": "#323536",
+                        "inverse-on-surface": "#2e3132",
+                        "background": "#111415",
+                        "on-tertiary-fixed-variant": "#5d4124",
+                        "surface-bright": "#373a3b",
+                        "on-secondary-fixed-variant": "#3e4755",
+                        "surface-container-high": "#282a2b",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed": "#2b1701",
+                        "tertiary-fixed-dim": "#e7bf99",
+                        "surface-dim": "#111415",
+                        "inverse-primary": "#515f78",
+                        "outline-variant": "#44474d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "sm": "12px",
+                        "xs": "4px",
+                        "margin-desktop": "64px",
+                        "md": "24px",
+                        "base": "8px",
+                        "lg": "48px",
+                        "xl": "80px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "letterSpacing": "0.01em", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #050B14; } /* Overriding base background to match Deep Tech */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .text-glow {
+            text-shadow: 0 0 10px rgba(185, 199, 228, 0.5); /* Using primary color for subtle glow */
+        }
+        .btn-glow {
+            box-shadow: 0 0 20px rgba(185, 199, 228, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-surface-container/80 backdrop-blur-xl docked full-width top-0 sticky z-50 border-b border-outline-variant/30 shadow-sm">
+<div class="flex justify-between items-center w-full px-margin-desktop h-20 max-w-[1440px] mx-auto">
+<div class="font-headline-md text-headline-md font-bold tracking-tight text-primary">
+                TechPro
+            </div>
+<nav class="hidden md:flex gap-md items-center">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors duration-200 hover:bg-surface-variant/50 px-3 py-2 rounded scale-95 transition-transform duration-150" href="#">Products</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors duration-200 hover:bg-surface-variant/50 px-3 py-2 rounded scale-95 transition-transform duration-150" href="#">Compare</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors duration-200 hover:bg-surface-variant/50 px-3 py-2 rounded scale-95 transition-transform duration-150" href="#">VIP Lounge</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors duration-200 hover:bg-surface-variant/50 px-3 py-2 rounded scale-95 transition-transform duration-150" href="#">Support</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors duration-200 hover:bg-surface-variant/50 px-3 py-2 rounded scale-95 transition-transform duration-150" href="#">News</a>
+</nav>
+<div class="flex items-center gap-sm">
+<button aria-label="shopping_cart" class="text-primary hover:bg-surface-variant/50 p-2 rounded-full transition-all duration-200 scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined text-primary font-bold">shopping_cart</span>
+</button>
+<button aria-label="account_circle" class="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/50 p-2 rounded-full transition-all duration-200 scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+<button aria-label="notifications" class="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant/50 p-2 rounded-full transition-all duration-200 scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow w-full max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-lg">
+<div class="mb-lg">
+<h1 class="font-headline-xl text-headline-xl text-on-surface mb-xs">Command Center Cart</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Review your selected hardware specs before deployment.</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Cart Items List -->
+<div class="lg:col-span-8 flex flex-col gap-md">
+<!-- Item 1 -->
+<div class="glass-panel rounded-xl p-md flex flex-col sm:flex-row gap-md items-start sm:items-center relative group">
+<div class="w-full sm:w-32 h-32 bg-surface-container-highest rounded-lg overflow-hidden shrink-0 border border-outline-variant/30 relative">
+<img alt="TechPro Nexus Laptop" class="w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:opacity-100 transition-opacity duration-300" data-alt="A sleek, high-performance laptop open on a dark surface, displaying complex code. The lighting is moody with subtle blue edge highlights, emphasizing the metallic finish and minimalist design typical of premium tech gear. The setting is a sterile, dark-themed engineering workspace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmPhEJ9rbRwF79bbd_XRmYJPaYOCbsJ0hkQagwxcK4gJFwzUlzakqlzZKELaUBjeXc42T7AjLSILeSseBz8VdxPS6vTj6qw3dK2mdbnsA_KjOWuZMiLkZDhqOupVTEB8FQrGoZQFCc-FFjXsRRVvuskUb_qXQ9_1Hhz5XkOJd5wvy8DBmMbD_FZmg1ZKLhdB_Bj1RYJXwxiSskWeaTiE2iNkQBDEJvJyTSfCXnXsdjX-m-W7vWduhZ0g39LuXBzyfTBWTTFyJ4ZBBh"/>
+</div>
+<div class="flex-grow flex flex-col justify-between h-full w-full">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-xs text-glow">Nexus Core M7</h3>
+<div class="flex gap-xs flex-wrap">
+<span class="px-2 py-1 bg-surface-variant text-on-surface-variant font-label-sm text-label-sm rounded uppercase border border-outline-variant/50">64GB RAM</span>
+<span class="px-2 py-1 bg-surface-variant text-on-surface-variant font-label-sm text-label-sm rounded uppercase border border-outline-variant/50">2TB NVMe</span>
+</div>
+</div>
+<span class="font-headline-md text-headline-md text-primary">$2,499.00</span>
+</div>
+<div class="flex justify-between items-center w-full mt-auto">
+<div class="flex items-center bg-surface-container-highest border border-outline-variant/30 rounded-lg">
+<button aria-label="decrease quantity" class="p-2 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">remove</span></button>
+<span class="font-body-md text-body-md text-on-surface px-4 py-1 text-center min-w-[3rem]">1</span>
+<button aria-label="increase quantity" class="p-2 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">add</span></button>
+</div>
+<button class="text-error hover:text-on-error-container transition-colors flex items-center gap-xs font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+                                Remove
+                            </button>
+</div>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="glass-panel rounded-xl p-md flex flex-col sm:flex-row gap-md items-start sm:items-center relative group">
+<div class="w-full sm:w-32 h-32 bg-surface-container-highest rounded-lg overflow-hidden shrink-0 border border-outline-variant/30 relative">
+<img alt="Quantum GPU Accelerator" class="w-full h-full object-cover mix-blend-luminosity opacity-80 group-hover:opacity-100 transition-opacity duration-300" data-alt="A close-up shot of a high-end graphics processing unit with complex cooling fins and glowing cyan LED accents. The component is isolated against a pitch-black background, highlighting its precision engineering and brutalist aesthetic. The lighting is stark and directional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuApHKAFSy9KRmLGY7EMZi9bZAQf03twbkQOJhrkRPeDDFKwxt9CoQbQcdFrIXHTEXwBSm3K_1qwUYDdELGkyYNtRd8qnHc7qP_qR6DUmWtaFZ3VRWKbDFbNKkQtV6Sr5NpTZhwc8kr0IeRAQGzmpWmW0eqEP98EpdzmTGzIL4cPIwKFDpGA0P1Lba_51Uev8kWI-MnXAhCrUjxhOL6PUBUn0yZysELO8hnr5OCpvKeZNgF8uFSdAWUGPpIpPKdiKH6fQ9rRXIqM9nIE"/>
+</div>
+<div class="flex-grow flex flex-col justify-between h-full w-full">
+<div class="flex justify-between items-start mb-sm">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-xs text-glow">Quantum GPU TX-90</h3>
+<div class="flex gap-xs flex-wrap">
+<span class="px-2 py-1 bg-surface-variant text-on-surface-variant font-label-sm text-label-sm rounded uppercase border border-outline-variant/50">24GB VRAM</span>
+<span class="px-2 py-1 bg-surface-variant text-on-surface-variant font-label-sm text-label-sm rounded uppercase border border-outline-variant/50">Ray Tracing</span>
+</div>
+</div>
+<span class="font-headline-md text-headline-md text-primary">$1,199.00</span>
+</div>
+<div class="flex justify-between items-center w-full mt-auto">
+<div class="flex items-center bg-surface-container-highest border border-outline-variant/30 rounded-lg">
+<button aria-label="decrease quantity" class="p-2 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">remove</span></button>
+<span class="font-body-md text-body-md text-on-surface px-4 py-1 text-center min-w-[3rem]">2</span>
+<button aria-label="increase quantity" class="p-2 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">add</span></button>
+</div>
+<button class="text-error hover:text-on-error-container transition-colors flex items-center gap-xs font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+                                Remove
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Summary Sidebar -->
+<div class="lg:col-span-4 mt-lg lg:mt-0">
+<div class="glass-panel rounded-xl p-md flex flex-col sticky top-28">
+<h2 class="font-headline-md text-headline-md text-on-surface border-b border-outline-variant/30 pb-sm mb-md">Telemetry Summary</h2>
+<div class="flex flex-col gap-sm mb-md">
+<div class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-on-surface-variant">Subtotal (3 items)</span>
+<span class="font-body-md text-body-md text-on-surface">$4,897.00</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-on-surface-variant">Shipping Matrix</span>
+<span class="font-body-md text-body-md text-primary">Calculated at Checkout</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-on-surface-variant">Estimated Tax</span>
+<span class="font-body-md text-body-md text-on-surface">$391.76</span>
+</div>
+</div>
+<div class="border-t border-outline-variant/30 pt-sm mb-lg">
+<div class="flex justify-between items-center">
+<span class="font-headline-md text-headline-md text-on-surface">Total Allocation</span>
+<span class="font-headline-lg text-headline-lg text-primary text-glow">$5,288.76</span>
+</div>
+</div>
+<!-- Discount Section -->
+<div class="mb-lg">
+<label class="block font-label-md text-label-md text-on-surface-variant mb-xs" for="promo_code">Authorization Code</label>
+<div class="flex gap-xs">
+<input class="w-full bg-surface-container-highest border border-outline-variant/50 rounded-lg px-3 py-2 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary tracking-wider" id="promo_code" placeholder="ENTER-KEY" type="text"/>
+<button class="bg-surface-variant text-on-surface-variant hover:text-on-surface font-label-md text-label-md px-4 py-2 rounded-lg border border-outline-variant/50 hover:bg-surface-container-highest transition-colors">Apply</button>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary font-headline-sm font-bold py-3 rounded-lg flex justify-center items-center gap-sm btn-glow hover:bg-primary-fixed transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">lock</span>
+                        Initiate Checkout Protocol
+                    </button>
+<div class="mt-sm text-center">
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center justify-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                            Secure 256-bit Encryption Active
+                        </span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest w-full py-12 px-margin-desktop flex flex-col md:flex-row justify-between items-center max-w-[1440px] mx-auto border-t border-outline-variant/20 mt-auto">
+<div class="font-headline-md text-headline-md font-bold text-primary mb-md md:mb-0">
+            TechPro
+        </div>
+<nav class="flex flex-wrap justify-center gap-md mb-md md:mb-0">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Hardware Specs</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Shipping Logic</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">RMA Portal</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Security Protocol</a>
+</nav>
+<div class="font-label-sm text-label-sm text-on-surface-variant">
+            © 2024 TechPro Engineering. Precision Built.
+        </div>
+</footer>
+</body></html>

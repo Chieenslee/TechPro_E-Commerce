@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Order Success - TechPro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#111415",
+                        "inverse-primary": "#515f78",
+                        "outline-variant": "#44474d",
+                        "on-tertiary-fixed": "#2b1701",
+                        "tertiary-fixed-dim": "#e7bf99",
+                        "on-secondary": "#27313e",
+                        "surface-container-highest": "#323536",
+                        "inverse-on-surface": "#2e3132",
+                        "background": "#111415",
+                        "on-tertiary-fixed-variant": "#5d4124",
+                        "surface-bright": "#373a3b",
+                        "on-secondary-fixed-variant": "#3e4755",
+                        "surface-container-high": "#282a2b",
+                        "error-container": "#93000a",
+                        "on-secondary-container": "#afb9c9",
+                        "inverse-surface": "#e1e3e4",
+                        "on-primary": "#233148",
+                        "surface-tint": "#b9c7e4",
+                        "surface-container-lowest": "#0c0f10",
+                        "secondary": "#bdc7d8",
+                        "on-primary-fixed-variant": "#39475f",
+                        "surface-container-low": "#191c1d",
+                        "primary-fixed": "#d6e3ff",
+                        "surface-container": "#1d2021",
+                        "primary-container": "#0a192f",
+                        "on-error": "#690005",
+                        "outline": "#8f9097",
+                        "on-tertiary-container": "#9d7b5a",
+                        "on-tertiary": "#432b10",
+                        "surface": "#111415",
+                        "primary-fixed-dim": "#b9c7e4",
+                        "secondary-container": "#404a57",
+                        "tertiary": "#e7bf99",
+                        "tertiary-fixed": "#ffdcbd",
+                        "surface-variant": "#323536",
+                        "on-primary-fixed": "#0d1c32",
+                        "on-background": "#e1e3e4",
+                        "on-surface-variant": "#c5c6cd",
+                        "on-surface": "#e1e3e4",
+                        "on-secondary-fixed": "#121c28",
+                        "on-error-container": "#ffdad6",
+                        "on-primary-container": "#74829d",
+                        "error": "#ffb4ab",
+                        "tertiary-container": "#281400",
+                        "primary": "#b9c7e4",
+                        "secondary-fixed-dim": "#bdc7d8",
+                        "secondary-fixed": "#d9e3f4"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "lg": "48px",
+                        "xl": "80px",
+                        "margin-mobile": "16px",
+                        "md": "24px",
+                        "base": "8px",
+                        "xs": "4px",
+                        "margin-desktop": "64px",
+                        "gutter": "24px",
+                        "sm": "12px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-xl": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "400" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "0.02em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "letterSpacing": "0.01em", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Glassmorphism utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .ambient-shadow {
+            box-shadow: 0 8px 32px rgba(10, 25, 47, 0.15);
+        }
+
+        .glow-btn {
+            box-shadow: 0 0 15px rgba(185, 199, 228, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased selection:bg-primary-container selection:text-primary">
+<!-- Suppressed TopNavBar for Transactional Page -->
+<header class="w-full py-md px-margin-mobile md:px-margin-desktop flex justify-center items-center border-b border-outline-variant/30 bg-surface/80 backdrop-blur-md sticky top-0 z-50">
+<div class="font-headline-md text-headline-md font-bold tracking-tight text-primary">TechPro</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-grow flex items-center justify-center py-xl px-margin-mobile md:px-margin-desktop">
+<div class="w-full max-w-3xl glass-panel ambient-shadow rounded-xl p-md md:p-lg flex flex-col items-center text-center">
+<!-- Success Icon -->
+<div class="w-24 h-24 rounded-full bg-primary-container/50 border border-primary/30 flex items-center justify-center mb-md relative">
+<div class="absolute inset-0 rounded-full bg-primary/10 animate-pulse blur-xl"></div>
+<span class="material-symbols-outlined icon-fill text-primary text-[48px]">check_circle</span>
+</div>
+<!-- Headline -->
+<h1 class="font-headline-xl text-headline-xl text-on-surface mb-xs">Transaction Verified</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-lg max-w-lg">
+                Your order has been securely processed. A confirmation email with cryptographic receipt has been dispatched to your terminal.
+            </p>
+<!-- Order Details Grid -->
+<div class="w-full grid grid-cols-1 md:grid-cols-2 gap-gutter mb-lg text-left">
+<!-- Info Card 1 -->
+<div class="bg-surface-container rounded-lg p-md border border-outline-variant/20">
+<div class="flex items-center gap-sm mb-sm text-primary">
+<span class="material-symbols-outlined text-[20px]">tag</span>
+<h3 class="font-label-md text-label-md">Order Reference</h3>
+</div>
+<p class="font-body-md text-body-md text-on-surface font-mono tracking-wider">TP-8924-XQ9</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-xs">Placed on Oct 24, 2024</p>
+</div>
+<!-- Info Card 2 -->
+<div class="bg-surface-container rounded-lg p-md border border-outline-variant/20">
+<div class="flex items-center gap-sm mb-sm text-primary">
+<span class="material-symbols-outlined text-[20px]">local_shipping</span>
+<h3 class="font-label-md text-label-md">Delivery Protocol</h3>
+</div>
+<p class="font-body-md text-body-md text-on-surface">Expedited Freight</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-xs">Estimated Arrival: Oct 26 - Oct 28</p>
+</div>
+</div>
+<!-- Items Summary Summary -->
+<div class="w-full bg-surface-container-low rounded-lg border border-outline-variant/20 overflow-hidden mb-lg">
+<div class="p-md border-b border-outline-variant/20 flex justify-between items-center">
+<h3 class="font-label-md text-label-md text-on-surface">Requisition Summary</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2 Items</span>
+</div>
+<div class="p-md space-y-md">
+<!-- Item Row -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded bg-surface border border-outline-variant/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-[24px]">memory</span>
+</div>
+<div class="text-left">
+<p class="font-label-md text-label-md text-on-surface">Quantum Core Processor</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Qty: 1</p>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface">$1,299.00</p>
+</div>
+<!-- Item Row -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-md">
+<div class="w-12 h-12 rounded bg-surface border border-outline-variant/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-[24px]">router</span>
+</div>
+<div class="text-left">
+<p class="font-label-md text-label-md text-on-surface">Neural Mesh Router</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Qty: 1</p>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface">$349.00</p>
+</div>
+</div>
+<div class="p-md bg-surface border-t border-outline-variant/20 flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface-variant">Total Allocation</span>
+<span class="font-headline-md text-headline-md text-primary">$1,648.00</span>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex flex-col sm:flex-row gap-md w-full justify-center mt-sm">
+<a class="px-lg py-sm bg-primary text-on-primary rounded font-label-md text-label-md hover:bg-primary-fixed transition-colors duration-200 glow-btn flex items-center justify-center gap-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">explore</span>
+                    Track Order
+                </a>
+<a class="px-lg py-sm bg-transparent border border-outline-variant text-on-surface hover:bg-surface-variant/50 transition-colors duration-200 rounded font-label-md text-label-md flex items-center justify-center gap-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">home</span>
+                    Return to Home
+                </a>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest text-primary font-label-sm text-label-sm w-full py-12 px-margin-desktop flex flex-col md:flex-row justify-between items-center border-t border-outline-variant/20 max-w-[1440px] mx-auto">
+<div class="mb-6 md:mb-0 text-center md:text-left">
+<span class="font-headline-md text-headline-md font-bold block mb-2">TechPro</span>
+<span class="text-on-surface-variant">© 2024 TechPro Engineering. Precision Built.</span>
+</div>
+<div class="flex gap-6">
+<a class="text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Hardware Specs</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Shipping Logic</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">RMA Portal</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors opacity-80 hover:opacity-100" href="#">Security Protocol</a>
+</div>
+</footer>
+</body></html>
