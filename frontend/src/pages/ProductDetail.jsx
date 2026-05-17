@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { CartContext } from '../context/CartContextValue';
 import productApi from '../api/productApi';
@@ -11,10 +11,52 @@ const galleryImages = [
   "https://lh3.googleusercontent.com/aida-public/AB6AXuCKaFeUulBlfVJhHBt_RRBP_uYZKCPqIos9p99Bl3Vpv-7YvzPFsyC5LeaSYf5Nw8QOBp1KwxM_y16GUo7acehO4fKtTDjR47IO7GgKQ2eHL30q0McG0OR6-WUaM3ZdviVUFrx2HhpsddjuX1LtzdWGzRNLuOIabMoMxoJNOA2wcTdbgRm4FwSm5x2aSJWnf7U1uiyu334kZXQF0i1iCYSKVh4Xjf5qDYZh8M85Vte9DwZcZm0u4wL8bUAcF4KZX2QYGRZqstRbHQfO"
 ];
 
+const initialsFor = (name = '') => name
+  .split(' ')
+  .filter(Boolean)
+  .slice(0, 2)
+  .map(part => part[0]?.toUpperCase())
+  .join('') || 'TP';
+
+const formatReviewDate = (date) => new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric'
+}).format(new Date(date));
+
+const renderStars = (rating, size = 20) => {
+  const rounded = Math.round(rating * 2) / 2;
+
+  return Array.from({ length: 5 }, (_, index) => {
+    const value = index + 1;
+    const icon = rounded >= value ? 'star' : rounded >= value - 0.5 ? 'star_half' : 'star';
+    const filled = rounded >= value || icon === 'star_half';
+
+    return (
+      <span
+        key={value}
+        className="material-symbols-outlined"
+        style={{ fontSize: `${size}px`, fontVariationSettings: filled ? "'FILL' 1" : "'FILL' 0" }}
+      >
+        {icon}
+      </span>
+    );
+  });
+};
+
 const ProductDetail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewError, setReviewError] = useState('');
+  const [reviewForm, setReviewForm] = useState({
+    author: '',
+    rating: 5,
+    comment: ''
+  });
   
   const [mainImage, setMainImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState('Void Black');
@@ -22,6 +64,26 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('overview'); // overview, specs, reviews
   const { addToCart } = useContext(CartContext);
+  const reviewCount = reviews.length;
+  const averageRating = reviewCount
+    ? reviews.reduce((total, review) => total + Number(review.rating || 0), 0) / reviewCount
+    : Number(product?.rating || 0);
+  const ratingLabel = averageRating ? averageRating.toFixed(1) : '0.0';
+
+  const fetchReviews = useCallback(async () => {
+    setReviewLoading(true);
+    try {
+      const data = await productApi.getReviews(id);
+      setReviews(Array.isArray(data) ? data : []);
+      setReviewError('');
+    } catch (error) {
+      console.error("Failed to fetch product reviews", error);
+      setReviews([]);
+      setReviewError('Unable to load reviews right now.');
+    } finally {
+      setReviewLoading(false);
+    }
+  }, [id]);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -45,6 +107,36 @@ const ProductDetail = () => {
     };
     fetchProduct();
   }, [id]);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      fetchReviews();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [fetchReviews]);
+
+  const handleReviewSubmit = async (event) => {
+    event.preventDefault();
+    setReviewSubmitting(true);
+    setReviewError('');
+
+    try {
+      await productApi.createReview(id, {
+        author: reviewForm.author,
+        rating: Number(reviewForm.rating),
+        comment: reviewForm.comment
+      });
+      setReviewForm({ author: '', rating: 5, comment: '' });
+      await fetchReviews();
+      setActiveTab('reviews');
+    } catch (error) {
+      console.error("Failed to submit product review", error);
+      setReviewError(error.response?.data?.message || 'Unable to submit review right now.');
+    } finally {
+      setReviewSubmitting(false);
+    }
+  };
 
   if (loading) {
     return <main className="flex-grow flex items-center justify-center min-h-screen">
@@ -110,13 +202,11 @@ const ProductDetail = () => {
           <h1 className="text-headline-lg font-bold text-on-surface mb-2 text-glow">{product.name}</h1>
           <div className="flex items-center gap-2 mb-4 cursor-pointer group w-fit" onClick={() => setActiveTab('reviews')}>
             <div className="flex text-[#FFB400] transition-transform group-hover:scale-105">
-              <span className="material-symbols-outlined text-[20px]" style={{fontVariationSettings: "'FILL' 1"}}>star</span>
-              <span className="material-symbols-outlined text-[20px]" style={{fontVariationSettings: "'FILL' 1"}}>star</span>
-              <span className="material-symbols-outlined text-[20px]" style={{fontVariationSettings: "'FILL' 1"}}>star</span>
-              <span className="material-symbols-outlined text-[20px]" style={{fontVariationSettings: "'FILL' 1"}}>star</span>
-              <span className="material-symbols-outlined text-[20px]">star_half</span>
+              {renderStars(averageRating, 20)}
             </div>
-            <span className="text-label-sm text-on-surface-variant group-hover:text-primary underline transition-colors">4.8 (124 Reviews)</span>
+            <span className="text-label-sm text-on-surface-variant group-hover:text-primary underline transition-colors">
+              {ratingLabel} ({reviewCount} {reviewCount === 1 ? 'Review' : 'Reviews'})
+            </span>
           </div>
           <p className="text-headline-xl font-semibold text-primary mb-6">${(product.price * quantity).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
           <p className="text-body-md text-on-surface-variant mb-8 leading-relaxed">
@@ -216,7 +306,7 @@ const ProductDetail = () => {
           {[
             { id: 'overview', label: 'Product Overview' },
             { id: 'specs', label: 'Tech Specs' },
-            { id: 'reviews', label: 'Reviews (124)' }
+            { id: 'reviews', label: `Reviews (${reviewCount})` }
           ].map(tab => (
             <button
               key={tab.id}
@@ -289,74 +379,98 @@ const ProductDetail = () => {
                 <h2 className="text-headline-md font-semibold text-on-surface mb-2">Customer Feedback</h2>
                 <div className="flex items-center gap-4">
                   <div className="flex text-[#FFB400]">
-                    <span className="material-symbols-outlined text-[32px]" style={{fontVariationSettings: "'FILL' 1"}}>star</span>
-                    <span className="material-symbols-outlined text-[32px]" style={{fontVariationSettings: "'FILL' 1"}}>star</span>
-                    <span className="material-symbols-outlined text-[32px]" style={{fontVariationSettings: "'FILL' 1"}}>star</span>
-                    <span className="material-symbols-outlined text-[32px]" style={{fontVariationSettings: "'FILL' 1"}}>star</span>
-                    <span className="material-symbols-outlined text-[32px]">star_half</span>
+                    {renderStars(averageRating, 32)}
                   </div>
                   <div>
-                    <span className="text-headline-md font-bold text-on-surface block">4.8 / 5</span>
-                    <span className="text-label-sm text-on-surface-variant uppercase tracking-wider">Based on 124 reviews</span>
+                    <span className="text-headline-md font-bold text-on-surface block">{ratingLabel} / 5</span>
+                    <span className="text-label-sm text-on-surface-variant uppercase tracking-wider">
+                      Based on {reviewCount} {reviewCount === 1 ? 'review' : 'reviews'}
+                    </span>
                   </div>
                 </div>
               </div>
-              <button className="bg-primary/10 border border-primary text-primary hover:bg-primary hover:text-on-primary font-label-md py-3 px-6 rounded-lg transition-colors btn-ripple">
-                Write a Review
-              </button>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-md stagger-children">
-              {/* Review 1 */}
-              <div className="bg-surface-container p-6 rounded-xl border border-outline-variant/50 hover:border-primary/50 transition-colors">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-surface-container-highest flex items-center justify-center text-on-primary font-headline-sm shadow-inner">JD</div>
-                    <div>
-                      <p className="text-body-md font-semibold text-on-surface">John D.</p>
-                      <p className="text-[12px] text-primary flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">verified</span> Verified Buyer - Oct 12, 2024</p>
-                    </div>
-                  </div>
-                  <div className="flex text-[#FFB400] text-sm">
-                    <span className="material-symbols-outlined text-[16px]" style={{fontVariationSettings: "'FILL' 1"}}>star</span>
-                    <span className="material-symbols-outlined text-[16px]" style={{fontVariationSettings: "'FILL' 1"}}>star</span>
-                    <span className="material-symbols-outlined text-[16px]" style={{fontVariationSettings: "'FILL' 1"}}>star</span>
-                    <span className="material-symbols-outlined text-[16px]" style={{fontVariationSettings: "'FILL' 1"}}>star</span>
-                    <span className="material-symbols-outlined text-[16px]" style={{fontVariationSettings: "'FILL' 1"}}>star</span>
-                  </div>
-                </div>
-                <h4 className="text-body-lg font-semibold text-on-surface mb-2">Absolute powerhouse</h4>
-                <p className="text-body-md text-on-surface-variant leading-relaxed">
-                  I compile massive codebases daily, and this machine hasn't broken a sweat. The keyboard is tactile and responsive, and the battery life is surprisingly good for something this powerful.
-                </p>
-              </div>
 
-              {/* Review 2 */}
-              <div className="bg-surface-container p-6 rounded-xl border border-outline-variant/50 hover:border-primary/50 transition-colors">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-secondary to-surface-container-highest flex items-center justify-center text-on-primary font-headline-sm shadow-inner">SW</div>
-                    <div>
-                      <p className="text-body-md font-semibold text-on-surface">Sarah W.</p>
-                      <p className="text-[12px] text-primary flex items-center gap-1"><span className="material-symbols-outlined text-[14px]">verified</span> Verified Buyer - Sep 28, 2024</p>
+            <form onSubmit={handleReviewSubmit} className="bg-surface-container p-6 rounded-xl border border-outline-variant/50 mb-8">
+              <h3 className="text-headline-sm font-semibold text-on-surface mb-4">Write a Review</h3>
+              <div className="grid grid-cols-1 md:grid-cols-[1fr_160px] gap-4 mb-4">
+                <label className="flex flex-col gap-2 text-label-sm text-on-surface-variant">
+                  Your name
+                  <input
+                    required
+                    value={reviewForm.author}
+                    onChange={(event) => setReviewForm(prev => ({ ...prev, author: event.target.value }))}
+                    className="bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:border-primary focus:outline-none"
+                    placeholder="Alex Mercer"
+                  />
+                </label>
+                <label className="flex flex-col gap-2 text-label-sm text-on-surface-variant">
+                  Rating
+                  <select
+                    value={reviewForm.rating}
+                    onChange={(event) => setReviewForm(prev => ({ ...prev, rating: Number(event.target.value) }))}
+                    className="bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:border-primary focus:outline-none"
+                  >
+                    {[5, 4, 3, 2, 1].map(value => (
+                      <option key={value} value={value}>{value} stars</option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <label className="flex flex-col gap-2 text-label-sm text-on-surface-variant mb-4">
+                Comment
+                <textarea
+                  required
+                  rows={4}
+                  value={reviewForm.comment}
+                  onChange={(event) => setReviewForm(prev => ({ ...prev, comment: event.target.value }))}
+                  className="bg-surface-container-low border border-outline-variant rounded-lg px-4 py-3 text-on-surface focus:border-primary focus:outline-none resize-none"
+                  placeholder="Share what stood out after using this product."
+                />
+              </label>
+              {reviewError && <p className="text-error text-label-sm mb-4">{reviewError}</p>}
+              <button
+                type="submit"
+                disabled={reviewSubmitting}
+                className="bg-primary/10 border border-primary text-primary hover:bg-primary hover:text-on-primary disabled:opacity-60 disabled:cursor-not-allowed font-label-md py-3 px-6 rounded-lg transition-colors btn-ripple"
+              >
+                {reviewSubmitting ? 'Submitting...' : 'Submit Review'}
+              </button>
+            </form>
+
+            {reviewLoading && (
+              <div className="py-10 text-center text-on-surface-variant">Loading reviews...</div>
+            )}
+
+            {!reviewLoading && reviewCount === 0 && (
+              <div className="bg-surface-container p-6 rounded-xl border border-outline-variant/50 text-on-surface-variant">
+                No reviews yet. Be the first to share your experience.
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-md stagger-children">
+              {reviews.map(review => (
+                <div key={review.id} className="bg-surface-container p-6 rounded-xl border border-outline-variant/50 hover:border-primary/50 transition-colors">
+                  <div className="flex justify-between items-start mb-4 gap-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-surface-container-highest flex items-center justify-center text-on-primary font-headline-sm shadow-inner">
+                        {initialsFor(review.author)}
+                      </div>
+                      <div>
+                        <p className="text-body-md font-semibold text-on-surface">{review.author}</p>
+                        <p className="text-[12px] text-primary flex items-center gap-1">
+                          <span className="material-symbols-outlined text-[14px]">verified</span>
+                          Verified Buyer - {formatReviewDate(review.createdAt)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex text-[#FFB400] text-sm shrink-0">
+                      {renderStars(review.rating, 16)}
                     </div>
                   </div>
-                  <div className="flex text-[#FFB400] text-sm">
-                    <span className="material-symbols-outlined text-[16px]" style={{fontVariationSettings: "'FILL' 1"}}>star</span>
-                    <span className="material-symbols-outlined text-[16px]" style={{fontVariationSettings: "'FILL' 1"}}>star</span>
-                    <span className="material-symbols-outlined text-[16px]" style={{fontVariationSettings: "'FILL' 1"}}>star</span>
-                    <span className="material-symbols-outlined text-[16px]" style={{fontVariationSettings: "'FILL' 1"}}>star</span>
-                    <span className="material-symbols-outlined text-[16px]">star</span>
-                  </div>
+                  <p className="text-body-md text-on-surface-variant leading-relaxed">{review.comment}</p>
                 </div>
-                <h4 className="text-body-lg font-semibold text-on-surface mb-2">Incredible display, heavy charger</h4>
-                <p className="text-body-md text-on-surface-variant leading-relaxed">
-                  The Mini-LED screen is the best I've ever used for video editing. The colors are spot on. Taking one star off because the power brick is quite bulky, making it slightly less portable than I'd like.
-                </p>
-              </div>
-            </div>
-            <div className="mt-8 text-center">
-              <button className="text-primary font-label-md hover:underline btn-ripple px-4 py-2 rounded-lg hover:bg-primary/5">Load More Reviews</button>
+              ))}
             </div>
           </div>
         )}

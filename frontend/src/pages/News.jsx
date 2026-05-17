@@ -1,5 +1,28 @@
 
+import { useState } from 'react';
+import newsApi from '../api/newsApi';
+
 const News = () => {
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterStatus, setNewsletterStatus] = useState('');
+  const [isSubscribing, setIsSubscribing] = useState(false);
+
+  const handleNewsletterSubmit = async (event) => {
+    event.preventDefault();
+    setIsSubscribing(true);
+    setNewsletterStatus('');
+    try {
+      await newsApi.subscribe(newsletterEmail);
+      setNewsletterStatus('Subscription active. Daily brief is now linked to your inbox.');
+      setNewsletterEmail('');
+    } catch (error) {
+      console.error('Newsletter subscribe failed', error);
+      setNewsletterStatus('Subscription failed. Please verify the email and try again.');
+    } finally {
+      setIsSubscribing(false);
+    }
+  };
+
   return (
     <main className="flex-grow max-w-7xl mx-auto w-full px-margin-mobile lg:px-margin-desktop py-lg grid grid-cols-1 lg:grid-cols-12 gap-gutter page-enter">
       {/* Left Column: Main Content (Hero + Grid) */}
@@ -105,12 +128,26 @@ const News = () => {
             <h3 className="font-headline-md">TechPro Daily</h3>
           </div>
           <p className="font-body-md text-on-surface-variant relative z-10 leading-relaxed">Get the definitive daily brief on technology, directly to your inbox. No fluff, just precision.</p>
-          <form className="flex flex-col gap-3 relative z-10 mt-2">
+          <form className="flex flex-col gap-3 relative z-10 mt-2" onSubmit={handleNewsletterSubmit}>
             <div className="relative group/input">
               <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px] group-focus-within/input:text-primary transition-colors">alternate_email</span>
-              <input className="w-full bg-surface-container border border-outline-variant/50 rounded-lg py-3 pl-10 pr-4 font-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all hover:border-primary/50" placeholder="Enter your email" required type="email" />
+              <input
+                className="w-full bg-surface-container border border-outline-variant/50 rounded-lg py-3 pl-10 pr-4 font-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all hover:border-primary/50"
+                placeholder="Enter your email"
+                required
+                type="email"
+                value={newsletterEmail}
+                onChange={(event) => setNewsletterEmail(event.target.value)}
+              />
             </div>
-            <button className="w-full bg-primary text-on-primary py-3 rounded-lg font-label-md font-bold transition-colors btn-ripple glow-primary hover:glow-primary-hover" type="submit">Subscribe</button>
+            <button disabled={isSubscribing} className="w-full bg-primary text-on-primary py-3 rounded-lg font-label-md font-bold transition-colors btn-ripple glow-primary hover:glow-primary-hover disabled:opacity-60" type="submit">
+              {isSubscribing ? 'Subscribing...' : 'Subscribe'}
+            </button>
+            {newsletterStatus && (
+              <p className="font-label-sm text-primary bg-primary/10 border border-primary/20 rounded-lg px-3 py-2">
+                {newsletterStatus}
+              </p>
+            )}
           </form>
         </div>
 

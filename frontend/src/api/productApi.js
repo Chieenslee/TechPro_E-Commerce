@@ -11,6 +11,16 @@ const productApi = {
     const url = `/products/${id}`;
     return axiosClient.get(url);
   },
+
+  getReviews: (id) => {
+    const url = `/products/${id}/reviews`;
+    return axiosClient.get(url);
+  },
+
+  createReview: (id, data) => {
+    const url = `/products/${id}/reviews`;
+    return axiosClient.post(url, data);
+  },
   
   // Future Admin Endpoints
   create: (data) => {

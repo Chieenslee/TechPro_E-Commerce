@@ -31,6 +31,8 @@ Directory.CreateDirectory(dataDirectory);
 var productStorePath = Path.Combine(dataDirectory, "products.json");
 var orderStorePath = Path.Combine(dataDirectory, "orders.json");
 var userStorePath = Path.Combine(dataDirectory, "users.json");
+var newsletterStorePath = Path.Combine(dataDirectory, "newsletterSubscribers.json");
+var reviewStorePath = Path.Combine(dataDirectory, "reviews.json");
 
 var products = LoadList<Product>(productStorePath);
 if (products.Count == 0)
@@ -40,12 +42,19 @@ if (products.Count == 0)
 }
 
 var orders = LoadList<Order>(orderStorePath);
+var reviews = LoadList<ProductReview>(reviewStorePath);
+if (reviews.Count == 0)
+{
+    reviews = BuildReviews(products);
+    SaveList(reviewStorePath, reviews);
+}
 var users = LoadList<UserAccount>(userStorePath);
 if (users.Count == 0)
 {
     users = BuildUsers();
     SaveList(userStorePath, users);
 }
+var newsletterSubscribers = LoadList<NewsletterSubscriber>(newsletterStorePath);
 
 app.MapPost("/api/auth/login", (LoginRequest request) =>
 {
@@ -162,6 +171,38 @@ app.MapPut("/api/users/{id:int}", (int id, UserRequest request) =>
 })
 .WithName("UpdateUser");
 
+app.MapGet("/api/newsletter/subscribers", () =>
+{
+    return Results.Ok(newsletterSubscribers.OrderByDescending(subscriber => subscriber.CreatedAt));
+})
+.WithName("GetNewsletterSubscribers");
+
+app.MapPost("/api/newsletter/subscribe", (NewsletterRequest request) =>
+{
+    if (string.IsNullOrWhiteSpace(request.Email))
+    {
+        return Results.BadRequest(new { message = "Email is required." });
+    }
+
+    var email = request.Email.Trim().ToLowerInvariant();
+    var existing = newsletterSubscribers.FirstOrDefault(subscriber => subscriber.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+    if (existing is not null)
+    {
+        return Results.Ok(existing);
+    }
+
+    var subscriber = new NewsletterSubscriber(
+        newsletterSubscribers.Count == 0 ? 1 : newsletterSubscribers.Max(item => item.Id) + 1,
+        email,
+        DateTimeOffset.UtcNow,
+        "Active"
+    );
+    newsletterSubscribers.Add(subscriber);
+    SaveList(newsletterStorePath, newsletterSubscribers);
+    return Results.Created($"/api/newsletter/subscribers/{subscriber.Id}", subscriber);
+})
+.WithName("SubscribeNewsletter");
+
 app.MapGet("/api/products", (string? category, string? q) =>
 {
     var query = products.AsEnumerable();
@@ -189,6 +230,50 @@ app.MapGet("/api/products/{id:int}", (int id) =>
     return product is null ? Results.NotFound() : Results.Ok(product);
 })
 .WithName("GetProductById");
+
+app.MapGet("/api/products/{id:int}/reviews", (int id) =>
+{
+    if (!products.Any(product => product.Id == id))
+    {
+        return Results.NotFound();
+    }
+
+    return Results.Ok(reviews
+        .Where(review => review.ProductId == id)
+        .OrderByDescending(review => review.CreatedAt));
+})
+.WithName("GetProductReviews");
+
+app.MapPost("/api/products/{id:int}/reviews", (int id, ProductReviewRequest request) =>
+{
+    if (!products.Any(product => product.Id == id))
+    {
+        return Results.NotFound();
+    }
+
+    if (string.IsNullOrWhiteSpace(request.Author) || string.IsNullOrWhiteSpace(request.Comment))
+    {
+        return Results.BadRequest(new { message = "Author and comment are required." });
+    }
+
+    if (request.Rating < 1 || request.Rating > 5)
+    {
+        return Results.BadRequest(new { message = "Rating must be between 1 and 5." });
+    }
+
+    var review = new ProductReview(
+        reviews.Count == 0 ? 1 : reviews.Max(item => item.Id) + 1,
+        id,
+        request.Author.Trim(),
+        request.Rating,
+        request.Comment.Trim(),
+        DateTimeOffset.UtcNow
+    );
+    reviews.Add(review);
+    SaveList(reviewStorePath, reviews);
+    return Results.Created($"/api/products/{id}/reviews/{review.Id}", review);
+})
+.WithName("CreateProductReview");
 
 app.MapPost("/api/products", (ProductRequest request) =>
 {
@@ -375,6 +460,34 @@ static List<UserAccount> BuildUsers() => new()
     )
 };
 
+static List<ProductReview> BuildReviews(List<Product> products)
+{
+    var now = DateTimeOffset.UtcNow;
+    var reviews = new List<ProductReview>();
+
+    foreach (var product in products.Take(6))
+    {
+        reviews.Add(new ProductReview(
+            reviews.Count + 1,
+            product.Id,
+            "John D.",
+            5,
+            "Excellent performance and build quality. It feels fast, polished, and ready for everyday work.",
+            now.AddDays(-(product.Id + 2))
+        ));
+        reviews.Add(new ProductReview(
+            reviews.Count + 1,
+            product.Id,
+            "Sarah W.",
+            4,
+            "Great display and smooth setup. The accessories could be lighter, but the product itself is impressive.",
+            now.AddDays(-(product.Id + 9))
+        ));
+    }
+
+    return reviews;
+}
+
 static Product ToProduct(int id, ProductRequest request)
 {
     var category = string.IsNullOrWhiteSpace(request.Category) ? "accessories" : request.Category.Trim().ToLowerInvariant();
@@ -474,6 +587,10 @@ record UserAccount(
 
 record UserRequest(string? Name, string? Email, string? Role, string? Status);
 
+record NewsletterRequest(string? Email);
+
+record NewsletterSubscriber(int Id, string Email, DateTimeOffset CreatedAt, string Status);
+
 record Product(
     int Id,
     string Name,
@@ -500,6 +617,17 @@ record ProductRequest(
     bool OnSale,
     string[]? Tags
 );
+
+record ProductReview(
+    int Id,
+    int ProductId,
+    string Author,
+    int Rating,
+    string Comment,
+    DateTimeOffset CreatedAt
+);
+
+record ProductReviewRequest(string? Author, int Rating, string? Comment);
 
 record CreateOrderRequest(
     CustomerInfo Customer,
