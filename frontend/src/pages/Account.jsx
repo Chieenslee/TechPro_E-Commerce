@@ -1,10 +1,210 @@
-import React, { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
+import { useContext, useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContextValue';
+import { CartContext } from '../context/CartContextValue';
+import orderApi from '../api/orderApi';
+import productApi from '../api/productApi';
+import userApi from '../api/userApi';
+
+const formatCurrency = (value) => {
+  return Number(value || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+};
+
+const formatDate = (value) => {
+  if (!value) return 'Pending sync';
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(new Date(value));
+};
+
+const statusClass = (status) => {
+  if (status === 'Delivered') return 'text-primary bg-primary/10 border-primary/20';
+  if (status === 'Cancelled') return 'text-error bg-error/10 border-error/20';
+  return 'text-[#00E5FF] bg-[#00E5FF]/10 border-[#00E5FF]/20';
+};
+
+const emptyAddress = {
+  label: '',
+  recipient: '',
+  phone: '',
+  line1: '',
+  city: '',
+  isDefault: false
+};
+
+const getInitialAddresses = (user) => {
+  if (!user?.email) return [];
+
+  const storageKey = `techpro_addresses_${user.email}`;
+  const storedAddresses = JSON.parse(localStorage.getItem(storageKey) || '[]');
+  if (storedAddresses.length > 0) {
+    return storedAddresses;
+  }
+
+  const defaultAddress = [{
+    id: crypto.randomUUID(),
+    label: 'Primary Node',
+    recipient: user.name || 'TechPro Customer',
+    phone: '+1 (555) 019-8234',
+    line1: '128 Tech Boulevard, Cyber District',
+    city: 'Neo City 90210',
+    isDefault: true
+  }];
+  localStorage.setItem(storageKey, JSON.stringify(defaultAddress));
+  return defaultAddress;
+};
 
 const Account = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated, user, logout, updateUser } = useContext(AuthContext);
+  const { addToCart } = useContext(CartContext);
   const [activeTab, setActiveTab] = useState('profile');
-  const { isAuthenticated, user, logout } = useContext(AuthContext);
+  const [orders, setOrders] = useState([]);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [ordersError, setOrdersError] = useState('');
+  const [profileForm, setProfileForm] = useState(() => ({
+    name: user?.name || '',
+    email: user?.email || ''
+  }));
+  const [addresses, setAddresses] = useState(() => getInitialAddresses(user));
+  const [addressForm, setAddressForm] = useState(emptyAddress);
+  const [editingAddressId, setEditingAddressId] = useState(null);
+  const [wishlist, setWishlist] = useState([]);
+  const [accountNotice, setAccountNotice] = useState('');
+
+  useEffect(() => {
+    if (!isAuthenticated || !user?.email) return;
+
+    const loadOrders = async () => {
+      setOrdersLoading(true);
+      setOrdersError('');
+      try {
+        const apiOrders = await orderApi.getAll({ email: user.email });
+        setOrders(apiOrders);
+      } catch (error) {
+        console.error('Failed to load orders', error);
+        const localOrders = JSON.parse(localStorage.getItem('techpro_orders') || '[]')
+          .filter(order => order.customer?.email === user.email);
+        setOrders(localOrders);
+        setOrdersError('Backend orders are unavailable, showing locally stored orders.');
+      } finally {
+        setOrdersLoading(false);
+      }
+    };
+
+    loadOrders();
+  }, [isAuthenticated, user?.email]);
+
+  useEffect(() => {
+    const loadWishlist = async () => {
+      if (!isAuthenticated || !user?.email) return;
+
+      const storageKey = `techpro_wishlist_${user.email}`;
+      const storedIds = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      const wishlistIds = storedIds.length > 0 ? storedIds : [1, 2, 3];
+
+      if (storedIds.length === 0) {
+        localStorage.setItem(storageKey, JSON.stringify(wishlistIds));
+      }
+
+      const products = await Promise.all(
+        wishlistIds.map(async (id) => {
+          try {
+            return await productApi.getById(id);
+          } catch {
+            return null;
+          }
+        })
+      );
+      setWishlist(products.filter(Boolean));
+    };
+
+    loadWishlist();
+  }, [isAuthenticated, user?.email]);
+
+  const saveAddresses = (nextAddresses) => {
+    if (!user?.email) return;
+    localStorage.setItem(`techpro_addresses_${user.email}`, JSON.stringify(nextAddresses));
+    setAddresses(nextAddresses);
+  };
+
+  const handleProfileInput = (event) => {
+    const { name, value } = event.target;
+    setProfileForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleProfileSave = async (event) => {
+    event.preventDefault();
+    const updated = await userApi.update(user.id, {
+      name: profileForm.name,
+      email: profileForm.email,
+      role: user.role,
+      status: user.status
+    });
+    updateUser({
+      id: updated.id,
+      name: updated.name,
+      email: updated.email,
+      role: updated.role,
+      status: updated.status
+    });
+    setAccountNotice('Profile updated.');
+  };
+
+  const handleAddressInput = (event) => {
+    const { name, value, type, checked } = event.target;
+    setAddressForm(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const resetAddressForm = () => {
+    setAddressForm(emptyAddress);
+    setEditingAddressId(null);
+  };
+
+  const handleSaveAddress = (event) => {
+    event.preventDefault();
+    const nextAddress = {
+      ...addressForm,
+      id: editingAddressId || crypto.randomUUID()
+    };
+    const merged = editingAddressId
+      ? addresses.map(address => address.id === editingAddressId ? nextAddress : address)
+      : [...addresses, nextAddress];
+    const normalized = nextAddress.isDefault
+      ? merged.map(address => ({ ...address, isDefault: address.id === nextAddress.id }))
+      : merged;
+    saveAddresses(normalized);
+    resetAddressForm();
+    setAccountNotice('Address book updated.');
+  };
+
+  const handleEditAddress = (address) => {
+    setEditingAddressId(address.id);
+    setAddressForm(address);
+  };
+
+  const handleDeleteAddress = (id) => {
+    saveAddresses(addresses.filter(address => address.id !== id));
+    if (editingAddressId === id) resetAddressForm();
+  };
+
+  const handleRemoveWishlist = (productId) => {
+    const nextWishlist = wishlist.filter(product => product.id !== productId);
+    localStorage.setItem(`techpro_wishlist_${user.email}`, JSON.stringify(nextWishlist.map(product => product.id)));
+    setWishlist(nextWishlist);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   if (!isAuthenticated) {
     return (
@@ -64,10 +264,10 @@ const Account = () => {
             </button>
           ))}
           <div className="my-sm border-t border-outline-variant/30 w-full"></div>
-          <Link to="/login" className="flex items-center gap-3 px-4 py-3 text-error hover:text-on-error-container hover:bg-error/10 rounded-lg transition-colors border border-transparent hover:border-error/20">
+          <button type="button" onClick={handleLogout} className="flex items-center gap-3 px-4 py-3 text-error hover:text-on-error-container hover:bg-error/10 rounded-lg transition-colors border border-transparent hover:border-error/20 text-left">
             <span className="material-symbols-outlined text-[20px]">logout</span>
             <span className="font-label-md">Terminate Session</span>
-          </Link>
+          </button>
         </nav>
       </aside>
 
@@ -82,6 +282,11 @@ const Account = () => {
                   <h1 className="font-headline-lg text-on-surface text-glow">Dashboard</h1>
                   <span className="font-mono text-primary text-sm bg-primary/10 px-3 py-1 rounded-full border border-primary/20">SESSION: SECURE</span>
                 </div>
+                {accountNotice && (
+                  <div className="col-span-1 md:col-span-12 border border-primary/30 bg-primary/10 text-primary rounded-lg px-4 py-3 font-label-md">
+                    {accountNotice}
+                  </div>
+                )}
                 
                 <div className="col-span-1 md:col-span-8 rounded-2xl p-lg flex flex-col sm:flex-row items-center sm:items-start gap-lg glass border border-primary/20 hover-lift shadow-[0_0_20px_rgba(185,199,228,0.05)]">
                   <div className="w-32 h-32 rounded-full border-[3px] border-primary/50 overflow-hidden flex-shrink-0 relative group shadow-[0_0_15px_rgba(185,199,228,0.3)]">
@@ -91,8 +296,8 @@ const Account = () => {
                     </div>
                   </div>
                   <div className="flex-1 text-center sm:text-left">
-                    <h2 className="font-headline-md text-on-surface">Alex Mercer</h2>
-                    <p className="font-body-md text-on-surface-variant mt-xs font-mono text-sm">alex.mercer@techpro.com</p>
+                    <h2 className="font-headline-md text-on-surface">{user?.name || 'Admin'}</h2>
+                    <p className="font-body-md text-on-surface-variant mt-xs font-mono text-sm">{user?.email || 'admin@techpro.eng'}</p>
                     <div className="flex flex-col sm:flex-row items-center gap-4 mt-4">
                       <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-primary/10 border border-primary/30 rounded-lg font-label-sm text-primary uppercase tracking-wider shadow-[0_0_10px_rgba(185,199,228,0.2)]">
                         <span className="material-symbols-outlined text-[16px]">stars</span> Platinum Tier
@@ -100,7 +305,7 @@ const Account = () => {
                       <span className="font-body-md text-on-surface-variant sm:border-l sm:border-outline-variant/30 sm:pl-4">Telemetry Points: <strong className="text-primary font-mono text-glow">12,450</strong></span>
                     </div>
                   </div>
-                  <button className="hidden md:flex border border-outline-variant/50 hover:border-primary text-on-surface px-6 py-2 rounded-lg hover:bg-primary/10 transition-colors font-label-md btn-ripple">Edit Profile</button>
+                  <button onClick={() => setActiveTab('profile')} className="hidden md:flex border border-outline-variant/50 hover:border-primary text-on-surface px-6 py-2 rounded-lg hover:bg-primary/10 transition-colors font-label-md btn-ripple">Edit Profile</button>
                 </div>
                 
                 {/* Saved Address Quick View */}
@@ -111,20 +316,32 @@ const Account = () => {
                         <span className="material-symbols-outlined text-primary bg-primary/10 p-1.5 rounded-full text-[18px]">home_pin</span> 
                         Primary Node
                       </h3>
-                      <button className="text-primary hover:underline font-label-sm">Manage</button>
+                      <button onClick={() => setActiveTab('address')} className="text-primary hover:underline font-label-sm">Manage</button>
                     </div>
                     <div className="bg-surface-container-low p-3 rounded-lg border border-outline-variant/20 mb-3">
-                      <p className="font-body-md text-on-surface font-medium mb-1">Sector 7G Residence</p>
+                      <p className="font-body-md text-on-surface font-medium mb-1">{addresses.find(address => address.isDefault)?.label || 'No default address'}</p>
                       <p className="font-body-md text-on-surface-variant leading-relaxed text-sm">
-                        Apt 4B, 128 Tech Boulevard<br/>
-                        Cyber District, Neo City 90210
+                        {addresses.find(address => address.isDefault)?.line1 || 'Add a shipping node'}<br/>
+                        {addresses.find(address => address.isDefault)?.city || ''}
                       </p>
                     </div>
                   </div>
                   <p className="font-body-md text-on-surface-variant flex items-center gap-2 font-mono text-sm">
-                    <span className="material-symbols-outlined text-[16px]">phone_iphone</span> +1 (555) 019-8234
+                    <span className="material-symbols-outlined text-[16px]">phone_iphone</span> {addresses.find(address => address.isDefault)?.phone || 'No phone'}
                   </p>
                 </div>
+              </section>
+
+              <section className="glass rounded-xl border border-outline-variant/30 p-lg">
+                <h2 className="font-headline-sm mb-md flex items-center gap-2">
+                  <span className="material-symbols-outlined text-primary">manage_accounts</span>
+                  Profile Settings
+                </h2>
+                <form onSubmit={handleProfileSave} className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-sm">
+                  <input name="name" value={profileForm.name} onChange={handleProfileInput} required className="bg-surface border border-outline-variant rounded-lg px-3 py-2 text-on-surface outline-none focus:border-primary" placeholder="Full name" />
+                  <input name="email" value={profileForm.email} onChange={handleProfileInput} required type="email" className="bg-surface border border-outline-variant rounded-lg px-3 py-2 text-on-surface outline-none focus:border-primary" placeholder="Email" />
+                  <button type="submit" className="bg-primary text-on-primary px-5 py-2 rounded-lg font-label-md hover:bg-primary-fixed transition-colors">Save</button>
+                </form>
               </section>
 
               {/* Recent Orders Overview */}
@@ -147,19 +364,31 @@ const Account = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-outline-variant/20 font-body-md text-on-surface">
-                      <tr className="hover:bg-surface-bright transition-colors group">
-                        <td className="py-4 px-md font-mono text-sm tracking-wider group-hover:text-primary transition-colors">#TP-2024-8932</td>
-                        <td className="py-4 px-md text-on-surface-variant">Oct 24, 2024</td>
-                        <td className="py-4 px-md">
-                          <span className="inline-flex items-center gap-2 text-[#00E5FF] bg-[#00E5FF]/10 px-3 py-1 rounded-full text-sm border border-[#00E5FF]/20">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#00E5FF] animate-pulse"></span> Processing
-                          </span>
-                        </td>
-                        <td className="py-4 px-md font-bold">$2,499.00</td>
-                        <td className="py-4 px-md text-right">
-                          <button className="text-primary hover:bg-primary/10 border border-primary/20 px-4 py-1.5 rounded-lg text-sm transition-colors btn-ripple">Detail</button>
-                        </td>
-                      </tr>
+                      {ordersLoading && (
+                        <tr>
+                          <td className="py-6 px-md text-on-surface-variant" colSpan="5">Loading deployments...</td>
+                        </tr>
+                      )}
+                      {!ordersLoading && orders.slice(0, 3).map(order => (
+                        <tr key={order.orderNumber} className="hover:bg-surface-bright transition-colors group">
+                          <td className="py-4 px-md font-mono text-sm tracking-wider group-hover:text-primary transition-colors">#{order.orderNumber}</td>
+                          <td className="py-4 px-md text-on-surface-variant">{formatDate(order.createdAt)}</td>
+                          <td className="py-4 px-md">
+                            <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm border ${statusClass(order.status)}`}>
+                              <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span> {order.status}
+                            </span>
+                          </td>
+                          <td className="py-4 px-md font-bold">{formatCurrency(order.total)}</td>
+                          <td className="py-4 px-md text-right">
+                            <button onClick={() => setActiveTab('orders')} className="text-primary hover:bg-primary/10 border border-primary/20 px-4 py-1.5 rounded-lg text-sm transition-colors btn-ripple">Detail</button>
+                          </td>
+                        </tr>
+                      ))}
+                      {!ordersLoading && orders.length === 0 && (
+                        <tr>
+                          <td className="py-6 px-md text-on-surface-variant" colSpan="5">No deployments yet.</td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -170,6 +399,11 @@ const Account = () => {
           {activeTab === 'orders' && (
             <div className="fade-in-up">
                <h1 className="font-headline-lg text-on-surface mb-lg text-glow">Order History</h1>
+               {ordersError && (
+                 <div className="mb-md border border-error/30 bg-error/10 text-error rounded-lg px-4 py-3 font-label-md">
+                   {ordersError}
+                 </div>
+               )}
                <div className="glass rounded-xl overflow-hidden overflow-x-auto border border-outline-variant/30">
                   <table className="w-full text-left min-w-[800px]">
                     <thead className="bg-surface-container border-b border-outline-variant/30">
@@ -182,45 +416,36 @@ const Account = () => {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-outline-variant/20 font-body-md text-on-surface">
-                      <tr className="hover:bg-surface-bright transition-colors group">
-                        <td className="py-4 px-md font-mono text-sm tracking-wider group-hover:text-primary transition-colors">#TP-2024-8932</td>
-                        <td className="py-4 px-md text-on-surface-variant">Oct 24, 2024</td>
-                        <td className="py-4 px-md">
-                          <span className="inline-flex items-center gap-2 text-[#00E5FF] bg-[#00E5FF]/10 px-3 py-1 rounded-full text-sm border border-[#00E5FF]/20">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#00E5FF] animate-pulse"></span> Processing
-                          </span>
-                        </td>
-                        <td className="py-4 px-md font-bold">$2,499.00</td>
-                        <td className="py-4 px-md text-right">
-                          <button className="text-primary hover:bg-primary/10 border border-primary/20 px-4 py-1.5 rounded-lg text-sm transition-colors btn-ripple">Detail</button>
-                        </td>
-                      </tr>
-                      <tr className="hover:bg-surface-bright transition-colors group">
-                        <td className="py-4 px-md font-mono text-sm tracking-wider group-hover:text-primary transition-colors">#TP-2024-8501</td>
-                        <td className="py-4 px-md text-on-surface-variant">Sep 12, 2024</td>
-                        <td className="py-4 px-md">
-                          <span className="inline-flex items-center gap-2 text-primary bg-primary/10 px-3 py-1 rounded-full text-sm border border-primary/20">
-                            <span className="material-symbols-outlined text-[14px]">check_circle</span> Delivered
-                          </span>
-                        </td>
-                        <td className="py-4 px-md font-bold">$129.99</td>
-                        <td className="py-4 px-md text-right">
-                          <button className="text-on-surface-variant hover:text-on-surface border border-outline-variant/50 hover:border-primary px-4 py-1.5 rounded-lg text-sm transition-colors btn-ripple">Detail</button>
-                        </td>
-                      </tr>
-                      <tr className="hover:bg-surface-bright transition-colors group">
-                        <td className="py-4 px-md font-mono text-sm tracking-wider group-hover:text-primary transition-colors">#TP-2024-7210</td>
-                        <td className="py-4 px-md text-on-surface-variant">Aug 05, 2024</td>
-                        <td className="py-4 px-md">
-                           <span className="inline-flex items-center gap-2 text-primary bg-primary/10 px-3 py-1 rounded-full text-sm border border-primary/20">
-                            <span className="material-symbols-outlined text-[14px]">check_circle</span> Delivered
-                          </span>
-                        </td>
-                        <td className="py-4 px-md font-bold">$849.50</td>
-                        <td className="py-4 px-md text-right">
-                          <button className="text-on-surface-variant hover:text-on-surface border border-outline-variant/50 hover:border-primary px-4 py-1.5 rounded-lg text-sm transition-colors btn-ripple">Detail</button>
-                        </td>
-                      </tr>
+                      {ordersLoading && (
+                        <tr>
+                          <td className="py-6 px-md text-on-surface-variant" colSpan="5">Loading order history...</td>
+                        </tr>
+                      )}
+                      {!ordersLoading && orders.map(order => (
+                        <tr key={order.orderNumber} className="hover:bg-surface-bright transition-colors group align-top">
+                          <td className="py-4 px-md">
+                            <div className="font-mono text-sm tracking-wider group-hover:text-primary transition-colors">#{order.orderNumber}</div>
+                            <div className="text-[11px] text-on-surface-variant mt-1">{order.items?.length || 0} item(s)</div>
+                          </td>
+                          <td className="py-4 px-md text-on-surface-variant">{formatDate(order.createdAt)}</td>
+                          <td className="py-4 px-md">
+                            <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm border ${statusClass(order.status)}`}>
+                              <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span> {order.status}
+                            </span>
+                          </td>
+                          <td className="py-4 px-md font-bold">{formatCurrency(order.total)}</td>
+                          <td className="py-4 px-md text-right">
+                            <span className="text-on-surface-variant border border-outline-variant/50 px-4 py-1.5 rounded-lg text-sm">
+                              {order.paymentMethod?.toUpperCase()} / {order.shippingMethod}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                      {!ordersLoading && orders.length === 0 && (
+                        <tr>
+                          <td className="py-6 px-md text-on-surface-variant" colSpan="5">No order history yet. Complete checkout to see orders here.</td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -231,65 +456,31 @@ const Account = () => {
             <div className="fade-in-up">
               <h1 className="font-headline-lg text-on-surface mb-lg text-glow">Wishlist</h1>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-gutter stagger-children">
-                {/* Product Card 1 */}
-                <div className="glass rounded-xl p-sm group relative overflow-hidden border border-outline-variant/30 hover:border-primary/50 transition-colors hover-lift">
-                  <div className="aspect-[4/3] bg-surface-container rounded-lg mb-sm relative flex items-center justify-center p-sm overflow-hidden">
-                    <button className="absolute top-3 right-3 text-error bg-surface/80 backdrop-blur p-1.5 rounded-full z-10 shadow hover:scale-110 transition-transform">
-                      <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
-                    </button>
-                    <img alt="Smartphone" className="object-contain h-full w-full group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsa5ZHbjDj6D7qUvcVxGCYNiOyjb-Q8zUTTtKu8gI0Kg-UcJztDCo7PWpbMIvzhxi5-x0JtR4ali2KwMskPeO-9_MRj-8Imsdwlr5rcrOhwx-P7hEQuVXwL5wh6mWjHnz10f-S4PO3ooQmLHszcn-aXyRDN2XnAOXg9BrjQhUxkBskEb-gw0kZlWbP8wCeJrkpeBMPGM1kqlqoRQU2EkK3zDv1I7BjloJbfkc6r0bkvnFlJ5ScVx5jgAfP16n76FQVblnOtEPVEUI6" />
-                  </div>
-                  <div className="px-xs pb-xs">
-                    <span className="font-label-sm text-on-surface-variant uppercase tracking-widest text-[10px]">Phone</span>
-                    <h3 className="font-body-lg text-on-surface truncate font-semibold mb-2 group-hover:text-primary transition-colors">Quantum Pro X</h3>
-                    <div className="flex items-center justify-between mt-xs">
-                      <span className="font-headline-md font-bold text-primary">$999</span>
-                      <button className="text-primary hover:bg-primary text-primary hover:text-on-primary border border-primary/30 p-2 rounded-lg transition-colors btn-ripple">
-                        <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+                {wishlist.map(product => (
+                  <div key={product.id} className="glass rounded-xl p-sm group relative overflow-hidden border border-outline-variant/30 hover:border-primary/50 transition-colors hover-lift">
+                    <div className="aspect-[4/3] bg-surface-container rounded-lg mb-sm relative flex items-center justify-center p-sm overflow-hidden">
+                      <button onClick={() => handleRemoveWishlist(product.id)} className="absolute top-3 right-3 text-error bg-surface/80 backdrop-blur p-1.5 rounded-full z-10 shadow hover:scale-110 transition-transform">
+                        <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
                       </button>
+                      <img alt={product.name} className="object-cover h-full w-full group-hover:scale-110 transition-transform duration-500" src={product.image} />
+                    </div>
+                    <div className="px-xs pb-xs">
+                      <span className="font-label-sm text-on-surface-variant uppercase tracking-widest text-[10px]">{product.category}</span>
+                      <h3 className="font-body-lg text-on-surface truncate font-semibold mb-2 group-hover:text-primary transition-colors">{product.name}</h3>
+                      <div className="flex items-center justify-between mt-xs">
+                        <span className="font-headline-md font-bold text-primary">{formatCurrency(product.price)}</span>
+                        <button onClick={() => addToCart(product, 1)} className="text-primary hover:bg-primary hover:text-on-primary border border-primary/30 p-2 rounded-lg transition-colors btn-ripple">
+                          <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-                
-                {/* Product Card 2 */}
-                <div className="glass rounded-xl p-sm group relative overflow-hidden border border-outline-variant/30 hover:border-primary/50 transition-colors hover-lift">
-                  <div className="aspect-[4/3] bg-surface-container rounded-lg mb-sm relative flex items-center justify-center p-sm overflow-hidden">
-                    <button className="absolute top-3 right-3 text-error bg-surface/80 backdrop-blur p-1.5 rounded-full z-10 shadow hover:scale-110 transition-transform">
-                      <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
-                    </button>
-                    <img alt="Headphones" className="object-contain h-full w-full group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYYI619vZpQTYrogEpp3bGFn45NdyxI_6ZjiBPWnz9dMU8VHCJHJL0TYi4pmMmk8VbYAII7fCM9FNbtKAUSVhSEQ3DQ2OfO2w-wHBucA6c--6vVH-QY9fq86HOxHtOAf0VKn15VP61eRzk-zuPBdMYg9UMPPKgZ4xp3b2U_UFJSVwhLs2Ptvpr2BvGJNkBwd-8rqC3KAzRv0t595NiZBN2DlJBQSW4Y7huu4FDav6fN20YVjTmtNPjybPcW2lqD9-3R-FrWHn30sjW" />
+                ))}
+                {wishlist.length === 0 && (
+                  <div className="col-span-full glass rounded-xl border border-outline-variant/30 p-lg text-on-surface-variant">
+                    Wishlist is empty.
                   </div>
-                  <div className="px-xs pb-xs">
-                    <span className="font-label-sm text-on-surface-variant uppercase tracking-widest text-[10px]">Audio</span>
-                    <h3 className="font-body-lg text-on-surface truncate font-semibold mb-2 group-hover:text-primary transition-colors">Sonic ANC Buds</h3>
-                    <div className="flex items-center justify-between mt-xs">
-                      <span className="font-headline-md font-bold text-primary">$249</span>
-                      <button className="text-primary hover:bg-primary text-primary hover:text-on-primary border border-primary/30 p-2 rounded-lg transition-colors btn-ripple">
-                        <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Product Card 3 */}
-                <div className="glass rounded-xl p-sm group relative overflow-hidden border border-outline-variant/30 hover:border-primary/50 transition-colors hover-lift">
-                  <div className="aspect-[4/3] bg-surface-container rounded-lg mb-sm relative flex items-center justify-center p-sm overflow-hidden">
-                    <button className="absolute top-3 right-3 text-error bg-surface/80 backdrop-blur p-1.5 rounded-full z-10 shadow hover:scale-110 transition-transform">
-                      <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
-                    </button>
-                    <img alt="Tablet" className="object-contain h-full w-full group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrXmuz93Jr2VsMP7cqI8MjVmL924lXo0iZQUmbnyYFnR3WjS83hfNnNB63dHS6QqKXLkAuaSnajg7x2JgaB1DEis8H_FQR4oFNCIEGImJ4RK07I8ltTnVRkyz7KtBTDV1TgSbgz7yto_cb9cmWt0qT0hv3X8tw61AzLjqpk9QI3C5elKtqVrGeKoJTmE6sDuFIXB46_cDf0rUqkEa7LEr4hVIZ3Or_jf3CGydVdbZ4B5BW_hxdwV9V9BWWcH1vPoadB4486OeByWZI" />
-                  </div>
-                  <div className="px-xs pb-xs">
-                    <span className="font-label-sm text-on-surface-variant uppercase tracking-widest text-[10px]">Tablet</span>
-                    <h3 className="font-body-lg text-on-surface truncate font-semibold mb-2 group-hover:text-primary transition-colors">Slate Ultra 12"</h3>
-                    <div className="flex items-center justify-between mt-xs">
-                      <span className="font-headline-md font-bold text-primary">$799</span>
-                      <button className="text-primary hover:bg-primary text-primary hover:text-on-primary border border-primary/30 p-2 rounded-lg transition-colors btn-ripple">
-                        <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           )}
@@ -298,57 +489,59 @@ const Account = () => {
              <div className="fade-in-up">
                <div className="flex justify-between items-center mb-lg">
                  <h1 className="font-headline-lg text-on-surface text-glow">Address Book</h1>
-                 <button className="bg-primary text-on-primary font-label-md px-6 py-2.5 rounded-lg flex items-center gap-2 btn-ripple hover:glow-primary-hover glow-primary">
+                 <button onClick={resetAddressForm} className="bg-primary text-on-primary font-label-md px-6 py-2.5 rounded-lg flex items-center gap-2 btn-ripple hover:glow-primary-hover glow-primary">
                     <span className="material-symbols-outlined text-[18px]">add</span> Add New
                  </button>
                </div>
-               
+
+               {accountNotice && (
+                 <div className="mb-md border border-primary/30 bg-primary/10 text-primary rounded-lg px-4 py-3 font-label-md">
+                   {accountNotice}
+                 </div>
+               )}
+
+               <form onSubmit={handleSaveAddress} className="grid grid-cols-1 md:grid-cols-3 gap-sm mb-lg glass rounded-xl border border-outline-variant/30 p-md">
+                 <input name="label" value={addressForm.label} onChange={handleAddressInput} required placeholder="Label" className="bg-surface border border-outline-variant rounded-lg px-3 py-2 text-on-surface outline-none focus:border-primary" />
+                 <input name="recipient" value={addressForm.recipient} onChange={handleAddressInput} required placeholder="Recipient" className="bg-surface border border-outline-variant rounded-lg px-3 py-2 text-on-surface outline-none focus:border-primary" />
+                 <input name="phone" value={addressForm.phone} onChange={handleAddressInput} required placeholder="Phone" className="bg-surface border border-outline-variant rounded-lg px-3 py-2 text-on-surface outline-none focus:border-primary" />
+                 <input name="line1" value={addressForm.line1} onChange={handleAddressInput} required placeholder="Street / building" className="bg-surface border border-outline-variant rounded-lg px-3 py-2 text-on-surface outline-none focus:border-primary md:col-span-2" />
+                 <input name="city" value={addressForm.city} onChange={handleAddressInput} required placeholder="City / postal" className="bg-surface border border-outline-variant rounded-lg px-3 py-2 text-on-surface outline-none focus:border-primary" />
+                 <label className="flex items-center gap-2 text-on-surface-variant font-label-md">
+                   <input name="isDefault" checked={addressForm.isDefault} onChange={handleAddressInput} type="checkbox" />
+                   Default address
+                 </label>
+                 <div className="md:col-span-2 flex gap-sm">
+                   <button type="submit" className="bg-primary text-on-primary px-5 py-2 rounded-lg font-label-md">{editingAddressId ? 'Update Address' : 'Save Address'}</button>
+                   {editingAddressId && <button type="button" onClick={resetAddressForm} className="border border-outline-variant px-5 py-2 rounded-lg font-label-md text-on-surface">Cancel</button>}
+                 </div>
+               </form>
+
                <div className="grid grid-cols-1 md:grid-cols-2 gap-md stagger-children">
-                 <div className="rounded-2xl p-lg flex flex-col justify-between glass border border-primary/50 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 bg-primary text-on-primary text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-bl-lg">Default</div>
+                 {addresses.map(address => (
+                 <div key={address.id} className={`rounded-2xl p-lg flex flex-col justify-between glass relative overflow-hidden ${address.isDefault ? 'border border-primary/50' : 'border border-outline-variant/30 hover:border-primary/30 transition-colors'}`}>
+                    {address.isDefault && <div className="absolute top-0 right-0 bg-primary text-on-primary text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-bl-lg">Default</div>}
                     <div>
                       <h3 className="font-body-lg text-on-surface flex items-center gap-2 mb-md">
                         <span className="material-symbols-outlined text-primary bg-primary/10 p-1.5 rounded-full text-[18px]">home_pin</span> 
-                        Sector 7G Residence
+                        {address.label}
                       </h3>
                       <div className="bg-surface-container-low p-4 rounded-lg border border-outline-variant/20 mb-4">
-                        <p className="font-body-md text-on-surface font-medium mb-1">Alex Mercer</p>
+                        <p className="font-body-md text-on-surface font-medium mb-1">{address.recipient}</p>
                         <p className="font-body-md text-on-surface-variant leading-relaxed text-sm">
-                          Apt 4B, 128 Tech Boulevard<br/>
-                          Cyber District, Neo City 90210
+                          {address.line1}<br/>
+                          {address.city}
                         </p>
                         <p className="font-body-md text-on-surface-variant flex items-center gap-2 font-mono text-sm mt-3 pt-3 border-t border-outline-variant/20">
-                          <span className="material-symbols-outlined text-[16px]">phone_iphone</span> +1 (555) 019-8234
+                          <span className="material-symbols-outlined text-[16px]">phone_iphone</span> {address.phone}
                         </p>
                       </div>
                     </div>
                     <div className="flex gap-3">
-                       <button className="flex-1 bg-surface-bright border border-outline-variant hover:border-primary text-on-surface font-label-md py-2 rounded-lg transition-colors btn-ripple">Edit</button>
+                       <button onClick={() => handleEditAddress(address)} className="flex-1 bg-surface-bright border border-outline-variant hover:border-primary text-on-surface font-label-md py-2 rounded-lg transition-colors btn-ripple">Edit</button>
+                       <button onClick={() => handleDeleteAddress(address.id)} className="px-4 bg-error/10 border border-error/20 text-error hover:bg-error hover:text-on-error font-label-md py-2 rounded-lg transition-colors btn-ripple"><span className="material-symbols-outlined text-[18px] block">delete</span></button>
                     </div>
                  </div>
-
-                 <div className="rounded-2xl p-lg flex flex-col justify-between glass border border-outline-variant/30 hover:border-primary/30 transition-colors">
-                    <div>
-                      <h3 className="font-body-lg text-on-surface flex items-center gap-2 mb-md">
-                        <span className="material-symbols-outlined text-on-surface-variant bg-surface-container-highest p-1.5 rounded-full text-[18px]">work</span> 
-                        Corporate Office HQ
-                      </h3>
-                      <div className="bg-surface-container-low p-4 rounded-lg border border-outline-variant/20 mb-4 opacity-70">
-                        <p className="font-body-md text-on-surface font-medium mb-1">Alex Mercer (IT Dept)</p>
-                        <p className="font-body-md text-on-surface-variant leading-relaxed text-sm">
-                          Floor 12, MegaCorp Building<br/>
-                          Financial District, Neo City 90215
-                        </p>
-                        <p className="font-body-md text-on-surface-variant flex items-center gap-2 font-mono text-sm mt-3 pt-3 border-t border-outline-variant/20">
-                          <span className="material-symbols-outlined text-[16px]">phone_iphone</span> +1 (555) 019-9999
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex gap-3">
-                       <button className="flex-1 bg-surface-bright border border-outline-variant hover:border-primary text-on-surface font-label-md py-2 rounded-lg transition-colors btn-ripple">Edit</button>
-                       <button className="px-4 bg-error/10 border border-error/20 text-error hover:bg-error hover:text-on-error font-label-md py-2 rounded-lg transition-colors btn-ripple"><span className="material-symbols-outlined text-[18px] block">delete</span></button>
-                    </div>
-                 </div>
+                 ))}
                </div>
              </div>
           )}

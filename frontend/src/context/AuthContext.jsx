@@ -1,64 +1,44 @@
-import React, { createContext, useState, useEffect } from 'react';
+import { useState } from 'react';
 import authApi from '../api/authApi';
-
-export const AuthContext = createContext();
+import { AuthContext } from './AuthContextValue';
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem('techpro_user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+  const [isAuthenticated, setIsAuthenticated] = useState(() => Boolean(localStorage.getItem('access_token')));
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    // Check if token exists on initial load
-    const token = localStorage.getItem('access_token');
-    if (token) {
-      // In a real app, verify token with backend or fetch profile
-      // For now, we mock a logged in state if token exists
-      verifyTokenAndFetchProfile();
-    } else {
-      setLoading(false);
-    }
-  }, []);
-
-  const verifyTokenAndFetchProfile = async () => {
-    try {
-      setLoading(true);
-      // Example call: const response = await authApi.getProfile();
-      // setUser(response.data);
-      
-      // Mock successful login
-      setUser({ name: 'Admin', email: 'admin@techpro.eng' });
-      setIsAuthenticated(true);
-    } catch (error) {
-      console.error("Token verification failed", error);
-      logout();
-    } finally {
-      setLoading(false);
-    }
+  const logout = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('techpro_user');
+    setUser(null);
+    setIsAuthenticated(false);
   };
 
   const login = async (credentials) => {
     try {
-      // Example call: 
-      // const response = await authApi.login(credentials);
-      // const { token, user } = response.data;
-      // localStorage.setItem('access_token', token);
-      
-      // Mocking the response
-      localStorage.setItem('access_token', 'mock_token_123');
-      setUser({ name: 'Admin', email: 'admin@techpro.eng' });
+      setLoading(true);
+      const response = credentials.mode === 'register'
+        ? await authApi.register(credentials)
+        : await authApi.login(credentials);
+      localStorage.setItem('access_token', response.token);
+      localStorage.setItem('techpro_user', JSON.stringify(response.user));
+      setUser(response.user);
       setIsAuthenticated(true);
       return true;
     } catch (error) {
       console.error("Login failed", error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('access_token');
-    setUser(null);
-    setIsAuthenticated(false);
+  const updateUser = (nextUser) => {
+    localStorage.setItem('techpro_user', JSON.stringify(nextUser));
+    setUser(nextUser);
   };
 
   return (
@@ -67,7 +47,8 @@ export const AuthProvider = ({ children }) => {
       isAuthenticated,
       loading,
       login,
-      logout
+      logout,
+      updateUser
     }}>
       {children}
     </AuthContext.Provider>

@@ -1,23 +1,18 @@
-import React, { createContext, useState, useEffect } from 'react';
-
-// Create Context
-export const CartContext = createContext();
+import { useEffect, useState } from 'react';
+import { CartContext } from './CartContextValue';
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
-
-  // Load cart from local storage on mount
-  useEffect(() => {
+  const [cartItems, setCartItems] = useState(() => {
     const storedCart = localStorage.getItem('techpro_cart');
-    if (storedCart) {
-      try {
-        setCartItems(JSON.parse(storedCart));
-      } catch (error) {
-        console.error("Failed to parse cart", error);
-      }
+    if (!storedCart) return [];
+    try {
+      return JSON.parse(storedCart);
+    } catch (error) {
+      console.error("Failed to parse cart", error);
+      return [];
     }
-  }, []);
+  });
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   // Save cart to local storage whenever it changes
   useEffect(() => {

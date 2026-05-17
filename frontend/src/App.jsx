@@ -1,7 +1,8 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { useContext } from 'react';
+import { BrowserRouter as Router, Navigate, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import { AuthContext } from './context/AuthContextValue';
 
 // Pages
 import Home from './pages/Home';
@@ -11,6 +12,7 @@ import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Account from './pages/Account';
 import News from './pages/News';
+import NewsDetail from './pages/NewsDetail';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Services from './pages/Services';
@@ -24,6 +26,20 @@ import PaymentFailed from './pages/PaymentFailed';
 import SystemLoading from './pages/SystemLoading';
 import Maintenance from './pages/Maintenance';
 import Admin from './pages/Admin';
+
+function AdminRoute() {
+  const { isAuthenticated, user } = useContext(AuthContext);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace state={{ from: '/admin' }} />;
+  }
+
+  if (user?.role !== 'Admin') {
+    return <Navigate to="/account" replace />;
+  }
+
+  return <Admin />;
+}
 
 function AppContent() {
   const location = useLocation();
@@ -41,6 +57,7 @@ function AppContent() {
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/account" element={<Account />} />
           <Route path="/news" element={<News />} />
+          <Route path="/news/:id" element={<NewsDetail />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/services" element={<Services />} />
@@ -53,7 +70,7 @@ function AppContent() {
           <Route path="/server-error" element={<ServerError />} />
           <Route path="/loading" element={<SystemLoading />} />
           <Route path="/maintenance" element={<Maintenance />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin" element={<AdminRoute />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

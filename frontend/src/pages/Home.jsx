@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { CartContext } from '../context/CartContext';
+import { CartContext } from '../context/CartContextValue';
 
 const Home = () => {
   const { addToCart } = useContext(CartContext);
@@ -154,7 +154,7 @@ const Home = () => {
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter stagger-children">
           {/* Product Card 1 */}
-          <Link to="/product/1" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift relative overflow-hidden block">
+          <Link to="/products/1" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift relative overflow-hidden block">
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-surface/50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
             <div className="relative aspect-square bg-surface-container-low rounded-lg mb-4 overflow-hidden flex items-center justify-center">
               <span className="absolute top-2 left-2 bg-error text-on-error px-2 py-1 rounded text-[10px] font-bold z-20 shadow-[0_0_10px_rgba(255,180,171,0.3)]">-30%</span>
@@ -182,7 +182,7 @@ const Home = () => {
           </Link>
 
           {/* Product Card 2 */}
-          <Link to="/product/2" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift relative overflow-hidden block">
+          <Link to="/products/2" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift relative overflow-hidden block">
             <div className="relative aspect-square bg-surface-container-low rounded-lg mb-4 overflow-hidden flex items-center justify-center">
               <span className="absolute top-2 left-2 bg-error text-on-error px-2 py-1 rounded text-[10px] font-bold z-20 shadow-[0_0_10px_rgba(255,180,171,0.3)]">-15%</span>
               <img alt="Earbuds" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBK4CWF1jfcn2Egt2Icl31S3f_bTEhxACm90CobmicAmgndSVCc1Fkfn5rwrNGJJve1N6tIVLifpEVY5B4FQLK-ydTS5LwFyrQK5L6WP2UZJjLxSy_5kXxWIJ8uerAhppdRbMQvOX6kJu0cBgZTuFRzJwfLiV5PtSzkCJS4YbDovuqtGhWJfI75joGjcR9_hZTFHzhYmCxPPUEsUNM6pAIMyHtNxvdt7HIZ3RxAZPw7K6sNpAcTnUdct0a3jDTtHhV1S3Di4JGY7LvF" />
@@ -207,7 +207,7 @@ const Home = () => {
           </Link>
 
           {/* Product Card 3 */}
-          <Link to="/product/3" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift relative overflow-hidden hidden sm:block">
+          <Link to="/products/3" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift relative overflow-hidden hidden sm:block">
             <div className="relative aspect-square bg-surface-container-low rounded-lg mb-4 overflow-hidden flex items-center justify-center">
               <span className="absolute top-2 left-2 bg-error text-on-error px-2 py-1 rounded text-[10px] font-bold z-20 shadow-[0_0_10px_rgba(255,180,171,0.3)]">-20%</span>
               <img alt="Headphones" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5AQ5RU3WPbIu6xb-cxmIrDwJcFgy-8qlWlKoFUEtEx2OvKOZZZXUplLLGNXFVc7lnd-svVQVPws5jlMxgohMVs-3bdPK3_dxNx1LlNYcnHjddamHwtFzrOgRSblUbD5rS07yinaBMMRvtcWeW6VAtY9PJDP3wxn8fgNX3HtT2DWF3CU22yPxWSsKv4mmPkRaTOeoPp7ox48wc-0QxYtMYMIcPAe2a95JZ9IisFFhDdyGLtM4c0208L3HK6yU33P3guOB6ZJNLL2Ps" />
@@ -232,7 +232,7 @@ const Home = () => {
           </Link>
 
           {/* Product Card 4 */}
-          <Link to="/product/4" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift relative overflow-hidden hidden lg:block">
+          <Link to="/products/4" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift relative overflow-hidden hidden lg:block">
             <div className="relative aspect-square bg-surface-container-low rounded-lg mb-4 overflow-hidden flex items-center justify-center">
               <span className="absolute top-2 left-2 bg-error text-on-error px-2 py-1 rounded text-[10px] font-bold z-20 shadow-[0_0_10px_rgba(255,180,171,0.3)]">-50%</span>
               <img alt="Speaker" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBejdZgzBTqpAvuuwE00vSQ-B-6FWgwB9dbavCJP6rtQIbIBhNKTEapO6cj_lrSOXZ3g_Oam52oYcNU7CN3xe-BDkFl3ITE75JBu-y8k7DSi3lBYrF6txev5-FVYNBOV7E81T3zP-Tsf2m432cLcy4kM3UhBmAPuAwOQrhKiZ6nMN9wgVKmpxGDywdP4HgMZ4-VSMSJfejc089ZzDwqo1Cc02Al9JX_Nm2lPdw4Zu5rZgrc9mtToaV_Deze_10hrCPjDF9bSjPmvvSF" />
@@ -327,7 +327,7 @@ const Home = () => {
         {/* Simulating changing content based on tab with a key to re-trigger animation */}
         <div key={activeTab} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter stagger-children">
           {/* Standard Product Cards */}
-          <Link to="/product/1" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift block">
+          <Link to="/products/1" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift block">
             <div className="relative aspect-square bg-surface-container-low rounded-lg mb-4 overflow-hidden flex items-center justify-center">
               <img alt="Phone" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDq7O5_4xg6d8z77u4Zi75DrC0P9yjp25ci6lmrnKWVFLVDJnvYj_eLnUtChkXvWdurEYfV_KPl-mOAgxaFi2HaHZnaJV6unTG8t92fkjWC-7LqxmUKyjWPaeO_r9wi5MAsx8CdRoFpP1jO9BJ-n46n25_1e3tNv9HAxNENIctDTGhdxWo_1gUa22P3mB-th8JNFaVpa1L8ghrYYQn-nxeqoeulEqgn76n8Ewi84zDsjzcWttaOAiMARrgkbnzah4R7CZu3oS7u2Krx" />
               <div className="absolute inset-0 bg-surface/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
@@ -352,7 +352,7 @@ const Home = () => {
             </div>
           </Link>
           
-          <Link to="/product/2" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift block">
+          <Link to="/products/2" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift block">
             <div className="relative aspect-square bg-surface-container-low rounded-lg mb-4 overflow-hidden flex items-center justify-center">
               <img alt="Laptop" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCatrCA_U54emDO95njFXPUr8q7s2mvLu7QksKIN2No0UZN6jaRcIDnfgJ-ytNi34YPEa02b02uX9wAR1ls3h4SoUGT-UfygV8jlHCuTzv_MnOexpS6KByqjXKPqtGL5ivDMaR7ZVzdfXPyR7PSaV0ozq3uXKhYBPzKL_vzhwz_p3T_kweZ2ZnhG1AzRmOC7qhxxXUNRbp2a5Bp7SupwKqakn2OKh-R-989qmeBa-bbLLLGdNcOfiYSGtGnGTCQLPTjLvFQM7dfjROs" />
               <div className="absolute inset-0 bg-surface/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
@@ -377,7 +377,7 @@ const Home = () => {
             </div>
           </Link>
           
-          <Link to="/product/3" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift hidden sm:block">
+          <Link to="/products/3" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift hidden sm:block">
             <div className="relative aspect-square bg-surface-container-low rounded-lg mb-4 overflow-hidden flex items-center justify-center">
               <img alt="Tablet" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHtjCyIscwqL9tDJJ87YgTl5OGiPU_YKMvIoh4HkIyrNKpwggXvo0FauUXfnNsck2r96YHXEfHU07uOxDP9fLA5uF1Znll6oJqdK1pIafi7sxiqB12wPk5YfOIqnGKsj_FK-SJ3T8Q8jd0PQw-Lc7-4QjxljdiTd6MLjGtbgvUvnstEoOgC5rZ9DO11RrcNKk9BVOnLHdllvY92YxOu2NNyhXQeeBGph2_q-ImlOP5mpEjEwGroe021GUFtRRgJi56bh8rMyWdylA_" />
               <div className="absolute inset-0 bg-surface/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
@@ -402,7 +402,7 @@ const Home = () => {
             </div>
           </Link>
           
-          <Link to="/product/4" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift hidden lg:block">
+          <Link to="/products/4" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift hidden lg:block">
             <div className="relative aspect-square bg-surface-container-low rounded-lg mb-4 overflow-hidden flex items-center justify-center">
               <img alt="Camera" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMYhWMfTylUMseLEvQzto7kHr7RMV4i7CQKQIYHsMSq8jtj7b-gvOJO-0g_QTyGcXcMxb4YjF1IL4UzBWWDFHN5h7A9nF2aLPX7RhpGvEJMBMl_pHDX8roHupo5ihtDtlKGt7qpsstXSaWJte9clnNjW9xadZRggfdXp5RBwtb8SNMm4LS4HLi7n56TynK11u65aehKTldR6IqPTa0pYf5htY2iit77LnpapUWe3gRwobQLow09jjSfwmyOGGxgGbgjJ-CkGz-g1VV" />
               <div className="absolute inset-0 bg-surface/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">

@@ -1,9 +1,35 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useContext, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContextValue';
 
 const Login = () => {
-  const [mode, setMode] = useState('signin'); // 'signin' | 'register'
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
+  const [mode, setMode] = useState(location.state?.mode === 'register' ? 'register' : 'signin'); // 'signin' | 'register'
   const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: 'admin@techpro.eng',
+    password: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+    try {
+      await login({ ...formData, mode });
+      navigate('/account');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="flex w-full h-screen overflow-hidden page-enter bg-surface">
@@ -72,7 +98,7 @@ const Login = () => {
           </div>
 
           {/* Form */}
-          <form className="flex flex-col gap-md" onSubmit={(e) => e.preventDefault()}>
+          <form className="flex flex-col gap-md" onSubmit={handleSubmit}>
             <div className={`flex flex-col gap-md transition-all duration-500 overflow-hidden ${mode === 'register' ? 'max-h-[100px] opacity-100' : 'max-h-0 opacity-0 m-0'}`}>
               <div className="flex flex-col gap-xs relative">
                 <label className="font-label-sm text-label-sm text-on-surface-variant" htmlFor="fullname">Full Name</label>
@@ -81,6 +107,9 @@ const Login = () => {
                   <input
                     className="w-full bg-surface-container border border-outline-variant/50 rounded-lg py-sm pl-xl pr-md font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all placeholder:text-on-surface-variant/50 hover:border-primary/50"
                     id="fullname"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleInputChange}
                     placeholder="Alex Mercer"
                     type="text"
                   />
@@ -92,12 +121,16 @@ const Login = () => {
               <label className="font-label-sm text-label-sm text-on-surface-variant" htmlFor="email">Access Identifier (Email)</label>
               <div className="relative flex items-center group">
                 <span className="material-symbols-outlined absolute left-sm text-on-surface-variant text-[20px] group-focus-within:text-primary transition-colors">mail</span>
-                <input
-                  className="w-full bg-surface-container border border-outline-variant/50 rounded-lg py-sm pl-xl pr-md font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all placeholder:text-on-surface-variant/50 tracking-wide hover:border-primary/50"
-                  id="email"
-                  placeholder="admin@techpro.eng"
-                  type="email"
-                />
+                  <input
+                    className="w-full bg-surface-container border border-outline-variant/50 rounded-lg py-sm pl-xl pr-md font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all placeholder:text-on-surface-variant/50 tracking-wide hover:border-primary/50"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="admin@techpro.eng"
+                    required
+                    type="email"
+                  />
               </div>
             </div>
 
@@ -105,7 +138,7 @@ const Login = () => {
               <div className="flex justify-between items-center">
                 <label className="font-label-sm text-label-sm text-on-surface-variant" htmlFor="password">Security Key (Password)</label>
                 <div className={`transition-all duration-300 ${mode === 'signin' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                  <a className="font-label-sm text-label-sm text-primary hover:text-primary-fixed transition-colors underline" href="#">Forgot Key?</a>
+                  <Link className="font-label-sm text-label-sm text-primary hover:text-primary-fixed transition-colors underline" to="/contact">Forgot Key?</Link>
                 </div>
               </div>
               <div className="relative flex items-center group">
@@ -113,7 +146,11 @@ const Login = () => {
                 <input
                   className="w-full bg-surface-container border border-outline-variant/50 rounded-lg py-sm pl-xl pr-xl font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all tracking-widest hover:border-primary/50"
                   id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
                   placeholder="••••••••••••"
+                  required
                   type={showPassword ? 'text' : 'password'}
                 />
                 <button
@@ -136,14 +173,15 @@ const Login = () => {
               </div>
             </div>
 
-            <Link
-              to="/account"
+            <button
+              type="submit"
+              disabled={isSubmitting}
               className="mt-md w-full py-3 px-lg bg-primary text-on-primary font-label-md text-label-md rounded-lg glow-primary glow-primary-hover transition-all flex justify-center items-center gap-sm btn-ripple group overflow-hidden relative"
             >
               <div className="absolute inset-0 bg-white/20 w-1/2 -skew-x-12 -translate-x-[150%] group-hover:animate-[ticker_1s_ease-in-out]"></div>
-              <span className="z-10">{mode === 'signin' ? 'Initialize Link' : 'Create Identity'}</span>
-              <span className="material-symbols-outlined text-[18px] z-10 group-hover:translate-x-1 transition-transform">arrow_forward</span>
-            </Link>
+              <span className="z-10">{isSubmitting ? 'Synchronizing...' : mode === 'signin' ? 'Initialize Link' : 'Create Identity'}</span>
+              <span className="material-symbols-outlined text-[18px] z-10 group-hover:translate-x-1 transition-transform">{isSubmitting ? 'sync' : 'arrow_forward'}</span>
+            </button>
           </form>
 
           {/* Security Notice */}

@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { mockProducts } from '../data/mockProducts';
-import { CartContext } from '../context/CartContext';
+import { CartContext } from '../context/CartContextValue';
 import productApi from '../api/productApi';
 
 const ProductList = () => {
@@ -9,11 +9,11 @@ const ProductList = () => {
   const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'list'
   const [currentPage, setCurrentPage] = useState(1);
   const [isFilterOpen, setIsFilterOpen] = useState(false); // for mobile
-  const [selectedBrands, setSelectedBrands] = useState(['ASUS', 'MSI']);
-  const [selectedRams, setSelectedRams] = useState(['16GB', '32GB']);
+  const [selectedBrands, setSelectedBrands] = useState([]);
+  const [selectedRams, setSelectedRams] = useState([]);
+  const [maxPrice, setMaxPrice] = useState(5000);
   const [activeSidebarIcon, setActiveSidebarIcon] = useState(null); // 'shipping' | 'warranty' | 'return' | null
   const [sortBy, setSortBy] = useState('Newest');
-  const [animateKey, setAnimateKey] = useState(0); // to re-trigger animations
   const { addToCart } = useContext(CartContext);
 
   const [products, setProducts] = useState([]);
@@ -23,6 +23,8 @@ const ProductList = () => {
   const searchParams = new URLSearchParams(location.search);
   const categoryParam = searchParams.get('category');
   const brandParam = searchParams.get('brand');
+  const queryParam = searchParams.get('q') || '';
+  const itemsPerPage = viewMode === 'grid' ? 9 : 5;
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -41,31 +43,48 @@ const ProductList = () => {
     fetchProducts();
   }, []);
 
-  let filteredProducts = products;
-  if (categoryParam) {
-    filteredProducts = filteredProducts.filter(p => p.category === categoryParam);
-  }
-  if (brandParam) {
-    filteredProducts = filteredProducts.filter(p => p.name.toLowerCase().includes(brandParam.toLowerCase().replace('-', ' ')));
-  }
+  const filteredProducts = useMemo(() => {
+    const normalizedBrand = brandParam?.toLowerCase().replace(/-/g, ' ') || '';
+    const normalizedQuery = queryParam.toLowerCase().trim();
+
+    const filtered = products.filter((product) => {
+      const syntheticRam = ['8GB', '16GB', '32GB', '64GB'][product.id % 4];
+      const productText = `${product.name} ${product.category} ${product.sku} ${product.tags?.join(' ') || ''} ${syntheticRam}`.toLowerCase();
+      const matchesCategory = !categoryParam || product.category === categoryParam;
+      const matchesBrand = !normalizedBrand || productText.includes(normalizedBrand);
+      const matchesSearch = !normalizedQuery || productText.includes(normalizedQuery);
+      const matchesBrandFilter = selectedBrands.length === 0 || selectedBrands.some(brand => productText.includes(brand.toLowerCase()));
+      const matchesRam = selectedRams.length === 0 || selectedRams.some(ram => productText.includes(ram.toLowerCase()));
+      const matchesPrice = product.price <= maxPrice;
+      return matchesCategory && matchesBrand && matchesSearch && matchesBrandFilter && matchesRam && matchesPrice;
+    });
+
+    return [...filtered].sort((a, b) => {
+      if (sortBy === 'Price: Low to High') return a.price - b.price;
+      if (sortBy === 'Price: High to Low') return b.price - a.price;
+      if (sortBy === 'Best Rated') return Number(b.rating) - Number(a.rating);
+      return b.id - a.id;
+    });
+  }, [brandParam, categoryParam, maxPrice, products, queryParam, selectedBrands, selectedRams, sortBy]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / itemsPerPage));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const visibleProducts = filteredProducts.slice((safeCurrentPage - 1) * itemsPerPage, safeCurrentPage * itemsPerPage);
+  const animateKey = `${categoryParam || 'all'}-${brandParam || 'all'}-${queryParam}-${sortBy}-${viewMode}-${safeCurrentPage}-${selectedBrands.join('.')}-${selectedRams.join('.')}-${maxPrice}`;
 
   const toggleBrand = (brand) => {
     setSelectedBrands(prev => prev.includes(brand) ? prev.filter(b => b !== brand) : [...prev, brand]);
-    setAnimateKey(prev => prev + 1);
+    setCurrentPage(1);
   };
 
   const toggleRam = (ram) => {
     setSelectedRams(prev => prev.includes(ram) ? prev.filter(r => r !== ram) : [...prev, ram]);
-    setAnimateKey(prev => prev + 1);
+    setCurrentPage(1);
   };
 
-  useEffect(() => {
-    setAnimateKey(prev => prev + 1);
-  }, [categoryParam, sortBy, viewMode]);
+  const categoryName = categoryParam ? categoryParam.charAt(0).toUpperCase() + categoryParam.slice(1) : queryParam ? `Search: ${queryParam}` : 'All Products';
 
-  const categoryName = categoryParam ? categoryParam.charAt(0).toUpperCase() + categoryParam.slice(1) : 'All Products';
-
-  if (isSearchEmpty || (filteredProducts.length === 0 && (categoryParam || brandParam))) {
+  if (isSearchEmpty || (filteredProducts.length === 0 && (categoryParam || brandParam || queryParam || selectedBrands.length || selectedRams.length || maxPrice < 5000))) {
     return (
       <main className="flex-grow flex flex-col items-center justify-center py-xl px-margin-mobile md:px-margin-desktop w-full max-w-[1440px] mx-auto page-enter">
         <div className="w-full flex justify-end mb-4">
@@ -85,7 +104,7 @@ const ProductList = () => {
           </div>
           
           <h1 className="font-headline-lg text-on-surface mb-sm">
-            Không tìm thấy kết quả phù hợp cho "{brandParam || categoryParam || 'tìm kiếm của bạn'}"
+            Không tìm thấy kết quả phù hợp cho "{queryParam || brandParam || categoryParam || 'tìm kiếm của bạn'}"
           </h1>
           <p className="font-body-md text-on-surface-variant mb-lg">
             Hệ thống không tìm thấy thông số kỹ thuật hoặc sản phẩm nào khớp với truy vấn của bạn. Vui lòng kiểm tra lại chính tả, sử dụng mã sản phẩm chung chung hơn, hoặc thử các từ khóa khác.
@@ -94,8 +113,8 @@ const ProductList = () => {
           <div className="w-full max-w-md relative mb-md hover-lift">
             <div className="flex items-center bg-surface border border-outline-variant rounded-lg px-4 py-3 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all w-full shadow-[0_0_15px_rgba(185,199,228,0.05)] focus-within:shadow-[0_0_20px_rgba(185,199,228,0.15)]">
               <span className="material-symbols-outlined text-on-surface-variant mr-3">search</span>
-              <input className="bg-transparent border-none text-on-surface focus:outline-none w-full font-body-md tracking-wider placeholder-on-surface-variant/50" placeholder="Nhập mã sản phẩm, ví dụ: X-200" type="text" />
-              <button className="bg-primary text-on-primary rounded px-4 py-1 ml-2 font-label-md transition-all hover:bg-primary-fixed btn-ripple">Tìm kiếm</button>
+              <input className="bg-transparent border-none text-on-surface focus:outline-none w-full font-body-md tracking-wider placeholder-on-surface-variant/50" defaultValue={queryParam} placeholder="Nhập mã sản phẩm, ví dụ: X-200" type="text" />
+              <Link to="/products" className="bg-primary text-on-primary rounded px-4 py-1 ml-2 font-label-md transition-all hover:bg-primary-fixed btn-ripple">Reset</Link>
             </div>
           </div>
 
@@ -203,10 +222,10 @@ const ProductList = () => {
               </button>
               
               <div className="hidden sm:flex items-center bg-surface-container rounded border border-outline-variant p-0.5">
-                <button onClick={() => setViewMode('grid')} className={`p-1.5 rounded transition-colors ${viewMode === 'grid' ? 'bg-surface text-primary shadow' : 'text-on-surface-variant hover:text-on-surface'}`}>
+                <button onClick={() => { setViewMode('grid'); setCurrentPage(1); }} className={`p-1.5 rounded transition-colors ${viewMode === 'grid' ? 'bg-surface text-primary shadow' : 'text-on-surface-variant hover:text-on-surface'}`}>
                   <span className="material-symbols-outlined text-[20px]">grid_view</span>
                 </button>
-                <button onClick={() => setViewMode('list')} className={`p-1.5 rounded transition-colors ${viewMode === 'list' ? 'bg-surface text-primary shadow' : 'text-on-surface-variant hover:text-on-surface'}`}>
+                <button onClick={() => { setViewMode('list'); setCurrentPage(1); }} className={`p-1.5 rounded transition-colors ${viewMode === 'list' ? 'bg-surface text-primary shadow' : 'text-on-surface-variant hover:text-on-surface'}`}>
                   <span className="material-symbols-outlined text-[20px]">view_list</span>
                 </button>
               </div>
@@ -215,7 +234,7 @@ const ProductList = () => {
                 <span className="text-on-surface-variant font-label-md hidden sm:block">Sort by:</span>
                 <select 
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
+                  onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
                   className="bg-surface-container border border-outline-variant rounded py-1.5 pl-3 pr-8 text-on-surface font-label-md focus:border-primary focus:ring-1 focus:ring-primary appearance-none cursor-pointer transition-colors"
                 >
                   <option>Newest</option>
@@ -275,10 +294,10 @@ const ProductList = () => {
               <div>
                 <h4 className="font-label-md font-semibold mb-sm text-on-surface uppercase tracking-wider text-[12px]">Price Range</h4>
                 <div className="px-2">
-                  <input type="range" className="w-full accent-primary" min="0" max="5000" defaultValue="2500" />
+                  <input type="range" className="w-full accent-primary" min="0" max="5000" value={maxPrice} onChange={(e) => { setMaxPrice(Number(e.target.value)); setCurrentPage(1); }} />
                   <div className="flex justify-between text-[12px] text-on-surface-variant mt-2">
                     <span>$0</span>
-                    <span className="text-primary font-bold">$2,500</span>
+                    <span className="text-primary font-bold">${maxPrice.toLocaleString('en-US')}</span>
                     <span>$5k+</span>
                   </div>
                 </div>
@@ -289,7 +308,12 @@ const ProductList = () => {
           {/* Product Grid / List */}
           <div className="flex-grow flex flex-col">
             <div key={animateKey} className={`grid gap-gutter stagger-children mb-xl ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}>
-              {filteredProducts.map((product) => (
+              {loading && (
+                <div className="col-span-full flex justify-center py-xl">
+                  <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                </div>
+              )}
+              {!loading && visibleProducts.map((product) => (
                 <article key={product.id} className={`glass rounded-lg border border-white/10 overflow-hidden group hover:border-primary/50 transition-colors duration-300 relative hover-lift flex ${viewMode === 'grid' ? 'flex-col' : 'flex-row h-48'}`}>
                   <div className="absolute top-sm left-sm z-10 flex flex-col gap-xs">
                     {product.onSale && <span className="bg-error/20 text-error font-label-sm px-2 py-1 rounded uppercase tracking-wider backdrop-blur-sm border border-error/30 shadow-[0_0_10px_rgba(255,180,171,0.2)]">Sale</span>}
@@ -353,34 +377,35 @@ const ProductList = () => {
               <div className="flex items-center gap-2">
                 <button 
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                  disabled={currentPage === 1}
+                  disabled={safeCurrentPage === 1}
                   className="w-10 h-10 flex items-center justify-center rounded border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary disabled:opacity-50 disabled:hover:border-outline-variant disabled:hover:text-on-surface-variant transition-colors cursor-pointer"
                 >
                   <span className="material-symbols-outlined">chevron_left</span>
                 </button>
                 
-                {[1, 2, 3].map(page => (
+                {Array.from({ length: Math.min(3, totalPages) }, (_, index) => index + 1).map(page => (
                   <button 
                     key={page}
-                    onClick={() => { setCurrentPage(page); setAnimateKey(k => k + 1); }}
-                    className={`w-10 h-10 flex items-center justify-center rounded font-label-md transition-all ${currentPage === page ? 'bg-primary text-on-primary shadow-[0_0_15px_rgba(185,199,228,0.3)]' : 'border border-outline-variant text-on-surface hover:border-primary hover:text-primary'}`}
+                    onClick={() => setCurrentPage(page)}
+                    className={`w-10 h-10 flex items-center justify-center rounded font-label-md transition-all ${safeCurrentPage === page ? 'bg-primary text-on-primary shadow-[0_0_15px_rgba(185,199,228,0.3)]' : 'border border-outline-variant text-on-surface hover:border-primary hover:text-primary'}`}
                   >
                     {page}
                   </button>
                 ))}
                 
-                <span className="text-on-surface-variant px-2">...</span>
+                {totalPages > 3 && <span className="text-on-surface-variant px-2">...</span>}
+                {totalPages > 3 && (
+                  <button 
+                    onClick={() => setCurrentPage(totalPages)}
+                    className={`w-10 h-10 flex items-center justify-center rounded font-label-md transition-all ${safeCurrentPage === totalPages ? 'bg-primary text-on-primary shadow-[0_0_15px_rgba(185,199,228,0.3)]' : 'border border-outline-variant text-on-surface hover:border-primary hover:text-primary'}`}
+                  >
+                    {totalPages}
+                  </button>
+                )}
                 
                 <button 
-                  onClick={() => { setCurrentPage(12); setAnimateKey(k => k + 1); }}
-                  className={`w-10 h-10 flex items-center justify-center rounded font-label-md transition-all ${currentPage === 12 ? 'bg-primary text-on-primary shadow-[0_0_15px_rgba(185,199,228,0.3)]' : 'border border-outline-variant text-on-surface hover:border-primary hover:text-primary'}`}
-                >
-                  12
-                </button>
-                
-                <button 
-                  onClick={() => setCurrentPage(prev => Math.min(12, prev + 1))}
-                  disabled={currentPage === 12}
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={safeCurrentPage === totalPages}
                   className="w-10 h-10 flex items-center justify-center rounded border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary disabled:opacity-50 disabled:hover:border-outline-variant disabled:hover:text-on-surface-variant transition-colors cursor-pointer"
                 >
                   <span className="material-symbols-outlined">chevron_right</span>

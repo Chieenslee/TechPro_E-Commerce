@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "Admin Root",
+    "email": "admin@techpro.eng",
+    "role": "Admin",
+    "status": "Active",
+    "createdAt": "2026-05-17T12:34:44.7875083+00:00",
+    "lastLoginAt": "2026-05-17T12:37:05.5635123+00:00"
+  },
+  {
+    "id": 2,
+    "name": "Alex Mercer",
+    "email": "alex.mercer@techpro.eng",
+    "role": "Customer",
+    "status": "Active",
+    "createdAt": "2026-05-17T12:34:44.7875684+00:00",
+    "lastLoginAt": null
+  }
+]

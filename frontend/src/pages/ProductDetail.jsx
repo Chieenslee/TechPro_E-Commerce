@@ -1,8 +1,15 @@
-import React, { useState, useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { CartContext } from '../context/CartContext';
+import { CartContext } from '../context/CartContextValue';
 import productApi from '../api/productApi';
 import { mockProducts } from '../data/mockProducts';
+
+const galleryImages = [
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuB0Tj12Rg3fSuQEffZBuNYVTKO3fUO98nMOOarCMBOM3KKLjcXP1NQd6b3RvO59i3kv-nguk1LrWC_tjkvID33d4Z4r0HLirzoh1PVSu5Bt0PuCCZ5HBbAKfILew_oDdDjeY_kS1R-AvtOuH42QD3JaApTxyEIXB1bcjk96nm_3bOj_ycib7NEOuOoJNXAhAilpwRsiqcJVMQRhmD-MVT5XzjyPI6u6VBx8ifBTwvJZQP_t2gGHuMwCY8Rh-QXIPcx2LjI4noPDfQQO",
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuD4BXfhhqMPKzq33eZ5C0dr2-0tZC-vZL7JJc9YiUbLLG86enb-9yIZ5lOJQt9QCGTgDx1QFsq9jF_UfjsZubgVGPxmLL49Safoa2ju94Rq0LCyUR61bponLqWTY827qTbnHthNjV_6360NC0rn3iShY8hdoVmOrjGVBLVBcOSiea9gPyGJcw7W63lFlaRLa3-4jA8NYewj575FYtb4l5ynSo0teiLZFx3_TPPEhGOItVJPgaOc0ysA311RBsjEHt-t0mzbE8fT9ZII",
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuDIbjxZwDALzIvxJEKb_Wvgki1yxbdmz8iT9Ff3n6yxdEw6c2futeW1pwWXHXToe6wIOBy1aUWzNkJZXZATtTO-A77ZjNCH4Y-TSmI87LvXSi02wKUqO7aafTp8wZ1QmquWF9nuTZCJihY0HvNAWm0yefbPsH_r_VKBl5ZohS6cFMV53b0NE7JfKrGspIQ4w5_oaWfr5o9YQS3kJnx0cR5cir4HeRydyUl-q6kcDFAjmE64r3s3pRVAaGNs6Q6vy_ZZWPlxWYjSEdwP",
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuCKaFeUulBlfVJhHBt_RRBP_uYZKCPqIos9p99Bl3Vpv-7YvzPFsyC5LeaSYf5Nw8QOBp1KwxM_y16GUo7acehO4fKtTDjR47IO7GgKQ2eHL30q0McG0OR6-WUaM3ZdviVUFrx2HhpsddjuX1LtzdWGzRNLuOIabMoMxoJNOA2wcTdbgRm4FwSm5x2aSJWnf7U1uiyu334kZXQF0i1iCYSKVh4Xjf5qDYZh8M85Vte9DwZcZm0u4wL8bUAcF4KZX2QYGRZqstRbHQfO"
+];
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -29,7 +36,7 @@ const ProductDetail = () => {
           name: 'PrecisionX Pro 16"',
           price: 2499.00,
           category: 'Laptops',
-          image: images[0]
+          image: galleryImages[0]
         };
         setProduct(mockProduct);
       } finally {
@@ -48,13 +55,6 @@ const ProductDetail = () => {
   if (!product) {
     return <main className="flex-grow flex items-center justify-center min-h-screen text-xl text-error">Product not found</main>;
   }
-
-  const images = [
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuB0Tj12Rg3fSuQEffZBuNYVTKO3fUO98nMOOarCMBOM3KKLjcXP1NQd6b3RvO59i3kv-nguk1LrWC_tjkvID33d4Z4r0HLirzoh1PVSu5Bt0PuCCZ5HBbAKfILew_oDdDjeY_kS1R-AvtOuH42QD3JaApTxyEIXB1bcjk96nm_3bOj_ycib7NEOuOoJNXAhAilpwRsiqcJVMQRhmD-MVT5XzjyPI6u6VBx8ifBTwvJZQP_t2gGHuMwCY8Rh-QXIPcx2LjI4noPDfQQO",
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuD4BXfhhqMPKzq33eZ5C0dr2-0tZC-vZL7JJc9YiUbLLG86enb-9yIZ5lOJQt9QCGTgDx1QFsq9jF_UfjsZubgVGPxmLL49Safoa2ju94Rq0LCyUR61bponLqWTY827qTbnHthNjV_6360NC0rn3iShY8hdoVmOrjGVBLVBcOSiea9gPyGJcw7W63lFlaRLa3-4jA8NYewj575FYtb4l5ynSo0teiLZFx3_TPPEhGOItVJPgaOc0ysA311RBsjEHt-t0mzbE8fT9ZII",
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuDIbjxZwDALzIvxJEKb_Wvgki1yxbdmz8iT9Ff3n6yxdEw6c2futeW1pwWXHXToe6wIOBy1aUWzNkJZXZATtTO-A77ZjNCH4Y-TSmI87LvXSi02wKUqO7aafTp8wZ1QmquWF9nuTZCJihY0HvNAWm0yefbPsH_r_VKBl5ZohS6cFMV53b0NE7JfKrGspIQ4w5_oaWfr5o9YQS3kJnx0cR5cir4HeRydyUl-q6kcDFAjmE64r3s3pRVAaGNs6Q6vy_ZZWPlxWYjSEdwP",
-    "https://lh3.googleusercontent.com/aida-public/AB6AXuCKaFeUulBlfVJhHBt_RRBP_uYZKCPqIos9p99Bl3Vpv-7YvzPFsyC5LeaSYf5Nw8QOBp1KwxM_y16GUo7acehO4fKtTDjR47IO7GgKQ2eHL30q0McG0OR6-WUaM3ZdviVUFrx2HhpsddjuX1LtzdWGzRNLuOIabMoMxoJNOA2wcTdbgRm4FwSm5x2aSJWnf7U1uiyu334kZXQF0i1iCYSKVh4Xjf5qDYZh8M85Vte9DwZcZm0u4wL8bUAcF4KZX2QYGRZqstRbHQfO"
-  ];
 
   return (
     <main className="flex-grow py-lg px-margin-mobile md:px-margin-desktop max-w-7xl mx-auto w-full page-enter">
@@ -87,12 +87,12 @@ const ProductDetail = () => {
             <img 
               alt={`${product.name} - Main View`}
               className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-500 ease-out" 
-              src={images[mainImage] || product.image} 
+              src={galleryImages[mainImage] || product.image} 
             />
             <div className="absolute top-4 left-4 bg-primary text-on-primary text-xs font-bold px-3 py-1 rounded shadow-[0_0_15px_rgba(185,199,228,0.4)] tracking-wider">NEW</div>
           </div>
           <div className="grid grid-cols-4 gap-sm">
-            {images.map((img, idx) => (
+            {galleryImages.map((img, idx) => (
               <button 
                 key={idx}
                 onClick={() => setMainImage(idx)}

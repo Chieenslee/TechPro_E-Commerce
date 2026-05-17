@@ -1,11 +1,13 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { CartContext } from '../context/CartContext';
+import { useContext, useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { CartContext } from '../context/CartContextValue';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const location = useLocation();
+  const navigate = useNavigate();
   const { cartTotalItems } = useContext(CartContext);
 
   useEffect(() => {
@@ -14,9 +16,12 @@ const Header = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
+  const handleSearch = (event) => {
+    event.preventDefault();
+    const query = searchTerm.trim();
+    navigate(query ? `/products?q=${encodeURIComponent(query)}` : '/products');
     setMobileMenuOpen(false);
-  }, [location]);
+  };
 
   const navCategories = [
     { label: 'Phones', path: '/products?category=phones', icon: 'expand_more', subcategories: ['Apple iPhone', 'Samsung Galaxy', 'Google Pixel', 'Xiaomi', 'Oppo'] },
@@ -52,18 +57,20 @@ const Header = () => {
           </Link>
 
           {/* Smart Search - Desktop */}
-          <div className="hidden md:flex flex-1 max-w-2xl relative">
+          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-2xl relative">
             <input
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
               className="w-full bg-surface-container border border-outline-variant rounded-full py-2 pl-4 pr-10 text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm"
               placeholder="Search for products, categories..."
               type="text"
             />
-            <span className="material-symbols-outlined absolute right-3 top-2.5 text-on-surface-variant cursor-pointer hover:text-primary text-[20px]">search</span>
-          </div>
+            <button type="submit" className="material-symbols-outlined absolute right-3 top-2.5 text-on-surface-variant cursor-pointer hover:text-primary text-[20px]" aria-label="Search products">search</button>
+          </form>
 
           {/* Actions */}
           <div className="flex items-center space-x-md">
-            <button className="md:hidden text-on-surface hover:text-primary transition-colors">
+            <button className="md:hidden text-on-surface hover:text-primary transition-colors" onClick={() => setMobileMenuOpen(true)} aria-label="Open search">
               <span className="material-symbols-outlined">search</span>
             </button>
 
@@ -130,14 +137,16 @@ const Header = () => {
         <div className="md:hidden bg-surface-container border-t border-outline-variant">
           {/* Mobile Search */}
           <div className="px-4 py-3">
-            <div className="relative">
+            <form onSubmit={handleSearch} className="relative">
               <input
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
                 className="w-full bg-surface border border-outline-variant rounded-full py-2 pl-4 pr-10 text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-sm"
                 placeholder="Search products..."
                 type="text"
               />
-              <span className="material-symbols-outlined absolute right-3 top-2.5 text-on-surface-variant text-[20px]">search</span>
-            </div>
+              <button type="submit" className="material-symbols-outlined absolute right-3 top-2.5 text-on-surface-variant text-[20px]" aria-label="Search products">search</button>
+            </form>
           </div>
           {/* Mobile Nav Links */}
           <nav className="px-4 pb-4 space-y-1">

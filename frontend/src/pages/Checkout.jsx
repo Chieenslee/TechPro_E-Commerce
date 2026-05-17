@@ -1,7 +1,8 @@
-import React, { useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { CartContext } from '../context/CartContext';
-import { AuthContext } from '../context/AuthContext';
+import { CartContext } from '../context/CartContextValue';
+import { AuthContext } from '../context/AuthContextValue';
+import orderApi from '../api/orderApi';
 
 const Checkout = () => {
   const [formData, setFormData] = useState({
@@ -19,9 +20,11 @@ const Checkout = () => {
   const [promoCode, setPromoCode] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [orderNumber, setOrderNumber] = useState('');
+  const [submitError, setSubmitError] = useState('');
 
   const { cartItems, cartTotalAmount, clearCart } = useContext(CartContext);
-  const { isAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated, user } = useContext(AuthContext);
 
   const subtotal = cartTotalAmount;
   const shippingFee = formData.shipping === 'express' ? 15.00 : 0.00;
@@ -33,16 +36,68 @@ const Checkout = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handlePlaceOrder = (e) => {
+  const buildOrderPayload = () => ({
+    customer: {
+      fullName: formData.fullName,
+      phone: formData.phone,
+      email: formData.email || user?.email || '',
+      city: formData.city,
+      district: formData.district,
+      ward: formData.ward,
+      address: formData.address
+    },
+    items: cartItems.map(item => ({
+      id: Number(item.id),
+      name: item.name,
+      price: Number(item.price),
+      quantity: Number(item.quantity),
+      image: item.image || null,
+      category: item.category || null,
+      storage: item.storage || null
+    })),
+    subtotal,
+    shippingFee,
+    discount,
+    total,
+    shippingMethod: formData.shipping,
+    paymentMethod: formData.payment
+  });
+
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
+    if (cartItems.length === 0) {
+      setSubmitError('Your cart is empty. Please add at least one product before checkout.');
+      return;
+    }
+
     setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      clearCart(); // clear cart on successful order
+    setSubmitError('');
+
+    try {
+      const createdOrder = await orderApi.create(buildOrderPayload());
+      setOrderNumber(createdOrder.orderNumber);
+      clearCart();
       setOrderSuccess(true);
-    }, 2000);
+    } catch (error) {
+      console.error('Failed to create order', error);
+      setSubmitError('Could not sync with backend. A local order was created so you can continue.');
+      const fallbackOrderNumber = `TP-${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`;
+      setOrderNumber(fallbackOrderNumber);
+      const localOrders = JSON.parse(localStorage.getItem('techpro_orders') || '[]');
+      localStorage.setItem('techpro_orders', JSON.stringify([
+        {
+          ...buildOrderPayload(),
+          orderNumber: fallbackOrderNumber,
+          createdAt: new Date().toISOString(),
+          status: 'Processing'
+        },
+        ...localOrders
+      ]));
+      clearCart();
+      setOrderSuccess(true);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (orderSuccess) {
@@ -62,7 +117,7 @@ const Checkout = () => {
             Deployment Successful!
           </h1>
           <p className="font-body-lg text-on-surface-variant max-w-md mx-auto mb-lg relative z-10">
-            Your hardware order <span className="text-primary font-mono">#TP-{Math.floor(Math.random() * 1000000)}</span> has been received and is being prepared for dispatch.
+            Your hardware order <span className="text-primary font-mono">#{orderNumber}</span> has been received and is being prepared for dispatch.
           </p>
           
           <div className="flex gap-4 relative z-10">
@@ -315,6 +370,11 @@ const Checkout = () => {
               </div>
 
               {/* CTA */}
+              {submitError && (
+                <div className="mb-sm text-error text-label-sm border border-error/30 bg-error/10 rounded-lg px-3 py-2">
+                  {submitError}
+                </div>
+              )}
               <button 
                 type="submit" 
                 disabled={isSubmitting}

@@ -1,0 +1,33 @@
+[
+  {
+    "orderNumber": "TP-260517122514",
+    "createdAt": "2026-05-17T12:25:14.3353321+00:00",
+    "status": "Delivered",
+    "customer": {
+      "fullName": "Persistence Test",
+      "phone": "0900000000",
+      "email": "persist@techpro.eng",
+      "city": "HCM",
+      "district": "1",
+      "ward": "Ben Nghe",
+      "address": "1 TechPro"
+    },
+    "items": [
+      {
+        "id": 61,
+        "name": "Persistent Codex Product",
+        "price": 777,
+        "quantity": 1,
+        "image": "https://placehold.co/600x400/222/FFF?text=Persistent",
+        "category": "accessories",
+        "storage": "N/A"
+      }
+    ],
+    "subtotal": 777,
+    "shippingFee": 0,
+    "discount": 0,
+    "total": 777,
+    "shippingMethod": "standard",
+    "paymentMethod": "cod"
+  }
+]
