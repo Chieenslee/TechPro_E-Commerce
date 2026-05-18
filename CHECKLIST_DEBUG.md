@@ -16,6 +16,7 @@ Ngay kiem tra: 2026-05-18
 | Admin role guard | `pnpm lint`, `pnpm build` | PASS | `/admin` yeu cau dang nhap va user role `Admin`; user thuong bi redirect ve `/account`. |
 | SQL baseline | `database/schema.sql`, `database/seed.sql` | DA THEM | Co schema SQL Server/Azure SQL cho users/products/orders/reviews/newsletter/addresses/wishlist va seed ban dau. |
 | SQL runtime core APIs | `GET /api/system/storage`, Products, Auth/Users, Orders, Reviews, Newsletter | DA NOI | Backend co `SqlStore` cho Products CRUD, Users/Auth, Orders, ProductReviews va Newsletter; tu dung SQL neu `TechProDb` san sang, fallback JSON neu SQL/schema chua co. |
+| SQL data import | `database/import-json-data.ps1`, `sqlcmd`, API smoke | DA UP | Da tao DB `TechPro`, ap schema, import JSON hien co: 2 users, 61 products, 2 orders, 13 reviews, 1 newsletter subscriber. Backend restart va `/api/system/storage` bao `sql`. |
 | CI/CD baseline | `.github/workflows/ci.yml`, `.github/workflows/release-artifacts.yml` | DA THEM | CI chay frontend lint/build, backend build, verify SQL assets. Release workflow build frontend/backend va upload artifacts. |
 | Git status | `git status --short` | CO THAY DOI | Dang co nhieu file da sua/moi: frontend, backend, SQL database, CI/CD va file build/obj da track tu truoc. |
 
