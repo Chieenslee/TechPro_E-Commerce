@@ -2,6 +2,7 @@ import { lazy, Suspense, useContext } from 'react';
 import { BrowserRouter as Router, Navigate, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import LanguageToggle from './components/LanguageToggle';
 import { AuthContext } from './context/AuthContextValue';
 
 const Home = lazy(() => import('./pages/Home'));
@@ -58,6 +59,11 @@ function AppContent() {
   return (
     <div className="min-h-screen flex flex-col font-body-md bg-background text-on-background">
       {!isAuthPage && <Header />}
+      {isAuthPage && (
+        <div className="fixed right-4 top-4 z-[100]">
+          <LanguageToggle compact />
+        </div>
+      )}
       <main className="flex-1 flex flex-col relative">
         <Suspense fallback={<RouteLoading />}>
           <Routes>

@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { CartContext } from '../context/CartContextValue';
+import LanguageToggle from './LanguageToggle';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -70,6 +71,8 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center space-x-md">
+            <LanguageToggle />
+
             <button className="md:hidden text-on-surface hover:text-primary transition-colors" onClick={() => setMobileMenuOpen(true)} aria-label="Open search">
               <span className="material-symbols-outlined">search</span>
             </button>

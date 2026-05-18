@@ -2,7 +2,7 @@ import axiosClient from '../utils/axiosClient';
 
 const newsApi = {
   subscribe: (email) => {
-    return axiosClient.post('/newsletter/subscribe', { email });
+    return axiosClient.post('/newsletter/subscribe', { email: email.trim() });
   },
 
   getSubscribers: () => {

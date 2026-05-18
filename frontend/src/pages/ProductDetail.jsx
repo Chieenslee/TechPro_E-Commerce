@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { CartContext } from '../context/CartContextValue';
 import productApi from '../api/productApi';
 import { mockProducts } from '../data/mockProducts';
@@ -46,6 +46,7 @@ const renderStars = (rating, size = 20) => {
 
 const ProductDetail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -136,6 +137,17 @@ const ProductDetail = () => {
     } finally {
       setReviewSubmitting(false);
     }
+  };
+
+  const buildCartProduct = () => ({
+    ...product,
+    color: selectedColor,
+    storage: selectedStorage
+  });
+
+  const handleBuyNow = () => {
+    addToCart(buildCartProduct(), quantity);
+    navigate('/checkout');
   };
 
   if (loading) {
@@ -275,17 +287,16 @@ const ProductDetail = () => {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-4 mt-auto">
-            <Link to="/checkout" className="flex-1 bg-primary hover:bg-primary-fixed text-on-primary font-bold py-4 px-6 rounded-lg transition-all shadow-[0_0_20px_rgba(185,199,228,0.2)] hover:shadow-[0_0_30px_rgba(185,199,228,0.4)] text-label-md uppercase tracking-widest text-center btn-ripple">
+            <button
+              type="button"
+              onClick={handleBuyNow}
+              className="flex-1 bg-primary hover:bg-primary-fixed text-on-primary font-bold py-4 px-6 rounded-lg transition-all shadow-[0_0_20px_rgba(185,199,228,0.2)] hover:shadow-[0_0_30px_rgba(185,199,228,0.4)] text-label-md uppercase tracking-widest text-center btn-ripple"
+            >
               Buy Now
-            </Link>
+            </button>
             <button 
               onClick={() => {
-                const productToAdd = {
-                  ...product,
-                  color: selectedColor,
-                  storage: selectedStorage
-                };
-                addToCart(productToAdd, quantity);
+                addToCart(buildCartProduct(), quantity);
               }}
               className="flex-1 bg-surface-container hover:bg-surface-bright border border-outline-variant hover:border-primary text-on-surface font-semibold py-4 px-6 rounded-lg transition-colors text-label-md uppercase tracking-wide flex items-center justify-center gap-2 btn-ripple"
             >

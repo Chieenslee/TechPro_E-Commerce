@@ -31,8 +31,8 @@ const ProductList = () => {
       try {
         setLoading(true);
         const data = await productApi.getAll();
-        // Assuming API returns array directly. If it returns { items: [] }, adjust here
-        setProducts(data.length ? data : mockProducts); 
+        const productItems = Array.isArray(data) ? data : data?.items || data?.data || [];
+        setProducts(productItems.length ? productItems : mockProducts); 
       } catch (error) {
         console.error("Failed to fetch products, falling back to mock data", error);
         setProducts(mockProducts);

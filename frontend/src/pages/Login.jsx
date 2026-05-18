@@ -14,6 +14,10 @@ const Login = () => {
     password: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const demoAccounts = [
+    { label: 'Admin Demo', email: 'admin.demo@techpro.eng', password: '123456' },
+    { label: 'User Demo', email: 'user.demo@techpro.eng', password: '123456' }
+  ];
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -25,7 +29,7 @@ const Login = () => {
     setIsSubmitting(true);
     try {
       await login({ ...formData, mode });
-      navigate('/account');
+      navigate(location.state?.from || '/account');
     } finally {
       setIsSubmitting(false);
     }
@@ -95,6 +99,30 @@ const Login = () => {
             <div className="h-px bg-outline-variant flex-1"></div>
             <span className="font-label-sm text-label-sm text-on-surface-variant px-sm uppercase tracking-wider">or command line</span>
             <div className="h-px bg-outline-variant flex-1"></div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-sm mb-lg">
+            {demoAccounts.map(account => (
+              <button
+                key={account.email}
+                type="button"
+                onClick={() => {
+                  setMode('signin');
+                  setFormData({
+                    fullName: '',
+                    email: account.email,
+                    password: account.password
+                  });
+                }}
+                className="flex items-center justify-between gap-sm rounded-lg border border-primary/30 bg-primary/5 px-md py-sm text-left hover:bg-primary/10 hover:border-primary transition-all btn-ripple"
+              >
+                <span>
+                  <span className="block font-label-md text-label-md text-on-surface">{account.label}</span>
+                  <span className="block font-label-sm text-label-sm text-on-surface-variant">{account.email}</span>
+                </span>
+                <span className="material-symbols-outlined text-primary text-[20px]">badge</span>
+              </button>
+            ))}
           </div>
 
           {/* Form */}

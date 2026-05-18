@@ -70,6 +70,7 @@ jobs:
           test -s artifacts/backend/backend.dll
           test -s artifacts/database/schema.sql
           test -s artifacts/database/seed.sql
+          test -s artifacts/database/import-json-data.ps1
 
       - name: Upload artifact bundle
         uses: actions/upload-artifact@v4

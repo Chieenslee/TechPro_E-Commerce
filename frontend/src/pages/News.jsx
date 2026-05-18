@@ -1,23 +1,68 @@
 
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import newsApi from '../api/newsApi';
+
+const trendingReviews = [
+  {
+    id: 1,
+    title: "Zenith Pro Laptop (2024): The Developer's Dream",
+    rating: '9.5/10',
+    productId: 11
+  },
+  {
+    id: 2,
+    title: 'Aura Sync Wireless Earbuds: Noise Cancellation Perfected',
+    rating: '8.8/10',
+    productId: 31
+  },
+  {
+    id: 3,
+    title: 'Titan Forge RTX Desktop: Uncompromised Rendering',
+    rating: '9.0/10',
+    productId: 21
+  },
+  {
+    id: 4,
+    title: 'Lumina Smart Home Hub: Tying It All Together',
+    rating: '8.2/10',
+    productId: 51
+  }
+];
 
 const News = () => {
   const [newsletterEmail, setNewsletterEmail] = useState('');
-  const [newsletterStatus, setNewsletterStatus] = useState('');
+  const [newsletterStatus, setNewsletterStatus] = useState(null);
   const [isSubscribing, setIsSubscribing] = useState(false);
 
   const handleNewsletterSubmit = async (event) => {
     event.preventDefault();
+    const email = newsletterEmail.trim();
+
+    if (!email) {
+      setNewsletterStatus({
+        type: 'error',
+        message: 'Please enter a valid email address.'
+      });
+      return;
+    }
+
     setIsSubscribing(true);
-    setNewsletterStatus('');
+    setNewsletterStatus(null);
     try {
-      await newsApi.subscribe(newsletterEmail);
-      setNewsletterStatus('Subscription active. Daily brief is now linked to your inbox.');
+      await newsApi.subscribe(email);
+      setNewsletterStatus({
+        type: 'success',
+        message: 'Subscription active. Daily brief is now linked to your inbox.'
+      });
       setNewsletterEmail('');
     } catch (error) {
       console.error('Newsletter subscribe failed', error);
-      setNewsletterStatus('Subscription failed. Please verify the email and try again.');
+      const message = error.response?.data?.message || 'Subscription failed. Please verify the email and try again.';
+      setNewsletterStatus({
+        type: 'error',
+        message
+      });
     } finally {
       setIsSubscribing(false);
     }
@@ -137,6 +182,7 @@ const News = () => {
                 required
                 type="email"
                 value={newsletterEmail}
+                disabled={isSubscribing}
                 onChange={(event) => setNewsletterEmail(event.target.value)}
               />
             </div>
@@ -144,8 +190,12 @@ const News = () => {
               {isSubscribing ? 'Subscribing...' : 'Subscribe'}
             </button>
             {newsletterStatus && (
-              <p className="font-label-sm text-primary bg-primary/10 border border-primary/20 rounded-lg px-3 py-2">
-                {newsletterStatus}
+              <p className={`font-label-sm rounded-lg px-3 py-2 ${
+                newsletterStatus.type === 'success'
+                  ? 'text-primary bg-primary/10 border border-primary/20'
+                  : 'text-error bg-error/10 border border-error/20'
+              }`}>
+                {newsletterStatus.message}
               </p>
             )}
           </form>
@@ -157,37 +207,20 @@ const News = () => {
             <span className="material-symbols-outlined text-primary">trending_up</span> Trending Reviews
           </h2>
           <div className="flex flex-col gap-4 stagger-children">
-            <a className="flex gap-4 group p-2 hover:bg-white/5 rounded-lg transition-colors cursor-pointer" href="#">
-              <div className="font-headline-lg font-bold text-outline-variant group-hover:text-primary transition-colors">01</div>
-              <div className="flex flex-col gap-1">
-                <h4 className="font-body-lg font-medium text-on-surface group-hover:text-primary transition-colors">Zenith Pro Laptop (2024): The Developer's Dream</h4>
-                <span className="font-mono text-[11px] text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded w-fit">Rating: 9.5/10</span>
+            {trendingReviews.map((review, index) => (
+              <div key={review.id} className="flex flex-col gap-4">
+                <Link className="flex gap-4 group p-2 hover:bg-white/5 rounded-lg transition-colors cursor-pointer" to={`/products/${review.productId}`}>
+                  <div className="font-headline-lg font-bold text-outline-variant group-hover:text-primary transition-colors">
+                    {String(index + 1).padStart(2, '0')}
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <h4 className="font-body-lg font-medium text-on-surface group-hover:text-primary transition-colors">{review.title}</h4>
+                    <span className="font-mono text-[11px] text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded w-fit">Rating: {review.rating}</span>
+                  </div>
+                </Link>
+                {index < trendingReviews.length - 1 && <div className="h-px bg-outline-variant/20 w-full"></div>}
               </div>
-            </a>
-            <div className="h-px bg-outline-variant/20 w-full"></div>
-            <a className="flex gap-4 group p-2 hover:bg-white/5 rounded-lg transition-colors cursor-pointer" href="#">
-              <div className="font-headline-lg font-bold text-outline-variant group-hover:text-primary transition-colors">02</div>
-              <div className="flex flex-col gap-1">
-                <h4 className="font-body-lg font-medium text-on-surface group-hover:text-primary transition-colors">Aura Sync Wireless Earbuds: Noise Cancellation Perfected</h4>
-                <span className="font-mono text-[11px] text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded w-fit">Rating: 8.8/10</span>
-              </div>
-            </a>
-            <div className="h-px bg-outline-variant/20 w-full"></div>
-            <a className="flex gap-4 group p-2 hover:bg-white/5 rounded-lg transition-colors cursor-pointer" href="#">
-              <div className="font-headline-lg font-bold text-outline-variant group-hover:text-primary transition-colors">03</div>
-              <div className="flex flex-col gap-1">
-                <h4 className="font-body-lg font-medium text-on-surface group-hover:text-primary transition-colors">Titan Forge RTX Desktop: Uncompromised Rendering</h4>
-                <span className="font-mono text-[11px] text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded w-fit">Rating: 9.0/10</span>
-              </div>
-            </a>
-            <div className="h-px bg-outline-variant/20 w-full"></div>
-            <a className="flex gap-4 group p-2 hover:bg-white/5 rounded-lg transition-colors cursor-pointer" href="#">
-              <div className="font-headline-lg font-bold text-outline-variant group-hover:text-primary transition-colors">04</div>
-              <div className="flex flex-col gap-1">
-                <h4 className="font-body-lg font-medium text-on-surface group-hover:text-primary transition-colors">Lumina Smart Home Hub: Tying It All Together</h4>
-                <span className="font-mono text-[11px] text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded w-fit">Rating: 8.2/10</span>
-              </div>
-            </a>
+            ))}
           </div>
         </div>
       </aside>

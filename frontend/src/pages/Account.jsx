@@ -40,7 +40,12 @@ const getInitialAddresses = (user) => {
   if (!user?.email) return [];
 
   const storageKey = `techpro_addresses_${user.email}`;
-  const storedAddresses = JSON.parse(localStorage.getItem(storageKey) || '[]');
+  let storedAddresses = [];
+  try {
+    storedAddresses = JSON.parse(localStorage.getItem(storageKey) || '[]');
+  } catch (error) {
+    console.error('Failed to parse stored addresses', error);
+  }
   if (storedAddresses.length > 0) {
     return storedAddresses;
   }
@@ -58,6 +63,18 @@ const getInitialAddresses = (user) => {
   return defaultAddress;
 };
 
+const canUseAccountApi = (user) => Number.isInteger(Number(user?.id));
+
+const getLocalWishlistIds = (user) => {
+  if (!user?.email) return [];
+  try {
+    return JSON.parse(localStorage.getItem(`techpro_wishlist_${user.email}`) || '[]');
+  } catch (error) {
+    console.error('Failed to parse stored wishlist', error);
+    return [];
+  }
+};
+
 const Account = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user, logout, updateUser } = useContext(AuthContext);
@@ -67,7 +84,7 @@ const Account = () => {
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [ordersError, setOrdersError] = useState('');
   const [profileForm, setProfileForm] = useState(() => ({
-    name: user?.name || '',
+    name: user?.name || user?.fullName || '',
     email: user?.email || ''
   }));
   const [addresses, setAddresses] = useState(() => getInitialAddresses(user));
@@ -100,12 +117,49 @@ const Account = () => {
   }, [isAuthenticated, user?.email]);
 
   useEffect(() => {
+    const loadAddresses = async () => {
+      if (!isAuthenticated || !canUseAccountApi(user)) return;
+
+      try {
+        const apiAddresses = await userApi.getAddresses(user.id);
+        setAddresses(apiAddresses);
+        if (user.email) {
+          localStorage.setItem(`techpro_addresses_${user.email}`, JSON.stringify(apiAddresses));
+        }
+      } catch (error) {
+        console.error('Failed to load addresses', error);
+        setAccountNotice('Backend address book is unavailable, using local address data.');
+      }
+    };
+
+    loadAddresses();
+  }, [isAuthenticated, user]);
+
+  useEffect(() => {
     const loadWishlist = async () => {
       if (!isAuthenticated || !user?.email) return;
 
       const storageKey = `techpro_wishlist_${user.email}`;
-      const storedIds = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      const wishlistIds = storedIds.length > 0 ? storedIds : [1, 2, 3];
+      const storedIds = getLocalWishlistIds(user);
+      let wishlistIds = storedIds.length > 0 ? storedIds : [1, 2, 3];
+
+      if (canUseAccountApi(user)) {
+        try {
+          const apiWishlist = await userApi.getWishlist(user.id);
+          if (apiWishlist.length > 0) {
+            setWishlist(apiWishlist);
+            localStorage.setItem(storageKey, JSON.stringify(apiWishlist.map(product => product.id)));
+            return;
+          }
+
+          if (wishlistIds.length > 0) {
+            await userApi.saveWishlist(user.id, wishlistIds);
+          }
+        } catch (error) {
+          console.error('Failed to sync wishlist', error);
+          setAccountNotice('Backend wishlist is unavailable, using local wishlist data.');
+        }
+      }
 
       if (storedIds.length === 0) {
         localStorage.setItem(storageKey, JSON.stringify(wishlistIds));
@@ -124,7 +178,7 @@ const Account = () => {
     };
 
     loadWishlist();
-  }, [isAuthenticated, user?.email]);
+  }, [isAuthenticated, user]);
 
   const saveAddresses = (nextAddresses) => {
     if (!user?.email) return;
@@ -168,7 +222,7 @@ const Account = () => {
     setEditingAddressId(null);
   };
 
-  const handleSaveAddress = (event) => {
+  const handleSaveAddress = async (event) => {
     event.preventDefault();
     const nextAddress = {
       ...addressForm,
@@ -180,9 +234,31 @@ const Account = () => {
     const normalized = nextAddress.isDefault
       ? merged.map(address => ({ ...address, isDefault: address.id === nextAddress.id }))
       : merged;
+
+    if (canUseAccountApi(user)) {
+      try {
+        const apiAddress = {
+          ...nextAddress,
+          id: Number.isInteger(Number(editingAddressId)) ? Number(editingAddressId) : 0
+        };
+        const saved = await userApi.saveAddress(user.id, apiAddress);
+        const next = editingAddressId
+          ? addresses.map(address => address.id === editingAddressId ? saved : address)
+          : [...addresses, saved];
+        saveAddresses(saved.isDefault
+          ? next.map(address => ({ ...address, isDefault: address.id === saved.id }))
+          : next);
+        resetAddressForm();
+        setAccountNotice('Address book synced.');
+        return;
+      } catch (error) {
+        console.error('Failed to save address', error);
+        setAccountNotice('Could not sync address to backend, saved locally.');
+      }
+    }
+
     saveAddresses(normalized);
     resetAddressForm();
-    setAccountNotice('Address book updated.');
   };
 
   const handleEditAddress = (address) => {
@@ -190,15 +266,34 @@ const Account = () => {
     setAddressForm(address);
   };
 
-  const handleDeleteAddress = (id) => {
+  const handleDeleteAddress = async (id) => {
+    if (canUseAccountApi(user) && Number.isInteger(Number(id))) {
+      try {
+        await userApi.deleteAddress(user.id, id);
+        setAccountNotice('Address removed from backend.');
+      } catch (error) {
+        console.error('Failed to delete address', error);
+        setAccountNotice('Could not sync address delete, removed locally.');
+      }
+    }
+
     saveAddresses(addresses.filter(address => address.id !== id));
     if (editingAddressId === id) resetAddressForm();
   };
 
-  const handleRemoveWishlist = (productId) => {
+  const handleRemoveWishlist = async (productId) => {
     const nextWishlist = wishlist.filter(product => product.id !== productId);
     localStorage.setItem(`techpro_wishlist_${user.email}`, JSON.stringify(nextWishlist.map(product => product.id)));
     setWishlist(nextWishlist);
+
+    if (!canUseAccountApi(user)) return;
+
+    try {
+      await userApi.removeWishlistItem(user.id, productId);
+    } catch (error) {
+      console.error('Failed to remove wishlist item', error);
+      setAccountNotice('Wishlist item was removed locally but backend sync failed.');
+    }
   };
 
   const handleLogout = () => {

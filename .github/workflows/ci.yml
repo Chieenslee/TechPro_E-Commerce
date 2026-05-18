@@ -96,6 +96,7 @@ jobs:
         run: |
           test -s database/schema.sql
           test -s database/seed.sql
+          test -s database/import-json-data.ps1
           grep -q "CREATE TABLE dbo.Products" database/schema.sql
           grep -q "CREATE TABLE dbo.Orders" database/schema.sql
           grep -q "CREATE TABLE dbo.Users" database/schema.sql
@@ -103,3 +104,20 @@ jobs:
           grep -q "CREATE INDEX IX_Products_Category" database/schema.sql
           grep -q "INSERT INTO dbo.Products" database/seed.sql
           grep -q "INSERT INTO dbo.Users" database/seed.sql
+          grep -q "NewsletterSubscribers" database/import-json-data.ps1
+          grep -q "OrderItems" database/import-json-data.ps1
+
+      - name: Validate import script syntax
+        shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path "database/import-json-data.ps1"),
+            [ref]$tokens,
+            [ref]$errors
+          ) | Out-Null
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Error $_.Message }
+            exit 1
+          }

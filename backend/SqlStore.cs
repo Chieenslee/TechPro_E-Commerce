@@ -245,6 +245,135 @@ sealed class SqlStore
         return (await ReadUsersAsync(command)).FirstOrDefault();
     }
 
+    public async Task<List<AccountAddress>> GetAddressesAsync(int userId)
+    {
+        await using var connection = await OpenAsync();
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT Id, UserId, Label, Recipient, Phone, Line1, City, IsDefault, CreatedAt
+            FROM dbo.Addresses
+            WHERE UserId = @userId
+            ORDER BY IsDefault DESC, CreatedAt DESC
+            """;
+        command.Parameters.AddWithValue("@userId", userId);
+        return await ReadAddressesAsync(command);
+    }
+
+    public async Task<AccountAddress?> SaveAddressAsync(int userId, AccountAddressRequest request)
+    {
+        await using var connection = await OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        if (request.IsDefault)
+        {
+            await using var clearDefault = connection.CreateCommand();
+            clearDefault.Transaction = (SqlTransaction)transaction;
+            clearDefault.CommandText = "UPDATE dbo.Addresses SET IsDefault = 0 WHERE UserId = @userId";
+            clearDefault.Parameters.AddWithValue("@userId", userId);
+            await clearDefault.ExecuteNonQueryAsync();
+        }
+
+        await using var command = connection.CreateCommand();
+        command.Transaction = (SqlTransaction)transaction;
+        if (request.Id is > 0)
+        {
+            command.CommandText = """
+                UPDATE dbo.Addresses
+                SET Label = @label,
+                    Recipient = @recipient,
+                    Phone = @phone,
+                    Line1 = @line1,
+                    City = @city,
+                    IsDefault = @isDefault
+                OUTPUT INSERTED.Id, INSERTED.UserId, INSERTED.Label, INSERTED.Recipient, INSERTED.Phone,
+                       INSERTED.Line1, INSERTED.City, INSERTED.IsDefault, INSERTED.CreatedAt
+                WHERE Id = @id AND UserId = @userId
+                """;
+            command.Parameters.AddWithValue("@id", request.Id.Value);
+        }
+        else
+        {
+            command.CommandText = """
+                INSERT INTO dbo.Addresses (UserId, Label, Recipient, Phone, Line1, City, IsDefault)
+                OUTPUT INSERTED.Id, INSERTED.UserId, INSERTED.Label, INSERTED.Recipient, INSERTED.Phone,
+                       INSERTED.Line1, INSERTED.City, INSERTED.IsDefault, INSERTED.CreatedAt
+                VALUES (@userId, @label, @recipient, @phone, @line1, @city, @isDefault)
+                """;
+        }
+
+        AddAddressParameters(command, userId, request);
+        var saved = (await ReadAddressesAsync(command)).FirstOrDefault();
+        await transaction.CommitAsync();
+        return saved;
+    }
+
+    public async Task<bool> DeleteAddressAsync(int userId, int addressId)
+    {
+        await using var connection = await OpenAsync();
+        await using var command = connection.CreateCommand();
+        command.CommandText = "DELETE FROM dbo.Addresses WHERE Id = @id AND UserId = @userId";
+        command.Parameters.AddWithValue("@id", addressId);
+        command.Parameters.AddWithValue("@userId", userId);
+        return await command.ExecuteNonQueryAsync() > 0;
+    }
+
+    public async Task<List<Product>> GetWishlistAsync(int userId)
+    {
+        await using var connection = await OpenAsync();
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT p.Id, p.Name, p.Category, p.Price, p.OriginalPrice, p.Rating, p.Sku, p.Image, p.IsNew, p.OnSale,
+                   STRING_AGG(t.Tag, ',') AS Tags
+            FROM dbo.WishlistItems w
+            INNER JOIN dbo.Products p ON p.Id = w.ProductId
+            LEFT JOIN dbo.ProductTags t ON t.ProductId = p.Id
+            WHERE w.UserId = @userId
+            GROUP BY p.Id, p.Name, p.Category, p.Price, p.OriginalPrice, p.Rating, p.Sku, p.Image, p.IsNew, p.OnSale, w.CreatedAt
+            ORDER BY w.CreatedAt DESC
+            """;
+        command.Parameters.AddWithValue("@userId", userId);
+        return await ReadProductsAsync(command);
+    }
+
+    public async Task SaveWishlistAsync(int userId, IEnumerable<int> productIds)
+    {
+        await using var connection = await OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        await using var delete = connection.CreateCommand();
+        delete.Transaction = (SqlTransaction)transaction;
+        delete.CommandText = "DELETE FROM dbo.WishlistItems WHERE UserId = @userId";
+        delete.Parameters.AddWithValue("@userId", userId);
+        await delete.ExecuteNonQueryAsync();
+
+        foreach (var productId in productIds.Where(id => id > 0).Distinct())
+        {
+            await using var insert = connection.CreateCommand();
+            insert.Transaction = (SqlTransaction)transaction;
+            insert.CommandText = """
+                IF EXISTS (SELECT 1 FROM dbo.Products WHERE Id = @productId)
+                BEGIN
+                    INSERT INTO dbo.WishlistItems (UserId, ProductId) VALUES (@userId, @productId)
+                END
+                """;
+            insert.Parameters.AddWithValue("@userId", userId);
+            insert.Parameters.AddWithValue("@productId", productId);
+            await insert.ExecuteNonQueryAsync();
+        }
+
+        await transaction.CommitAsync();
+    }
+
+    public async Task<bool> DeleteWishlistItemAsync(int userId, int productId)
+    {
+        await using var connection = await OpenAsync();
+        await using var command = connection.CreateCommand();
+        command.CommandText = "DELETE FROM dbo.WishlistItems WHERE UserId = @userId AND ProductId = @productId";
+        command.Parameters.AddWithValue("@userId", userId);
+        command.Parameters.AddWithValue("@productId", productId);
+        return await command.ExecuteNonQueryAsync() > 0;
+    }
+
     public async Task<List<Order>> GetOrdersAsync(string? email = null)
     {
         await using var connection = await OpenAsync();
@@ -545,6 +674,28 @@ sealed class SqlStore
         return reviews;
     }
 
+    private static async Task<List<AccountAddress>> ReadAddressesAsync(SqlCommand command)
+    {
+        var addresses = new List<AccountAddress>();
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            addresses.Add(new AccountAddress(
+                reader.GetInt32(reader.GetOrdinal("Id")),
+                reader.GetInt32(reader.GetOrdinal("UserId")),
+                reader.GetString(reader.GetOrdinal("Label")),
+                reader.GetString(reader.GetOrdinal("Recipient")),
+                reader.GetString(reader.GetOrdinal("Phone")),
+                reader.GetString(reader.GetOrdinal("Line1")),
+                reader.GetString(reader.GetOrdinal("City")),
+                reader.GetBoolean(reader.GetOrdinal("IsDefault")),
+                reader.GetFieldValue<DateTimeOffset>(reader.GetOrdinal("CreatedAt"))
+            ));
+        }
+
+        return addresses;
+    }
+
     private static async Task<List<Order>> AttachOrderItemsAsync(SqlConnection connection, List<Order> orders)
     {
         var hydratedOrders = new List<Order>();
@@ -644,6 +795,17 @@ sealed class SqlStore
         command.Parameters.AddWithValue("@email", user.Email);
         command.Parameters.AddWithValue("@role", user.Role);
         command.Parameters.AddWithValue("@status", user.Status);
+    }
+
+    private static void AddAddressParameters(SqlCommand command, int userId, AccountAddressRequest request)
+    {
+        command.Parameters.AddWithValue("@userId", userId);
+        command.Parameters.AddWithValue("@label", string.IsNullOrWhiteSpace(request.Label) ? "Address" : request.Label.Trim());
+        command.Parameters.AddWithValue("@recipient", string.IsNullOrWhiteSpace(request.Recipient) ? "TechPro Customer" : request.Recipient.Trim());
+        command.Parameters.AddWithValue("@phone", string.IsNullOrWhiteSpace(request.Phone) ? "" : request.Phone.Trim());
+        command.Parameters.AddWithValue("@line1", string.IsNullOrWhiteSpace(request.Line1) ? "" : request.Line1.Trim());
+        command.Parameters.AddWithValue("@city", string.IsNullOrWhiteSpace(request.City) ? "" : request.City.Trim());
+        command.Parameters.AddWithValue("@isDefault", request.IsDefault);
     }
 
     private static UserAccount ToUser(int id, UserRequest request)

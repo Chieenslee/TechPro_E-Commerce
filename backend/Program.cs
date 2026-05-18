@@ -36,6 +36,7 @@ var orderStorePath = Path.Combine(dataDirectory, "orders.json");
 var userStorePath = Path.Combine(dataDirectory, "users.json");
 var newsletterStorePath = Path.Combine(dataDirectory, "newsletterSubscribers.json");
 var reviewStorePath = Path.Combine(dataDirectory, "reviews.json");
+var accountStorePath = Path.Combine(dataDirectory, "accountData.json");
 
 var products = LoadList<Product>(productStorePath);
 if (products.Count == 0)
@@ -58,6 +59,7 @@ if (users.Count == 0)
     SaveList(userStorePath, users);
 }
 var newsletterSubscribers = LoadList<NewsletterSubscriber>(newsletterStorePath);
+var accountData = LoadList<UserAccountData>(accountStorePath);
 
 app.MapPost("/api/auth/login", async (LoginRequest request) =>
 {
@@ -275,6 +277,138 @@ app.MapGet("/api/system/storage", () =>
     });
 })
 .WithName("GetStorageStatus");
+
+app.MapGet("/api/users/{id:int}/addresses", async (int id) =>
+{
+    if (!UserExists(id))
+    {
+        return Results.NotFound();
+    }
+
+    if (useSqlProducts)
+    {
+        return Results.Ok(await sqlStore.GetAddressesAsync(id));
+    }
+
+    return Results.Ok(GetUserData(id).Addresses.OrderByDescending(address => address.IsDefault).ThenByDescending(address => address.CreatedAt));
+})
+.WithName("GetUserAddresses");
+
+app.MapPost("/api/users/{id:int}/addresses", async (int id, AccountAddressRequest request) =>
+{
+    if (!UserExists(id))
+    {
+        return Results.NotFound();
+    }
+
+    if (useSqlProducts)
+    {
+        var saved = await sqlStore.SaveAddressAsync(id, request);
+        return saved is null ? Results.NotFound() : Results.Ok(saved);
+    }
+
+    var userData = GetUserData(id);
+    var addressId = request.Id is > 0 ? request.Id.Value : NextAddressId();
+    var address = ToAddress(id, addressId, request);
+    var index = userData.Addresses.FindIndex(item => item.Id == addressId);
+    if (index >= 0)
+    {
+        userData.Addresses[index] = address;
+    }
+    else
+    {
+        userData.Addresses.Add(address);
+    }
+
+    if (address.IsDefault)
+    {
+        for (var addressIndex = 0; addressIndex < userData.Addresses.Count; addressIndex++)
+        {
+            userData.Addresses[addressIndex] = userData.Addresses[addressIndex] with { IsDefault = userData.Addresses[addressIndex].Id == address.Id };
+        }
+    }
+
+    SaveList(accountStorePath, accountData);
+    return Results.Ok(address);
+})
+.WithName("SaveUserAddress");
+
+app.MapDelete("/api/users/{id:int}/addresses/{addressId:int}", async (int id, int addressId) =>
+{
+    if (!UserExists(id))
+    {
+        return Results.NotFound();
+    }
+
+    if (useSqlProducts)
+    {
+        return await sqlStore.DeleteAddressAsync(id, addressId) ? Results.NoContent() : Results.NotFound();
+    }
+
+    var userData = GetUserData(id);
+    var removed = userData.Addresses.RemoveAll(address => address.Id == addressId) > 0;
+    SaveList(accountStorePath, accountData);
+    return removed ? Results.NoContent() : Results.NotFound();
+})
+.WithName("DeleteUserAddress");
+
+app.MapGet("/api/users/{id:int}/wishlist", async (int id) =>
+{
+    if (!UserExists(id))
+    {
+        return Results.NotFound();
+    }
+
+    if (useSqlProducts)
+    {
+        return Results.Ok(await sqlStore.GetWishlistAsync(id));
+    }
+
+    var wishlistIds = GetUserData(id).WishlistProductIds;
+    return Results.Ok(products.Where(product => wishlistIds.Contains(product.Id)));
+})
+.WithName("GetUserWishlist");
+
+app.MapPut("/api/users/{id:int}/wishlist", async (int id, WishlistRequest request) =>
+{
+    if (!UserExists(id))
+    {
+        return Results.NotFound();
+    }
+
+    var productIds = (request.ProductIds ?? new List<int>()).Where(productId => productId > 0).Distinct().ToList();
+    if (useSqlProducts)
+    {
+        await sqlStore.SaveWishlistAsync(id, productIds);
+        return Results.Ok(await sqlStore.GetWishlistAsync(id));
+    }
+
+    var userData = GetUserData(id);
+    userData.WishlistProductIds.Clear();
+    userData.WishlistProductIds.AddRange(productIds);
+    SaveList(accountStorePath, accountData);
+    return Results.Ok(products.Where(product => productIds.Contains(product.Id)));
+})
+.WithName("SaveUserWishlist");
+
+app.MapDelete("/api/users/{id:int}/wishlist/{productId:int}", async (int id, int productId) =>
+{
+    if (!UserExists(id))
+    {
+        return Results.NotFound();
+    }
+
+    if (useSqlProducts)
+    {
+        return await sqlStore.DeleteWishlistItemAsync(id, productId) ? Results.NoContent() : Results.NotFound();
+    }
+
+    var userData = GetUserData(id);
+    var removed = userData.WishlistProductIds.Remove(productId);
+    SaveList(accountStorePath, accountData);
+    return removed ? Results.NoContent() : Results.NotFound();
+})
+.WithName("DeleteUserWishlistItem");
 
 app.MapGet("/api/products", async (string? category, string? q) =>
 {
@@ -680,6 +814,45 @@ static UserAccount ToUser(int id, UserRequest request)
 
 static UserProfile ToProfile(UserAccount user) => new(user.Id, user.Name, user.Email, user.Role, user.Status);
 
+bool UserExists(int id)
+{
+    return useSqlProducts || users.Any(user => user.Id == id);
+}
+
+UserAccountData GetUserData(int userId)
+{
+    var existing = accountData.FirstOrDefault(item => item.UserId == userId);
+    if (existing is not null)
+    {
+        return existing;
+    }
+
+    existing = new UserAccountData(userId, new List<AccountAddress>(), new List<int>());
+    accountData.Add(existing);
+    return existing;
+}
+
+int NextAddressId()
+{
+    var maxId = accountData.SelectMany(item => item.Addresses).Select(address => address.Id).DefaultIfEmpty(0).Max();
+    return maxId + 1;
+}
+
+static AccountAddress ToAddress(int userId, int id, AccountAddressRequest request)
+{
+    return new AccountAddress(
+        id,
+        userId,
+        string.IsNullOrWhiteSpace(request.Label) ? "Address" : request.Label.Trim(),
+        string.IsNullOrWhiteSpace(request.Recipient) ? "TechPro Customer" : request.Recipient.Trim(),
+        string.IsNullOrWhiteSpace(request.Phone) ? "" : request.Phone.Trim(),
+        string.IsNullOrWhiteSpace(request.Line1) ? "" : request.Line1.Trim(),
+        string.IsNullOrWhiteSpace(request.City) ? "" : request.City.Trim(),
+        request.IsDefault,
+        DateTimeOffset.UtcNow
+    );
+}
+
 static List<T> LoadList<T>(string path)
 {
     if (!File.Exists(path))
@@ -731,6 +904,24 @@ record UserAccount(
 );
 
 record UserRequest(string? Name, string? Email, string? Role, string? Status);
+
+record UserAccountData(int UserId, List<AccountAddress> Addresses, List<int> WishlistProductIds);
+
+record AccountAddress(
+    int Id,
+    int UserId,
+    string Label,
+    string Recipient,
+    string Phone,
+    string Line1,
+    string City,
+    bool IsDefault,
+    DateTimeOffset CreatedAt
+);
+
+record AccountAddressRequest(int? Id, string? Label, string? Recipient, string? Phone, string? Line1, string? City, bool IsDefault);
+
+record WishlistRequest(List<int>? ProductIds);
 
 record NewsletterRequest(string? Email);
 

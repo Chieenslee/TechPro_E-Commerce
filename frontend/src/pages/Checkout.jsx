@@ -4,27 +4,37 @@ import { CartContext } from '../context/CartContextValue';
 import { AuthContext } from '../context/AuthContextValue';
 import orderApi from '../api/orderApi';
 
+const getStoredUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem('techpro_user') || 'null');
+  } catch (error) {
+    console.error('Failed to parse checkout user', error);
+    return null;
+  }
+};
+
 const Checkout = () => {
-  const [formData, setFormData] = useState({
-    fullName: '',
+  const { cartItems, cartTotalAmount, clearCart } = useContext(CartContext);
+  const { isAuthenticated, user } = useContext(AuthContext);
+  const storedUser = user || getStoredUser();
+
+  const [formData, setFormData] = useState(() => ({
+    fullName: storedUser?.fullName || storedUser?.name || '',
     phone: '',
-    email: '',
+    email: storedUser?.email || '',
     city: '',
     district: '',
     ward: '',
     address: '',
     shipping: 'standard',
     payment: 'cod'
-  });
+  }));
 
   const [promoCode, setPromoCode] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderNumber, setOrderNumber] = useState('');
   const [submitError, setSubmitError] = useState('');
-
-  const { cartItems, cartTotalAmount, clearCart } = useContext(CartContext);
-  const { isAuthenticated, user } = useContext(AuthContext);
 
   const subtotal = cartTotalAmount;
   const shippingFee = formData.shipping === 'express' ? 15.00 : 0.00;
@@ -34,6 +44,21 @@ const Checkout = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const fillDemoCheckout = () => {
+    setFormData(prev => ({
+      ...prev,
+      fullName: user?.fullName || user?.name || 'User Demo',
+      phone: '0900000000',
+      email: user?.email || 'user.demo@techpro.eng',
+      city: 'HCM',
+      district: 'D1',
+      ward: 'W1',
+      address: '1 Nguyen Hue, Ben Nghe',
+      shipping: prev.shipping || 'standard',
+      payment: prev.payment || 'cod'
+    }));
   };
 
   const buildOrderPayload = () => ({
@@ -163,13 +188,13 @@ const Checkout = () => {
               </p>
               
               <div className="flex flex-col w-full gap-3 mt-sm">
-                <Link to="/login" className="w-full py-3 bg-primary text-on-primary font-label-md rounded-lg glow-primary glow-primary-hover transition-all flex justify-center items-center gap-2 btn-ripple group overflow-hidden relative">
+                <Link to="/login" state={{ from: '/checkout' }} className="w-full py-3 bg-primary text-on-primary font-label-md rounded-lg glow-primary glow-primary-hover transition-all flex justify-center items-center gap-2 btn-ripple group overflow-hidden relative">
                   <div className="absolute inset-0 bg-white/20 w-1/2 -skew-x-12 -translate-x-[150%] group-hover:animate-[ticker_1s_ease-in-out]"></div>
                   <span className="material-symbols-outlined text-[20px] z-10">login</span>
                   <span className="z-10 uppercase tracking-wider text-[12px] font-bold">Initialize Link</span>
                 </Link>
                 
-                <Link to="/login" state={{ mode: 'register' }} className="w-full py-3 bg-surface border border-outline-variant hover:border-primary text-on-surface hover:text-primary font-label-md rounded-lg transition-all flex justify-center items-center gap-2 btn-ripple">
+                <Link to="/login" state={{ mode: 'register', from: '/checkout' }} className="w-full py-3 bg-surface border border-outline-variant hover:border-primary text-on-surface hover:text-primary font-label-md rounded-lg transition-all flex justify-center items-center gap-2 btn-ripple">
                   <span className="uppercase tracking-wider text-[12px] font-bold">Create Identity</span>
                 </Link>
               </div>
@@ -185,6 +210,13 @@ const Checkout = () => {
               <div className="flex items-center gap-3 mb-sm border-b border-outline-variant/30 pb-sm">
                 <span className="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-full">person</span>
                 <h2 className="font-headline-md text-on-surface">Customer Information</h2>
+                <button
+                  type="button"
+                  onClick={fillDemoCheckout}
+                  className="ml-auto rounded-lg border border-primary/40 bg-primary/10 px-3 py-2 text-label-sm font-semibold text-primary hover:bg-primary hover:text-on-primary transition-colors btn-ripple"
+                >
+                  Demo Fill
+                </button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-md">
                 <div className="space-y-xs">
