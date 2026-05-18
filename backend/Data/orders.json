@@ -1,5 +1,36 @@
 [
   {
+    "orderNumber": "TP-260518004236",
+    "createdAt": "2026-05-18T00:42:36.0447037+00:00",
+    "status": "Packed",
+    "customer": {
+      "fullName": "Test Customer",
+      "phone": "0900000000",
+      "email": "test.orders@techpro.eng",
+      "city": "HCM",
+      "district": "1",
+      "ward": "Ben Nghe",
+      "address": "1 Nguyen Hue"
+    },
+    "items": [
+      {
+        "id": 1,
+        "name": "TP Test Item",
+        "price": 199,
+        "quantity": 1,
+        "image": "",
+        "category": "phones",
+        "storage": "128GB"
+      }
+    ],
+    "subtotal": 199,
+    "shippingFee": 0,
+    "discount": 0,
+    "total": 199,
+    "shippingMethod": "standard",
+    "paymentMethod": "cod"
+  },
+  {
     "orderNumber": "TP-260517122514",
     "createdAt": "2026-05-17T12:25:14.3353321+00:00",
     "status": "Delivered",

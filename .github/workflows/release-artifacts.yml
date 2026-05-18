@@ -1,0 +1,79 @@
+name: Release Artifacts
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-artifacts-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  package:
+    name: Build deployable artifacts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: frontend/pnpm-lock.yaml
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint frontend
+        working-directory: frontend
+        run: pnpm lint
+
+      - name: Build frontend
+        working-directory: frontend
+        run: pnpm build
+
+      - name: Publish backend
+        working-directory: backend
+        run: dotnet publish --configuration Release --output ../artifacts/backend
+
+      - name: Package frontend
+        shell: bash
+        run: |
+          mkdir -p artifacts/frontend
+          cp -R frontend/dist/. artifacts/frontend/
+          cp -R database artifacts/database
+
+      - name: Verify artifact bundle
+        shell: bash
+        run: |
+          test -s artifacts/frontend/index.html
+          test -s artifacts/backend/backend.dll
+          test -s artifacts/database/schema.sql
+          test -s artifacts/database/seed.sql
+
+      - name: Upload artifact bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: techpro-release
+          path: artifacts
+          retention-days: 14

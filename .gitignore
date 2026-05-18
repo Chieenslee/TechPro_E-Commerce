@@ -1,0 +1,16 @@
+# Build output
+backend/bin/
+backend/obj/
+frontend/dist/
+
+# Runtime local data
+backend/Data/
+
+# Dependencies
+frontend/node_modules/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

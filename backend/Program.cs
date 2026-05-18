@@ -25,6 +25,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseCors("TechProFrontend");
 
+var sqlStore = new SqlStore(builder.Configuration.GetConnectionString("TechProDb"));
+var useSqlProducts = await sqlStore.CanConnectAsync();
+
 var dataDirectory = Path.Combine(app.Environment.ContentRootPath, "Data");
 Directory.CreateDirectory(dataDirectory);
 
@@ -56,20 +59,32 @@ if (users.Count == 0)
 }
 var newsletterSubscribers = LoadList<NewsletterSubscriber>(newsletterStorePath);
 
-app.MapPost("/api/auth/login", (LoginRequest request) =>
+app.MapPost("/api/auth/login", async (LoginRequest request) =>
 {
     var email = string.IsNullOrWhiteSpace(request.Email) ? "admin@techpro.eng" : request.Email;
-    var existingUser = users.FirstOrDefault(user => user.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+    var existingUser = useSqlProducts
+        ? await sqlStore.GetUserByEmailAsync(email)
+        : users.FirstOrDefault(user => user.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+
     if (existingUser is null)
     {
-        existingUser = ToUser(users.Count == 0 ? 1 : users.Max(user => user.Id) + 1, new UserRequest(
+        var newUserRequest = new UserRequest(
             string.IsNullOrWhiteSpace(request.FullName) ? email.Split('@')[0] : request.FullName,
             email,
             email.Equals("admin@techpro.eng", StringComparison.OrdinalIgnoreCase) ? "Admin" : "Customer",
             "Active"
-        ));
-        users.Add(existingUser);
-        SaveList(userStorePath, users);
+        );
+
+        if (useSqlProducts)
+        {
+            existingUser = await sqlStore.CreateUserAsync(newUserRequest);
+        }
+        else
+        {
+            existingUser = ToUser(users.Count == 0 ? 1 : users.Max(user => user.Id) + 1, newUserRequest);
+            users.Add(existingUser);
+            SaveList(userStorePath, users);
+        }
     }
 
     if (existingUser.Status.Equals("Suspended", StringComparison.OrdinalIgnoreCase))
@@ -77,9 +92,17 @@ app.MapPost("/api/auth/login", (LoginRequest request) =>
         return Results.Forbid();
     }
 
-    existingUser = existingUser with { LastLoginAt = DateTimeOffset.UtcNow };
-    users[users.FindIndex(user => user.Id == existingUser.Id)] = existingUser;
-    SaveList(userStorePath, users);
+    if (useSqlProducts)
+    {
+        existingUser = await sqlStore.TouchUserLoginAsync(existingUser.Id) ?? existingUser;
+    }
+    else
+    {
+        existingUser = existingUser with { LastLoginAt = DateTimeOffset.UtcNow };
+        users[users.FindIndex(user => user.Id == existingUser.Id)] = existingUser;
+        SaveList(userStorePath, users);
+    }
+
     return Results.Ok(new AuthResponse(
         "mock_token_123",
         ToProfile(existingUser)
@@ -87,41 +110,64 @@ app.MapPost("/api/auth/login", (LoginRequest request) =>
 })
 .WithName("Login");
 
-app.MapPost("/api/auth/register", (LoginRequest request) =>
+app.MapPost("/api/auth/register", async (LoginRequest request) =>
 {
     if (string.IsNullOrWhiteSpace(request.Email))
     {
         return Results.BadRequest(new { message = "Email is required." });
     }
 
-    if (users.Any(user => user.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase)))
+    if (useSqlProducts && await sqlStore.GetUserByEmailAsync(request.Email) is not null)
     {
         return Results.Conflict(new { message = "Email already exists." });
     }
 
-    var nextId = users.Count == 0 ? 1 : users.Max(user => user.Id) + 1;
-    var user = ToUser(nextId, new UserRequest(
+    if (!useSqlProducts && users.Any(user => user.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase)))
+    {
+        return Results.Conflict(new { message = "Email already exists." });
+    }
+
+    var userRequest = new UserRequest(
         string.IsNullOrWhiteSpace(request.FullName) ? request.Email.Split('@')[0] : request.FullName,
         request.Email,
         "Customer",
         "Active"
-    ));
-    users.Add(user);
-    SaveList(userStorePath, users);
+    );
+    var user = useSqlProducts
+        ? await sqlStore.CreateUserAsync(userRequest)
+        : ToUser(users.Count == 0 ? 1 : users.Max(user => user.Id) + 1, userRequest);
+
+    if (!useSqlProducts)
+    {
+        users.Add(user);
+        SaveList(userStorePath, users);
+    }
 
     return Results.Created($"/api/users/{user.Id}", new AuthResponse("mock_token_123", ToProfile(user)));
 })
 .WithName("Register");
 
-app.MapGet("/api/auth/profile", () =>
+app.MapGet("/api/auth/profile", async () =>
 {
-    var admin = users.First(user => user.Email.Equals("admin@techpro.eng", StringComparison.OrdinalIgnoreCase));
+    var admin = useSqlProducts
+        ? await sqlStore.GetAdminProfileAsync()
+        : users.First(user => user.Email.Equals("admin@techpro.eng", StringComparison.OrdinalIgnoreCase));
+    if (admin is null)
+    {
+        return Results.NotFound();
+    }
+
     return Results.Ok(ToProfile(admin));
 })
 .WithName("GetProfile");
 
-app.MapGet("/api/users", (string? q, string? role, string? status) =>
+app.MapGet("/api/users", async (string? q, string? role, string? status) =>
 {
+    if (useSqlProducts)
+    {
+        return Results.Ok(await sqlStore.GetUsersAsync(q, role, status));
+    }
+
     var query = users.AsEnumerable();
 
     if (!string.IsNullOrWhiteSpace(q))
@@ -145,8 +191,14 @@ app.MapGet("/api/users", (string? q, string? role, string? status) =>
 })
 .WithName("GetUsers");
 
-app.MapPut("/api/users/{id:int}", (int id, UserRequest request) =>
+app.MapPut("/api/users/{id:int}", async (int id, UserRequest request) =>
 {
+    if (useSqlProducts)
+    {
+        var updatedUser = await sqlStore.UpdateUserAsync(id, request);
+        return updatedUser is null ? Results.NotFound() : Results.Ok(updatedUser);
+    }
+
     var index = users.FindIndex(user => user.Id == id);
     if (index < 0)
     {
@@ -171,13 +223,18 @@ app.MapPut("/api/users/{id:int}", (int id, UserRequest request) =>
 })
 .WithName("UpdateUser");
 
-app.MapGet("/api/newsletter/subscribers", () =>
+app.MapGet("/api/newsletter/subscribers", async () =>
 {
+    if (useSqlProducts)
+    {
+        return Results.Ok(await sqlStore.GetNewsletterSubscribersAsync());
+    }
+
     return Results.Ok(newsletterSubscribers.OrderByDescending(subscriber => subscriber.CreatedAt));
 })
 .WithName("GetNewsletterSubscribers");
 
-app.MapPost("/api/newsletter/subscribe", (NewsletterRequest request) =>
+app.MapPost("/api/newsletter/subscribe", async (NewsletterRequest request) =>
 {
     if (string.IsNullOrWhiteSpace(request.Email))
     {
@@ -185,6 +242,12 @@ app.MapPost("/api/newsletter/subscribe", (NewsletterRequest request) =>
     }
 
     var email = request.Email.Trim().ToLowerInvariant();
+    if (useSqlProducts)
+    {
+        var sqlSubscriber = await sqlStore.SubscribeNewsletterAsync(email);
+        return Results.Ok(sqlSubscriber);
+    }
+
     var existing = newsletterSubscribers.FirstOrDefault(subscriber => subscriber.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
     if (existing is not null)
     {
@@ -203,8 +266,23 @@ app.MapPost("/api/newsletter/subscribe", (NewsletterRequest request) =>
 })
 .WithName("SubscribeNewsletter");
 
-app.MapGet("/api/products", (string? category, string? q) =>
+app.MapGet("/api/system/storage", () =>
 {
+    return Results.Ok(new
+    {
+        database = useSqlProducts ? "sql" : "json",
+        fallback = useSqlProducts ? null : "SQL is unavailable or schema has not been applied."
+    });
+})
+.WithName("GetStorageStatus");
+
+app.MapGet("/api/products", async (string? category, string? q) =>
+{
+    if (useSqlProducts)
+    {
+        return Results.Ok(await sqlStore.GetProductsAsync(category, q));
+    }
+
     var query = products.AsEnumerable();
 
     if (!string.IsNullOrWhiteSpace(category))
@@ -224,15 +302,31 @@ app.MapGet("/api/products", (string? category, string? q) =>
 })
 .WithName("GetProducts");
 
-app.MapGet("/api/products/{id:int}", (int id) =>
+app.MapGet("/api/products/{id:int}", async (int id) =>
 {
+    if (useSqlProducts)
+    {
+        var sqlProduct = await sqlStore.GetProductByIdAsync(id);
+        return sqlProduct is null ? Results.NotFound() : Results.Ok(sqlProduct);
+    }
+
     var product = products.FirstOrDefault(product => product.Id == id);
     return product is null ? Results.NotFound() : Results.Ok(product);
 })
 .WithName("GetProductById");
 
-app.MapGet("/api/products/{id:int}/reviews", (int id) =>
+app.MapGet("/api/products/{id:int}/reviews", async (int id) =>
 {
+    if (useSqlProducts)
+    {
+        if (await sqlStore.GetProductByIdAsync(id) is null)
+        {
+            return Results.NotFound();
+        }
+
+        return Results.Ok(await sqlStore.GetProductReviewsAsync(id));
+    }
+
     if (!products.Any(product => product.Id == id))
     {
         return Results.NotFound();
@@ -244,9 +338,14 @@ app.MapGet("/api/products/{id:int}/reviews", (int id) =>
 })
 .WithName("GetProductReviews");
 
-app.MapPost("/api/products/{id:int}/reviews", (int id, ProductReviewRequest request) =>
+app.MapPost("/api/products/{id:int}/reviews", async (int id, ProductReviewRequest request) =>
 {
-    if (!products.Any(product => product.Id == id))
+    if (useSqlProducts && await sqlStore.GetProductByIdAsync(id) is null)
+    {
+        return Results.NotFound();
+    }
+
+    if (!useSqlProducts && !products.Any(product => product.Id == id))
     {
         return Results.NotFound();
     }
@@ -259,6 +358,12 @@ app.MapPost("/api/products/{id:int}/reviews", (int id, ProductReviewRequest requ
     if (request.Rating < 1 || request.Rating > 5)
     {
         return Results.BadRequest(new { message = "Rating must be between 1 and 5." });
+    }
+
+    if (useSqlProducts)
+    {
+        var sqlReview = await sqlStore.CreateProductReviewAsync(id, request);
+        return Results.Created($"/api/products/{id}/reviews/{sqlReview.Id}", sqlReview);
     }
 
     var review = new ProductReview(
@@ -275,8 +380,14 @@ app.MapPost("/api/products/{id:int}/reviews", (int id, ProductReviewRequest requ
 })
 .WithName("CreateProductReview");
 
-app.MapPost("/api/products", (ProductRequest request) =>
+app.MapPost("/api/products", async (ProductRequest request) =>
 {
+    if (useSqlProducts)
+    {
+        var sqlProduct = await sqlStore.CreateProductAsync(request);
+        return Results.Created($"/api/products/{sqlProduct.Id}", sqlProduct);
+    }
+
     var nextId = products.Count == 0 ? 1 : products.Max(product => product.Id) + 1;
     var product = ToProduct(nextId, request);
     products.Add(product);
@@ -285,8 +396,14 @@ app.MapPost("/api/products", (ProductRequest request) =>
 })
 .WithName("CreateProduct");
 
-app.MapPut("/api/products/{id:int}", (int id, ProductRequest request) =>
+app.MapPut("/api/products/{id:int}", async (int id, ProductRequest request) =>
 {
+    if (useSqlProducts)
+    {
+        var sqlProduct = await sqlStore.UpdateProductAsync(id, request);
+        return sqlProduct is null ? Results.NotFound() : Results.Ok(sqlProduct);
+    }
+
     var index = products.FindIndex(product => product.Id == id);
     if (index < 0)
     {
@@ -300,8 +417,13 @@ app.MapPut("/api/products/{id:int}", (int id, ProductRequest request) =>
 })
 .WithName("UpdateProduct");
 
-app.MapDelete("/api/products/{id:int}", (int id) =>
+app.MapDelete("/api/products/{id:int}", async (int id) =>
 {
+    if (useSqlProducts)
+    {
+        return await sqlStore.DeleteProductAsync(id) ? Results.NoContent() : Results.NotFound();
+    }
+
     var product = products.FirstOrDefault(product => product.Id == id);
     if (product is null)
     {
@@ -314,8 +436,13 @@ app.MapDelete("/api/products/{id:int}", (int id) =>
 })
 .WithName("DeleteProduct");
 
-app.MapGet("/api/orders", (string? email) =>
+app.MapGet("/api/orders", async (string? email) =>
 {
+    if (useSqlProducts)
+    {
+        return Results.Ok(await sqlStore.GetOrdersAsync(email));
+    }
+
     var query = orders.AsEnumerable();
 
     if (!string.IsNullOrWhiteSpace(email))
@@ -327,26 +454,38 @@ app.MapGet("/api/orders", (string? email) =>
 })
 .WithName("GetOrders");
 
-app.MapGet("/api/orders/{orderNumber}", (string orderNumber) =>
+app.MapGet("/api/orders/{orderNumber}", async (string orderNumber) =>
 {
+    if (useSqlProducts)
+    {
+        var sqlOrder = await sqlStore.GetOrderByNumberAsync(orderNumber);
+        return sqlOrder is null ? Results.NotFound() : Results.Ok(sqlOrder);
+    }
+
     var order = orders.FirstOrDefault(order => order.OrderNumber.Equals(orderNumber, StringComparison.OrdinalIgnoreCase));
     return order is null ? Results.NotFound() : Results.Ok(order);
 })
 .WithName("GetOrderByNumber");
 
-app.MapPut("/api/orders/{orderNumber}/status", (string orderNumber, OrderStatusRequest request) =>
+app.MapPut("/api/orders/{orderNumber}/status", async (string orderNumber, OrderStatusRequest request) =>
 {
-    var index = orders.FindIndex(order => order.OrderNumber.Equals(orderNumber, StringComparison.OrdinalIgnoreCase));
-    if (index < 0)
-    {
-        return Results.NotFound();
-    }
-
     var allowedStatuses = new[] { "Processing", "Paid", "Packed", "Shipped", "Delivered", "Cancelled" };
     var status = allowedStatuses.FirstOrDefault(value => value.Equals(request.Status, StringComparison.OrdinalIgnoreCase));
     if (string.IsNullOrWhiteSpace(status))
     {
         return Results.BadRequest(new { message = "Unsupported order status." });
+    }
+
+    if (useSqlProducts)
+    {
+        var sqlOrder = await sqlStore.UpdateOrderStatusAsync(orderNumber, status);
+        return sqlOrder is null ? Results.NotFound() : Results.Ok(sqlOrder);
+    }
+
+    var index = orders.FindIndex(order => order.OrderNumber.Equals(orderNumber, StringComparison.OrdinalIgnoreCase));
+    if (index < 0)
+    {
+        return Results.NotFound();
     }
 
     var current = orders[index];
@@ -357,11 +496,17 @@ app.MapPut("/api/orders/{orderNumber}/status", (string orderNumber, OrderStatusR
 })
 .WithName("UpdateOrderStatus");
 
-app.MapPost("/api/orders", (CreateOrderRequest request) =>
+app.MapPost("/api/orders", async (CreateOrderRequest request) =>
 {
     if (request.Items.Count == 0)
     {
         return Results.BadRequest(new { message = "Order must contain at least one item." });
+    }
+
+    if (useSqlProducts)
+    {
+        var sqlOrder = await sqlStore.CreateOrderAsync(request);
+        return Results.Created($"/api/orders/{sqlOrder.OrderNumber}", sqlOrder);
     }
 
     var orderNumber = $"TP-{DateTimeOffset.UtcNow:yyMMddHHmmss}";

@@ -94,5 +94,13 @@
     "rating": 4,
     "comment": "Great display and smooth setup. The accessories could be lighter, but the product itself is impressive.",
     "createdAt": "2026-05-02T12:49:27.3904234+00:00"
+  },
+  {
+    "id": 13,
+    "productId": 1,
+    "author": "SQL Check",
+    "rating": 5,
+    "comment": "Review endpoint smoke test.",
+    "createdAt": "2026-05-18T00:45:43.1031104+00:00"
   }
 ]
