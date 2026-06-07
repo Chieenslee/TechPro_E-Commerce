@@ -1,0 +1,576 @@
+--- Slide 1 ---
+GITHUB · CHIEENSLEE/TECHPRO_E-COMMERCE
+TechPro E-Commerce
+Báo cáo tiến độ dự án
+Kiến trúc · Mô hình code · CI/CD · Triển khai & vận hành
+Stack
+React 19 · .NET 10 · SQL Server
+API
+25+ REST endpoints (Minimal API)
+CI/CD
+2 workflows · 4 parallel CI jobs
+Ngày báo cáo
+Tháng 5 / 2026
+01
+
+--- Slide 2 ---
+Nội dung báo cáo
+4 phần · 21 slide chi tiết kỹ thuật
+01 · Kiến trúc
+Thiết kế tổng quan 3 tầng
+Thành phần & phiên bản
+Dual persistence SQL/JSON
+Pipeline HTTP & CORS
+Luồng đơn hàng & trạng thái
+02 · Code
+Backend Program.cs + SqlStore
+20+ method SqlStore (ADO.NET)
+Frontend cấu trúc & Context
+22 route React Router
+REST API đầy đủ (2 slide)
+03 · CI/CD
+ci.yml — 4 jobs song song
+Lint · Build FE/BE · SQL grep
+release-artifacts.yml
+ESLint 10 · pnpm lockfile
+Quy trình PR → artifact
+04 · Vận hành
+run-all.ps1 (6 bước)
+stop-all.ps1 · sqlcmd
+Kiểm thử CI vs thủ công
+OpenAPI · backend.http
+Roadmap production
+TechPro E-Commerce
+02
+
+--- Slide 3 ---
+PHẦN 01
+Kiến trúc hệ thống
+Thiết kế tổng quan và chi tiết kiến trúc
+03
+
+--- Slide 4 ---
+Kiến trúc tổng quan — 3 tầng
+Presentation → Application → Data · dual persistence
+Tầng Presentation
+React 19.2 · Vite 8 · Tailwind 3.4 · React Router 7.15 · axios 1.16 · pnpm
+http://localhost:5173 · SPA · lazy routes · Auth/Cart/Language Context
+Tầng Application (ASP.NET Core 10)
+Minimal API · Program.cs (~1014 dòng) · SqlStore.cs (ADO.NET) · OpenAPI (Development)
+https://localhost:7099 · http://localhost:5016 · CORS TechProFrontend · HTTPS redirect
+Tầng Data — SQL Server
+DB TechPro · Trusted_Connection · schema.sql + seed.sql
+import-json-data.ps1 · 9 bảng · 5 indexes
+Fallback JSON (backend/Data/)
+products.json · orders.json · users.json · reviews.json
+Kích hoạt khi SqlStore.CanConnectAsync() = false
+HTTP Pipeline (backend)
+Request → HTTPS Redirection → CORS → Minimal API endpoint → SqlStore / JSON file I/O → JSON Response
+ConnectionStrings:TechProDb = Server=localhost;Database=TechPro;Trusted_Connection=True;TrustServerCertificate=True
+CORS origins: http://localhost:5173, https://localhost:5173 · AllowAnyHeader · AllowAnyMethod
+Development: MapOpenApi() → /openapi/v1.json
+useSqlProducts = await sqlStore.CanConnectAsync() — quyết định nhánh SQL vs JSON cho mọi endpoint
+TechPro E-Commerce
+04
+
+--- Slide 5 ---
+Thành phần & công nghệ
+Monorepo: frontend · backend · database · DevOps · CI
+frontend/
+React 19.2.5 · react-dom 19.2.5
+Vite 8.0.10 · @vitejs/plugin-react 6
+Tailwind 3.4.19 · PostCSS · Autoprefixer
+react-router-dom 7.15 · axios 1.16
+ESLint 10 · pnpm-lock.yaml
+backend/
+TargetFramework: net10.0
+Program.cs — Minimal API map
+SqlStore.cs — ~871 dòng ADO.NET
+appsettings.json — TechProDb
+backend.http — API smoke test
+database/
+schema.sql — 9 CREATE TABLE
+seed.sql — INSERT mẫu
+import-json-data.ps1
+sqlcmd trong run-all.ps1
+CI grep validate bảng/index
+DevOps scripts (root)
+run-all.ps1 — DB check, schema, import, kill ports, start BE+FE
+-ImportData · -SkipDatabase · -KeepExisting
+stop-all.ps1 / .bat — dừng process theo port
+Ports: 5173 (Vite), 7099/5016 (.NET), SQL localhost
+.github/workflows/
+ci.yml — trigger: push/PR main|master|develop
+Jobs: workflow, frontend, backend, database
+release-artifacts.yml — push main|master + dispatch
+Artifact techpro-release · retention 14 ngày
+Concurrency cancel-in-progress trên mỗi ref
+TechPro E-Commerce
+05
+
+--- Slide 6 ---
+Chi tiết Dual Persistence
+SqlStore.CanConnectAsync() — nhánh SQL ưu tiên, JSON dự phòng
+API Request
+CanConnectAsync()?
+Yes
+SqlStore methods
+GetProductsAsync, CreateOrderAsync...
+No
+JSON file I/O
+LoadList / SaveList per entity
+File JSON (backend/Data/)
+products.json (~20KB) — danh mục sản phẩm
+orders.json — đơn hàng mẫu
+users.json — tài khoản Admin/Customer
+reviews.json — đánh giá sản phẩm
+newsletterSubscribers.json · accountData.json (runtime)
+Auto-seed BuildProducts() nếu products.json rỗng
+run-all.ps1 -ImportData gọi import-json-data.ps1
+SQL Server — bảng chính
+Users (Role: Admin|Customer, Status: Active|Suspended)
+Products + ProductTags · Orders + OrderItems
+ProductReviews · Addresses · WishlistItems
+NewsletterSubscribers · Order status lifecycle
+Order status: Processing → Paid → Packed → Shipped → Delivered | Cancelled
+TechPro E-Commerce
+06
+
+--- Slide 7 ---
+Luồng nghiệp vụ E-Commerce
+Từ duyệt sản phẩm đến quản trị đơn hàng
+Customer Journey + API mapping
+1. Duyệt SP
+GET /api/products
+?category=&q=
+ProductList / ProductDetail
+2. Giỏ hàng
+CartContext (client state)
+localStorage persist
+/cart route
+3. Checkout
+POST /api/orders
+CreateOrderRequest
+/checkout → /order-success
+4. Admin
+PUT .../status
+AdminRoute role=Admin
+/admin dashboard
+Auth
+POST login
+register
+JWT Token
+Luồng phụ & tích hợp
+• Reviews / Wishlist / Addresses / Newsletter APIs
+• Admin: GET /api/users · PUT status đơn hàng
+• Quản lý user (admin): GET /api/users?q=&role=&status= · PUT /api/users/{id}
+• i18n: LanguageContext + LanguageToggle · Tin tức: newsApi (static data + API tùy cấu hình)
+Trạng thái đơn hàng (CHECK constraint)
+Processing → Paid → Packed → Shipped → Delivered | Cancelled
+OrderItems lưu snapshot sản phẩm (Name, Price, Qty) — FK cascade khi xóa Order
+GET /api/system/storage — kiểm tra dung lượng lưu trữ (admin/diagnostic)
+TechPro E-Commerce
+07
+
+--- Slide 8 ---
+PHẦN 02
+Mô hình & cấu trúc lập trình
+Backend · Frontend · REST API · Database
+08
+
+--- Slide 9 ---
+Backend — ASP.NET Core 10 Minimal API
+Program.cs monolith + records + dual branch per endpoint
+Cấu trúc Program.cs
+WebApplication.CreateBuilder → AddOpenApi → AddCors(TechProFrontend)
+SqlStore(connectionString) + CanConnectAsync → useSqlProducts
+Load/seed JSON: products, orders, users, reviews, newsletter, account
+MapPost/MapGet/MapPut/MapDelete — 25 endpoint groups
+Mỗi handler: if (useSqlProducts) sqlStore.* else in-memory list + SaveList
+AuthResponse(JWT Token, profile) — chưa JWT
+User mặc định: admin@techpro.eng · role Admin
+Suspended user → Results.Forbid()
+C# Records (DTO)
+LoginRequest, UserRequest, ProductRequest
+CreateOrderRequest, OrderStatusRequest
+ProductReviewRequest, NewsletterRequest
+AccountAddressRequest, WishlistRequest
+AuthResponse, ProfileDto — immutable DTO
+Không dùng (đơn giản hóa)
+Controllers tách file · Areas
+Entity Framework Core / migrations
+Repository + Unit of Work + DI phức tạp
+Identity / JWT Bearer (production TODO)
+MediatR / CQRS
+TechPro E-Commerce
+09
+
+--- Slide 10 ---
+SqlStore.cs — Data Access Layer
+ADO.NET · ~20 public async methods · Microsoft.Data.SqlClient
+Nhóm method SqlStore (SQL branch)
+CanConnectAsync()
+Kiểm tra kết nối trước khi chọn nhánh
+Products: GetProductsAsync, GetProductByIdAsync, Create/Update/DeleteProductAsync
+Users: GetUsersAsync(q,role,status), GetUserByEmailAsync, CreateUserAsync, UpdateUserAsync, TouchUserLoginAsync
+Addresses: GetAddressesAsync, SaveAddressAsync, DeleteAddressAsync
+Wishlist: GetWishlistAsync, SaveWishlistAsync, DeleteWishlistItemAsync
+Orders: GetOrdersAsync(email), GetOrderByNumberAsync, CreateOrderAsync, UpdateOrderStatusAsync
+Reviews: GetProductReviewsAsync, CreateProductReviewAsync
+Newsletter: GetNewsletterSubscribersAsync, SubscribeNewsletterAsync
+GetAdminProfileAsync()
+Parameterized SQL — tránh injection · Map reader → C# models · Transaction cho CreateOrder (Order + OrderItems)
+JSON branch mirror logic trong Program.cs với List<T> + SaveList(path) khi SQL offline
+BuildProducts(), BuildUsers(), BuildReviews() — seed code-first khi file trống
+File size: SqlStore.cs ~871 lines · Program.cs ~1014 lines
+TechPro E-Commerce
+10
+
+--- Slide 11 ---
+Frontend — React 19 SPA
+Vite + Tailwind · Context API · API clients tách file
+src/api/
+authApi.js — login, register, profile
+productApi.js — CRUD, filter category/q
+orderApi.js — list, create, update status
+userApi.js — profile, addresses, wishlist
+newsApi.js — tin tức / content
+axios baseURL → backend :7099
+src/context/
+AuthContext — isAuthenticated, user, login/logout
+CartContext — items, add/remove, totals
+LanguageContext — i18n switch vi/en
+AuthContextValue.js — export context ref
+Provider wrap trong main.jsx / App
+src/components/
+Header.jsx (~9KB) — nav, search, cart badge
+Footer.jsx (~4KB) — links, newsletter
+LanguageToggle.jsx — đổi ngôn ngữ
+ProductCard, filters (trong pages)
+Lazy Suspense RouteLoading fallback
+TechPro E-Commerce
+11
+
+--- Slide 12 ---
+React Router — Danh sách route
+BrowserRouter · lazy import · AdminRoute · 18 routes
+Route → Page
+GET
+/
+Home
+GET
+/products
+ProductList
+GET
+/products/:id
+ProductDetail
+GET
+/cart
+Cart
+GET
+/checkout
+Checkout
+GET
+/order-success
+OrderSuccess
+GET
+/account
+Account
+GET
+/login
+Login
+GET
+/admin
+Admin (protected)
+GET
+/news
+News
+GET
+/news/:id
+NewsDetail
+Route → Page
+GET
+/about
+About
+GET
+/contact
+Contact
+GET
+/services
+Services
+GET
+/policies
+Policies
+GET
+/rma
+RMA
+GET
+/server-error
+ServerError
+GET
+/loading
+SystemLoading
+GET
+/payment-failed
+PaymentFailed
+GET
+/maintenance
+Maintenance
+GET
+*
+NotFound
+isAuthPage: /login, /server-error, /loading, /admin* — layout riêng (LanguageToggle)
+AdminRoute: bắt buộc isAuthenticated và role === Admin
+TechPro E-Commerce
+12
+
+--- Slide 13 ---
+REST API (1/2)
+Auth · Users · Addresses · Wishlist · Newsletter · System
+HTTP
+Endpoint
+Mô tả / Tham số
+POST
+/api/auth/login
+Email, FullName → AuthResponse + JWT Token
+POST
+/api/auth/register
+Conflict nếu email trùng
+GET
+/api/auth/profile
+Admin profile (SQL hoặc JSON)
+GET
+/api/users
+Query: q, role, status — admin list
+PUT
+/api/users/{id}
+UserRequest update · email unique
+GET
+/api/users/{id}/addresses
+Danh sách địa chỉ giao hàng
+POST
+/api/users/{id}/addresses
+AccountAddressRequest
+DELETE
+/api/users/{id}/addresses/{aid}
+Xóa địa chỉ
+GET
+/api/users/{id}/wishlist
+Product IDs wishlist
+PUT
+/api/users/{id}/wishlist
+WishlistRequest productIds[]
+DELETE
+/api/users/{id}/wishlist/{pid}
+Bỏ 1 SP khỏi wishlist
+GET
+/api/newsletter/subscribers
+Admin — danh sách email
+POST
+/api/newsletter/subscribe
+Email → Created hoặc existing
+GET
+/api/system/storage
+Diagnostic storage info
+TechPro E-Commerce
+13
+
+--- Slide 14 ---
+REST API (2/2)
+Products · Reviews · Orders
+HTTP
+Endpoint
+Mô tả / Tham số
+GET
+/api/products
+?category= & q= filter
+GET
+/api/products/{id}
+Chi tiết 1 sản phẩm
+POST
+/api/products
+ProductRequest — admin create
+PUT
+/api/products/{id}
+Cập nhật SP
+DELETE
+/api/products/{id}
+Xóa SP
+GET
+/api/products/{id}/reviews
+Reviews theo productId
+POST
+/api/products/{id}/reviews
+ProductReviewRequest
+GET
+/api/orders
+?email= filter đơn hàng
+GET
+/api/orders/{orderNumber}
+Chi tiết đơn + items
+POST
+/api/orders
+CreateOrderRequest — checkout
+PUT
+/api/orders/{no}/status
+OrderStatusRequest — admin
+GET
+/weatherforecast
+Template sample (legacy)
+TechPro E-Commerce
+14
+
+--- Slide 15 ---
+Database Schema — Chi tiết bảng
+SQL Server dbo.* · schema.sql
+Users
+Id PK, Name, Email UNIQUE, Role (Admin|Customer), Status (Active|Suspended), CreatedAt, LastLoginAt
+Products + ProductTags
+Price, OriginalPrice, Rating 0-5, Sku UNIQUE, Image, IsNew, OnSale · Tags (ProductId, Tag) 
+PK composite
+Orders + OrderItems
+OrderNumber PK, UserId FK, Customer*, address fields, Subtotal/Shipping/Discount/Total, 
+Status CHECK
+OrderItems: ProductId FK nullable, Name, Price, Qty, Image snapshot — CASCADE delete
+ProductReviews
+ProductId, UserId FK, Author, Rating 1-5, Comment, CreatedAt
+Addresses
+UserId FK CASCADE, Label, Recipient, Phone, Line1, City, IsDefault
+WishlistItems
+PK (UserId, ProductId) — CASCADE both sides
+NewsletterSubscribers
+Email UNIQUE, Status Active|Unsubscribed
+Indexes & Constraints (CI validated)
+IX_Products_Category · IX_Orders_CustomerEmail · IX_Orders_Status_CreatedAt DESC
+IX_ProductReviews_ProductId_CreatedAt · IX_Addresses_UserId
+CHECK: CK_Users_Role, CK_Users_Status, CK_Products_Price>0, CK_Products_Rating, CK_Orders_Status, CK_OrderItems_Qty>0
+seed.sql: INSERT Products, Users mẫu — CI grep đảm bảo tồn tại
+import-json-data.ps1: merge JSON → SQL (NewsletterSubscribers, OrderItems referenced in CI)
+TechPro E-Commerce
+15
+
+--- Slide 16 ---
+PHẦN 03
+CI/CD & tiêu chuẩn
+GitHub Actions · ESLint · .NET build · SQL validation
+16
+
+--- Slide 17 ---
+ci.yml — Chi tiết từng job
+on: push/PR → main|master|develop · concurrency: cancel-in-progress
+job: workflow
+runs-on: ubuntu-latest
+checkout@v4
+Ruby: YAML.load_file mỗi
+.github/workflows/*.yml
+Fail nếu syntax YAML lỗi
+job: frontend
+working-directory: frontend
+pnpm/action-setup@v4 → v10
+setup-node@v4 → Node 24
+cache: pnpm-lock.yaml
+pnpm install --frozen-lockfile
+pnpm lint (ESLint 10)
+pnpm build (Vite production)
+job: backend
+working-directory: backend
+setup-dotnet@v4 → 10.0.x
+dotnet restore
+dotnet build -c Release
+--no-restore
+Nullable reference types
+job: database
+test -s schema.sql, seed.sql
+grep CREATE TABLE Products
+Orders, Users, OrderItems
+grep CREATE INDEX IX_*
+grep INSERT seed data
+pwsh: Parser::ParseFile
+import-json-data.ps1
+TechPro E-Commerce
+17
+
+--- Slide 18 ---
+Release & tiêu chuẩn code
+release-artifacts.yml + quy trình PR
+release-artifacts.yml
+on: push main|master · workflow_dispatch · concurrency cancel-in-progress
+Steps: checkout → pnpm install/lint/build → dotnet publish -o artifacts/backend → cp frontend/dist + database → verify files → upload-artifact@v4 name=techpro-release (14 days)
+Verify: artifacts/frontend/index.html · artifacts/backend/backend.dll · artifacts/database/*.sql
+Bundle deployable: static FE + published DLL + SQL scripts — sẵn sàng IIS/Kestrel + SQL deploy
+Frontend standards
+ESLint 10 + eslint-plugin-react-hooks
+eslint-plugin-react-refresh
+pnpm --frozen-lockfile (CI)
+Vite build = production assets
+No TypeScript (JSX only)
+Backend standards
+.NET 10 SDK
+Release configuration build
+ImplicitUsings enable
+Nullable enable
+Minimal API naming .WithName()
+Quy trình đề xuất
+feature/* → PR → develop/main
+CI 4/4 jobs must pass
+Merge → auto release artifact
+Local: run-all.ps1 trước demo
+TODO: unit tests, E2E, Sonar
+TechPro E-Commerce
+18
+
+--- Slide 19 ---
+PHẦN 04
+Triển khai & vận hành
+19
+
+--- Slide 20 ---
+Triển khai local & kiểm thử
+run-all.ps1 · stop-all.ps1 · ma trận test
+run-all.ps1 — từng bước
+1. Test-CommandExists sqlcmd · Invoke-Sql SELECT @@SERVERNAME
+2. IF DB_ID('TechPro') IS NULL → CREATE DATABASE TechPro
+3. IF OBJECT_ID Products missing → sqlcmd -i database/schema.sql · set ImportData
+4. -ImportData → import-json-data.ps1 -ConnectionString ... -DataDirectory backend/Data
+5. Stop-PortOwner 7099, 5016, 5173 (unless -KeepExisting)
+6. Start-Process dotnet run --urls https://localhost:7099;http://localhost:5016
+7. Start-Process pnpm dev --host localhost --port 5173 · sleep 4 · in PID
+Ma trận kiểm thử
+CI tự động: ESLint · Vite build · dotnet Release build · SQL grep + PS1 parse
+Thủ công API: backend.http · Swagger/OpenAPI dev · Postman/curl
+Thủ công UI: Vite HMR · flows mua hàng · admin status update
+Đã có: xUnit (Unit Test cơ bản) · Playwright/Cypress · load test · security scan
+stop-all.ps1: kill processes on ports · run-all.bat / stop-all.bat wrappers
+Production checklist
+Deploy artifact techpro-release từ GitHub Actions
+Host FE: nginx/IIS static · BE: Kestrel service · SQL: Azure SQL / on-prem
+Cập nhật CORS: production domain thay localhost:5173
+Thay JWT Token bằng JWT + refresh token
+HTTPS cert · secrets trong appsettings.Production.json / KeyVault
+Logging: Serilog · health checks /health · monitoring
+FE :5173 · BE :7099/:5016 · DB localhost/TechPro
+TechPro E-Commerce
+20
+
+--- Slide 21 ---
+Tổng kết tiến độ
+TechPro E-Commerce — đánh giá mức độ hoàn thiện
+Đã đạt
+✓ Kiến trúc 3 tầng + dual persistence SQL/JSON
+✓ 25+ REST API · SqlStore 20+ methods
+✓ Frontend 22 routes · 3 Context · 5 API modules
+✓ DB 9 bảng · constraints · indexes · seed/import
+✓ CI 4 jobs + release artifact pipeline
+✓ run-all.ps1 automation dev environment
+Hạn chế / TODO
+→ Xác thực bằng JWT (JSON Web Token)
+→ Đã có Unit Test (xUnit) cho API
+→ CORS localhost-only
+→ Minimal API monolith — khó scale team lớn
+21
+slide báo cáo chi tiết kỹ thuật
+github.com/Chieenslee/TechPro_E-Commerce
+Cảm ơn — Q&A
+TechPro E-Commerce · Báo cáo tiến độ
+21
+

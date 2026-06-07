@@ -1,0 +1,381 @@
+--- Slide 1 ---
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+01
+
+--- Slide 2 ---
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+
+--- Slide 3 ---
+PHẦN 01
+Kiến trúc hệ thống
+Thiết kế tổng quan và chi tiết kiến trúc
+03
+
+--- Slide 4 ---
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+
+--- Slide 5 ---
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+
+--- Slide 6 ---
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+
+--- Slide 7 ---
+[GROUP OF SHAPES/DIAGRAM]
+Customer Journey + API mapping
+1. Duyệt SP
+GET /api/products
+?category=&q=
+ProductList / ProductDetail
+2. Giỏ hàng
+CartContext (client state)
+localStorage persist
+/cart route
+3. Checkout
+POST /api/orders
+CreateOrderRequest
+/checkout → /order-success
+4. Admin
+PUT .../status
+AdminRoute role=Admin
+/admin dashboard
+Auth
+POST login
+register
+mock_token_123
+Luồng phụ & tích hợp
+• Reviews / Wishlist / Addresses / Newsletter APIs
+• Admin: GET /api/users · PUT status đơn hàng
+• Quản lý user (admin): GET /api/users?q=&role=&status= · PUT /api/users/{id}
+• i18n: LanguageContext + LanguageToggle · Tin tức: newsApi (static data + API tùy cấu hình)
+Trạng thái đơn hàng (CHECK constraint)
+Processing → Paid → Packed → Shipped → Delivered | Cancelled
+OrderItems lưu snapshot sản phẩm (Name, Price, Qty) — FK cascade khi xóa Order
+GET /api/system/storage — kiểm tra dung lượng lưu trữ (admin/diagnostic)
+[GROUP OF SHAPES/DIAGRAM]
+
+--- Slide 8 ---
+PHẦN 02
+Mô hình & cấu trúc lập trình
+Backend · Frontend · REST API · Database
+08
+
+--- Slide 9 ---
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+
+--- Slide 10 ---
+[GROUP OF SHAPES/DIAGRAM]
+Nhóm method SqlStore (SQL branch)
+CanConnectAsync()
+Kiểm tra kết nối trước khi chọn nhánh
+Products: GetProductsAsync, GetProductByIdAsync, Create/Update/DeleteProductAsync
+Users: GetUsersAsync(q,role,status), GetUserByEmailAsync, CreateUserAsync, UpdateUserAsync, TouchUserLoginAsync
+Addresses: GetAddressesAsync, SaveAddressAsync, DeleteAddressAsync
+Wishlist: GetWishlistAsync, SaveWishlistAsync, DeleteWishlistItemAsync
+Orders: GetOrdersAsync(email), GetOrderByNumberAsync, CreateOrderAsync, UpdateOrderStatusAsync
+Reviews: GetProductReviewsAsync, CreateProductReviewAsync
+Newsletter: GetNewsletterSubscribersAsync, SubscribeNewsletterAsync
+GetAdminProfileAsync()
+Parameterized SQL — tránh injection · Map reader → C# models · Transaction cho CreateOrder (Order + OrderItems)
+JSON branch mirror logic trong Program.cs với List<T> + SaveList(path) khi SQL offline
+BuildProducts(), BuildUsers(), BuildReviews() — seed code-first khi file trống
+File size: SqlStore.cs ~871 lines · Program.cs ~1014 lines
+[GROUP OF SHAPES/DIAGRAM]
+
+--- Slide 11 ---
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+
+--- Slide 12 ---
+[GROUP OF SHAPES/DIAGRAM]
+Route → Page
+GET
+/
+Home
+GET
+/products
+ProductList
+GET
+/products/:id
+ProductDetail
+GET
+/cart
+Cart
+GET
+/checkout
+Checkout
+GET
+/order-success
+OrderSuccess
+GET
+/account
+Account
+GET
+/login
+Login
+GET
+/admin
+Admin (protected)
+GET
+/news
+News
+GET
+/news/:id
+NewsDetail
+Route → Page
+GET
+/about
+About
+GET
+/contact
+Contact
+GET
+/services
+Services
+GET
+/policies
+Policies
+GET
+/rma
+RMA
+GET
+/server-error
+ServerError
+GET
+/loading
+SystemLoading
+GET
+/payment-failed
+PaymentFailed
+GET
+/maintenance
+Maintenance
+GET
+*
+NotFound
+isAuthPage: /login, /server-error, /loading, /admin* — layout riêng (LanguageToggle)
+AdminRoute: bắt buộc isAuthenticated và role === Admin
+[GROUP OF SHAPES/DIAGRAM]
+
+--- Slide 13 ---
+[GROUP OF SHAPES/DIAGRAM]
+HTTP
+Endpoint
+Mô tả / Tham số
+POST
+/api/auth/login
+Email, FullName → AuthResponse + mock_token
+POST
+/api/auth/register
+Conflict nếu email trùng
+GET
+/api/auth/profile
+Admin profile (SQL hoặc JSON)
+GET
+/api/users
+Query: q, role, status — admin list
+PUT
+/api/users/{id}
+UserRequest update · email unique
+GET
+/api/users/{id}/addresses
+Danh sách địa chỉ giao hàng
+POST
+/api/users/{id}/addresses
+AccountAddressRequest
+DELETE
+/api/users/{id}/addresses/{aid}
+Xóa địa chỉ
+GET
+/api/users/{id}/wishlist
+Product IDs wishlist
+PUT
+/api/users/{id}/wishlist
+WishlistRequest productIds[]
+DELETE
+/api/users/{id}/wishlist/{pid}
+Bỏ 1 SP khỏi wishlist
+GET
+/api/newsletter/subscribers
+Admin — danh sách email
+POST
+/api/newsletter/subscribe
+Email → Created hoặc existing
+GET
+/api/system/storage
+Diagnostic storage info
+[GROUP OF SHAPES/DIAGRAM]
+
+--- Slide 14 ---
+[GROUP OF SHAPES/DIAGRAM]
+HTTP
+Endpoint
+Mô tả / Tham số
+GET
+/api/products
+?category= & q= filter
+GET
+/api/products/{id}
+Chi tiết 1 sản phẩm
+POST
+/api/products
+ProductRequest — admin create
+PUT
+/api/products/{id}
+Cập nhật SP
+DELETE
+/api/products/{id}
+Xóa SP
+GET
+/api/products/{id}/reviews
+Reviews theo productId
+POST
+/api/products/{id}/reviews
+ProductReviewRequest
+GET
+/api/orders
+?email= filter đơn hàng
+GET
+/api/orders/{orderNumber}
+Chi tiết đơn + items
+POST
+/api/orders
+CreateOrderRequest — checkout
+PUT
+/api/orders/{no}/status
+OrderStatusRequest — admin
+GET
+/weatherforecast
+Template sample (legacy)
+[GROUP OF SHAPES/DIAGRAM]
+
+--- Slide 15 ---
+[GROUP OF SHAPES/DIAGRAM]
+Users
+Id PK, Name, Email UNIQUE, Role (Admin|Customer), Status (Active|Suspended), CreatedAt, LastLoginAt
+Products + ProductTags
+Price, OriginalPrice, Rating 0-5, Sku UNIQUE, Image, IsNew, OnSale · Tags (ProductId, Tag) 
+PK composite
+Orders + OrderItems
+OrderNumber PK, UserId FK, Customer*, address fields, Subtotal/Shipping/Discount/Total, 
+Status CHECK
+OrderItems: ProductId FK nullable, Name, Price, Qty, Image snapshot — CASCADE delete
+ProductReviews
+ProductId, UserId FK, Author, Rating 1-5, Comment, CreatedAt
+Addresses
+UserId FK CASCADE, Label, Recipient, Phone, Line1, City, IsDefault
+WishlistItems
+PK (UserId, ProductId) — CASCADE both sides
+NewsletterSubscribers
+Email UNIQUE, Status Active|Unsubscribed
+Indexes & Constraints (CI validated)
+IX_Products_Category · IX_Orders_CustomerEmail · IX_Orders_Status_CreatedAt DESC
+IX_ProductReviews_ProductId_CreatedAt · IX_Addresses_UserId
+CHECK: CK_Users_Role, CK_Users_Status, CK_Products_Price>0, CK_Products_Rating, CK_Orders_Status, CK_OrderItems_Qty>0
+seed.sql: INSERT Products, Users mẫu — CI grep đảm bảo tồn tại
+import-json-data.ps1: merge JSON → SQL (NewsletterSubscribers, OrderItems referenced in CI)
+[GROUP OF SHAPES/DIAGRAM]
+
+--- Slide 16 ---
+PHẦN 03
+CI/CD & tiêu chuẩn
+GitHub Actions · ESLint · .NET build · SQL validation
+16
+
+--- Slide 17 ---
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+
+--- Slide 18 ---
+[GROUP OF SHAPES/DIAGRAM]
+release-artifacts.yml
+on: push main|master · workflow_dispatch · concurrency cancel-in-progress
+Steps: checkout → pnpm install/lint/build → dotnet publish -o artifacts/backend → cp frontend/dist + database → verify files → upload-artifact@v4 name=techpro-release (14 days)
+Verify: artifacts/frontend/index.html · artifacts/backend/backend.dll · artifacts/database/*.sql
+Bundle deployable: static FE + published DLL + SQL scripts — sẵn sàng IIS/Kestrel + SQL deploy
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+[GROUP OF SHAPES/DIAGRAM]
+
+--- Slide 19 ---
+PHẦN 04
+Triển khai & vận hành
+19
+
+--- Slide 20 ---
+[GROUP OF SHAPES/DIAGRAM]
+run-all.ps1 — từng bước
+1. Test-CommandExists sqlcmd · Invoke-Sql SELECT @@SERVERNAME
+2. IF DB_ID('TechPro') IS NULL → CREATE DATABASE TechPro
+3. IF OBJECT_ID Products missing → sqlcmd -i database/schema.sql · set ImportData
+4. -ImportData → import-json-data.ps1 -ConnectionString ... -DataDirectory backend/Data
+5. Stop-PortOwner 7099, 5016, 5173 (unless -KeepExisting)
+6. Start-Process dotnet run --urls https://localhost:7099;http://localhost:5016
+7. Start-Process pnpm dev --host localhost --port 5173 · sleep 4 · in PID
+Ma trận kiểm thử
+CI tự động: ESLint · Vite build · dotnet Release build · SQL grep + PS1 parse
+Thủ công API: backend.http · Swagger/OpenAPI dev · Postman/curl
+Thủ công UI: Vite HMR · flows mua hàng · admin status update
+Chưa có: xUnit/NUnit · Playwright/Cypress · load test · security scan
+stop-all.ps1: kill processes on ports · run-all.bat / stop-all.bat wrappers
+Production checklist
+Deploy artifact techpro-release từ GitHub Actions
+Host FE: nginx/IIS static · BE: Kestrel service · SQL: Azure SQL / on-prem
+Cập nhật CORS: production domain thay localhost:5173
+Thay mock_token_123 bằng JWT + refresh token
+HTTPS cert · secrets trong appsettings.Production.json / KeyVault
+Logging: Serilog · health checks /health · monitoring
+FE :5173 · BE :7099/:5016 · DB localhost/TechPro
+[GROUP OF SHAPES/DIAGRAM]
+
+--- Slide 21 ---
+[GROUP OF SHAPES/DIAGRAM]
+Đã đạt
+✓ Kiến trúc 3 tầng + dual persistence SQL/JSON
+✓ 25+ REST API · SqlStore 20+ methods
+✓ Frontend 22 routes · 3 Context · 5 API modules
+✓ DB 9 bảng · constraints · indexes · seed/import
+✓ CI 4 jobs + release artifact pipeline
+✓ run-all.ps1 automation dev environment
+Hạn chế / TODO
+→ Mock auth · chưa JWT/OAuth
+→ Chưa unit/E2E tests trong repo
+→ CORS localhost-only
+→ Minimal API monolith — khó scale team lớn
+21
+slide báo cáo chi tiết kỹ thuật
+github.com/Chieenslee/TechPro_E-Commerce
+Cảm ơn — Q&A
+[GROUP OF SHAPES/DIAGRAM]
+
