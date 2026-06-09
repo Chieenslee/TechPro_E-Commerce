@@ -53,7 +53,7 @@ const Header = () => {
             <img
               alt="TechPro Logo"
               className="h-10 w-auto"
-              src="/logo.png"
+              src="../assets/logo.png"
             />
           </Link>
 
