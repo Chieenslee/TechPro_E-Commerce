@@ -32,10 +32,6 @@ D:\My\CNPM\TechPro_E-Commerce\backend\obj\Debug\net10.0\refint\backend.dll
 D:\My\CNPM\TechPro_E-Commerce\backend\obj\Debug\net10.0\backend.pdb
 D:\My\CNPM\TechPro_E-Commerce\backend\obj\Debug\net10.0\backend.genruntimeconfig.cache
 D:\My\CNPM\TechPro_E-Commerce\backend\obj\Debug\net10.0\ref\backend.dll
-D:\My\CNPM\TechPro_E-Commerce\backend\bin\Debug\net10.0\Data\orders.json
-D:\My\CNPM\TechPro_E-Commerce\backend\bin\Debug\net10.0\Data\products.json
-D:\My\CNPM\TechPro_E-Commerce\backend\bin\Debug\net10.0\Data\users.json
-D:\My\CNPM\TechPro_E-Commerce\backend\bin\Debug\net10.0\Data\reviews.json
 D:\My\CNPM\TechPro_E-Commerce\backend\bin\Debug\net10.0\Azure.Core.dll
 D:\My\CNPM\TechPro_E-Commerce\backend\bin\Debug\net10.0\Azure.Identity.dll
 D:\My\CNPM\TechPro_E-Commerce\backend\bin\Debug\net10.0\Microsoft.Bcl.AsyncInterfaces.dll
@@ -73,7 +69,6 @@ D:\My\CNPM\TechPro_E-Commerce\backend\bin\Debug\net10.0\runtimes\win\lib\net9.0\
 D:\My\CNPM\TechPro_E-Commerce\backend\bin\Debug\net10.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
 D:\My\CNPM\TechPro_E-Commerce\backend\bin\Debug\net10.0\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
 D:\My\CNPM\TechPro_E-Commerce\backend\bin\Debug\net10.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
-D:\My\CNPM\TechPro_E-Commerce\backend\bin\Debug\net10.0\Data\newsletterSubscribers.json
 C:\tmp\techpro-backend-build\appsettings.Development.json
 C:\tmp\techpro-backend-build\appsettings.json
 C:\tmp\techpro-backend-build\Data\newsletterSubscribers.json
@@ -87,3 +82,7 @@ C:\tmp\techpro-backend-build\backend.deps.json
 C:\tmp\techpro-backend-build\backend.runtimeconfig.json
 C:\tmp\techpro-backend-build\backend.dll
 C:\tmp\techpro-backend-build\backend.pdb
+D:\My\CNPM\TechPro_E-Commerce\backend\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\My\CNPM\TechPro_E-Commerce\backend\bin\Debug\net10.0\Data\products.json
+D:\My\CNPM\TechPro_E-Commerce\backend\bin\Debug\net10.0\Data\reviews.json
+D:\My\CNPM\TechPro_E-Commerce\backend\bin\Debug\net10.0\Data\users.json

@@ -53,7 +53,7 @@ const Header = () => {
             <img
               alt="TechPro Logo"
               className="h-10 w-auto"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsesC23xB0AHobEtRm5UQaqlhjIA1Zp2w59yQTn_Qa30C9ScN--NN0tUiav32Ky8r7xICDLxy_WQ-jJan9xSAyYkouRWf34aTZS_m-GASvr8GJEE_wX35SIEWhsUzBu9Jk1G54dIkJEZe441Ss9CRJhyydNSSnvRyj2MWCBdMQOiahGvZMs-MH6Df7jHQT1fmzj5djYGEcl5NZOkyBfk-4qWlySAFxO7vUgrk04jiq6ICc9iPjRiXrMu7cb79y4SR7nibkmBB_dD0A"
+              src="/logo.png"
             />
           </Link>
 
@@ -157,11 +157,10 @@ const Header = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors font-label-md ${
-                  location.pathname === link.path
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'
-                }`}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors font-label-md ${location.pathname === link.path
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high'
+                  }`}
               >
                 <span className="material-symbols-outlined text-[20px]">{link.icon}</span>
                 {link.label}

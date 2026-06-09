@@ -87,7 +87,7 @@ const Cart = () => {
                       ))}
                     </div>
                   </div>
-                  <span className="font-headline-md text-primary font-bold">${(item.price * item.quantity).toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                  <span className="font-headline-md text-primary font-bold">{(item.price * item.quantity).toLocaleString('vi-VN')} ₫</span>
                 </div>
                 <div className="flex justify-between items-center w-full mt-auto">
                   <div className="flex items-center bg-surface-container-highest border border-outline-variant/30 rounded-lg">
@@ -128,7 +128,7 @@ const Cart = () => {
             <div className="flex flex-col gap-sm mb-md">
               <div className="flex justify-between items-center">
                 <span className="font-body-md text-on-surface-variant">Subtotal ({cartTotalItems} items)</span>
-                <span className="font-body-md text-on-surface font-semibold">${subtotal.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                <span className="font-body-md text-on-surface font-semibold">{subtotal.toLocaleString('vi-VN')} ₫</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="font-body-md text-on-surface-variant">Shipping Matrix</span>
@@ -136,14 +136,14 @@ const Cart = () => {
               </div>
               <div className="flex justify-between items-center">
                 <span className="font-body-md text-on-surface-variant">Estimated Tax</span>
-                <span className="font-body-md text-on-surface font-semibold">${tax.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                <span className="font-body-md text-on-surface font-semibold">{tax.toLocaleString('vi-VN')} ₫</span>
               </div>
             </div>
             
             <div className="border-t border-outline-variant/30 pt-sm mb-lg">
               <div className="flex justify-between items-center">
                 <span className="font-headline-md text-on-surface">Total Allocation</span>
-                <span className="font-headline-lg text-primary text-glow font-bold">${total.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                <span className="font-headline-lg text-primary text-glow font-bold">{total.toLocaleString('vi-VN')} ₫</span>
               </div>
             </div>
 

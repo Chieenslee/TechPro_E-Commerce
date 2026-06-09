@@ -297,7 +297,7 @@ const ProductList = () => {
                   <input type="range" className="w-full accent-primary" min="0" max="5000" value={maxPrice} onChange={(e) => { setMaxPrice(Number(e.target.value)); setCurrentPage(1); }} />
                   <div className="flex justify-between text-[12px] text-on-surface-variant mt-2">
                     <span>$0</span>
-                    <span className="text-primary font-bold">${maxPrice.toLocaleString('en-US')}</span>
+                    <span className="text-primary font-bold">{maxPrice.toLocaleString('vi-VN')} ₫</span>
                     <span>$5k+</span>
                   </div>
                 </div>

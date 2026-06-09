@@ -220,7 +220,7 @@ const ProductDetail = () => {
               {ratingLabel} ({reviewCount} {reviewCount === 1 ? 'Review' : 'Reviews'})
             </span>
           </div>
-          <p className="text-headline-xl font-semibold text-primary mb-6">${(product.price * quantity).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
+          <p className="text-headline-xl font-semibold text-primary mb-6">{(product.price * quantity).toLocaleString('vi-VN')} ₫</p>
           <p className="text-body-md text-on-surface-variant mb-8 leading-relaxed">
             Engineered for absolute performance. The PrecisionX Pro features a next-generation neural processor, an edge-to-edge mini-LED display, and aerospace-grade thermal management.
           </p>

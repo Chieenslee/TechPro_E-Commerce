@@ -1,4 +1,10 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +20,25 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod());
 });
 
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var keyBytes = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
+        };
+    });
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -24,6 +49,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("TechProFrontend");
+app.UseAuthentication();
+app.UseAuthorization();
 
 var sqlStore = new SqlStore(builder.Configuration.GetConnectionString("TechProDb"));
 var useSqlProducts = await sqlStore.CanConnectAsync();
@@ -106,7 +133,7 @@ app.MapPost("/api/auth/login", async (LoginRequest request) =>
     }
 
     return Results.Ok(new AuthResponse(
-        "mock_token_123",
+        GenerateJwtToken(existingUser),
         ToProfile(existingUser)
     ));
 })
@@ -145,7 +172,7 @@ app.MapPost("/api/auth/register", async (LoginRequest request) =>
         SaveList(userStorePath, users);
     }
 
-    return Results.Created($"/api/users/{user.Id}", new AuthResponse("mock_token_123", ToProfile(user)));
+    return Results.Created($"/api/users/{user.Id}", new AuthResponse(GenerateJwtToken(user), ToProfile(user)));
 })
 .WithName("Register");
 
@@ -161,7 +188,7 @@ app.MapGet("/api/auth/profile", async () =>
 
     return Results.Ok(ToProfile(admin));
 })
-.WithName("GetProfile");
+.WithName("GetProfile").RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,Customer" });
 
 app.MapGet("/api/users", async (string? q, string? role, string? status) =>
 {
@@ -191,7 +218,7 @@ app.MapGet("/api/users", async (string? q, string? role, string? status) =>
 
     return Results.Ok(query.OrderBy(user => user.Name));
 })
-.WithName("GetUsers");
+.WithName("GetUsers").RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" });
 
 app.MapPut("/api/users/{id:int}", async (int id, UserRequest request) =>
 {
@@ -223,7 +250,7 @@ app.MapPut("/api/users/{id:int}", async (int id, UserRequest request) =>
     SaveList(userStorePath, users);
     return Results.Ok(updated);
 })
-.WithName("UpdateUser");
+.WithName("UpdateUser").RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" });
 
 app.MapGet("/api/newsletter/subscribers", async () =>
 {
@@ -234,7 +261,7 @@ app.MapGet("/api/newsletter/subscribers", async () =>
 
     return Results.Ok(newsletterSubscribers.OrderByDescending(subscriber => subscriber.CreatedAt));
 })
-.WithName("GetNewsletterSubscribers");
+.WithName("GetNewsletterSubscribers").RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" });
 
 app.MapPost("/api/newsletter/subscribe", async (NewsletterRequest request) =>
 {
@@ -292,7 +319,7 @@ app.MapGet("/api/users/{id:int}/addresses", async (int id) =>
 
     return Results.Ok(GetUserData(id).Addresses.OrderByDescending(address => address.IsDefault).ThenByDescending(address => address.CreatedAt));
 })
-.WithName("GetUserAddresses");
+.WithName("GetUserAddresses").RequireAuthorization();
 
 app.MapPost("/api/users/{id:int}/addresses", async (int id, AccountAddressRequest request) =>
 {
@@ -331,7 +358,7 @@ app.MapPost("/api/users/{id:int}/addresses", async (int id, AccountAddressReques
     SaveList(accountStorePath, accountData);
     return Results.Ok(address);
 })
-.WithName("SaveUserAddress");
+.WithName("SaveUserAddress").RequireAuthorization();
 
 app.MapDelete("/api/users/{id:int}/addresses/{addressId:int}", async (int id, int addressId) =>
 {
@@ -350,7 +377,7 @@ app.MapDelete("/api/users/{id:int}/addresses/{addressId:int}", async (int id, in
     SaveList(accountStorePath, accountData);
     return removed ? Results.NoContent() : Results.NotFound();
 })
-.WithName("DeleteUserAddress");
+.WithName("DeleteUserAddress").RequireAuthorization();
 
 app.MapGet("/api/users/{id:int}/wishlist", async (int id) =>
 {
@@ -367,7 +394,7 @@ app.MapGet("/api/users/{id:int}/wishlist", async (int id) =>
     var wishlistIds = GetUserData(id).WishlistProductIds;
     return Results.Ok(products.Where(product => wishlistIds.Contains(product.Id)));
 })
-.WithName("GetUserWishlist");
+.WithName("GetUserWishlist").RequireAuthorization();
 
 app.MapPut("/api/users/{id:int}/wishlist", async (int id, WishlistRequest request) =>
 {
@@ -389,7 +416,7 @@ app.MapPut("/api/users/{id:int}/wishlist", async (int id, WishlistRequest reques
     SaveList(accountStorePath, accountData);
     return Results.Ok(products.Where(product => productIds.Contains(product.Id)));
 })
-.WithName("SaveUserWishlist");
+.WithName("SaveUserWishlist").RequireAuthorization();
 
 app.MapDelete("/api/users/{id:int}/wishlist/{productId:int}", async (int id, int productId) =>
 {
@@ -408,7 +435,7 @@ app.MapDelete("/api/users/{id:int}/wishlist/{productId:int}", async (int id, int
     SaveList(accountStorePath, accountData);
     return removed ? Results.NoContent() : Results.NotFound();
 })
-.WithName("DeleteUserWishlistItem");
+.WithName("DeleteUserWishlistItem").RequireAuthorization();
 
 app.MapGet("/api/products", async (string? category, string? q) =>
 {
@@ -512,7 +539,7 @@ app.MapPost("/api/products/{id:int}/reviews", async (int id, ProductReviewReques
     SaveList(reviewStorePath, reviews);
     return Results.Created($"/api/products/{id}/reviews/{review.Id}", review);
 })
-.WithName("CreateProductReview");
+.WithName("CreateProductReview").RequireAuthorization();
 
 app.MapPost("/api/products", async (ProductRequest request) =>
 {
@@ -528,7 +555,7 @@ app.MapPost("/api/products", async (ProductRequest request) =>
     SaveList(productStorePath, products);
     return Results.Created($"/api/products/{product.Id}", product);
 })
-.WithName("CreateProduct");
+.WithName("CreateProduct").RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" });
 
 app.MapPut("/api/products/{id:int}", async (int id, ProductRequest request) =>
 {
@@ -549,7 +576,7 @@ app.MapPut("/api/products/{id:int}", async (int id, ProductRequest request) =>
     SaveList(productStorePath, products);
     return Results.Ok(product);
 })
-.WithName("UpdateProduct");
+.WithName("UpdateProduct").RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" });
 
 app.MapDelete("/api/products/{id:int}", async (int id) =>
 {
@@ -568,7 +595,7 @@ app.MapDelete("/api/products/{id:int}", async (int id) =>
     SaveList(productStorePath, products);
     return Results.NoContent();
 })
-.WithName("DeleteProduct");
+.WithName("DeleteProduct").RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" });
 
 app.MapGet("/api/orders", async (string? email) =>
 {
@@ -586,7 +613,7 @@ app.MapGet("/api/orders", async (string? email) =>
 
     return Results.Ok(query.OrderByDescending(order => order.CreatedAt));
 })
-.WithName("GetOrders");
+.WithName("GetOrders").RequireAuthorization();
 
 app.MapGet("/api/orders/{orderNumber}", async (string orderNumber) =>
 {
@@ -599,7 +626,7 @@ app.MapGet("/api/orders/{orderNumber}", async (string orderNumber) =>
     var order = orders.FirstOrDefault(order => order.OrderNumber.Equals(orderNumber, StringComparison.OrdinalIgnoreCase));
     return order is null ? Results.NotFound() : Results.Ok(order);
 })
-.WithName("GetOrderByNumber");
+.WithName("GetOrderByNumber").RequireAuthorization();
 
 app.MapPut("/api/orders/{orderNumber}/status", async (string orderNumber, OrderStatusRequest request) =>
 {
@@ -628,7 +655,7 @@ app.MapPut("/api/orders/{orderNumber}/status", async (string orderNumber, OrderS
     SaveList(orderStorePath, orders);
     return Results.Ok(updated);
 })
-.WithName("UpdateOrderStatus");
+.WithName("UpdateOrderStatus").RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" });
 
 app.MapPost("/api/orders", async (CreateOrderRequest request) =>
 {
@@ -662,7 +689,7 @@ app.MapPost("/api/orders", async (CreateOrderRequest request) =>
     SaveList(orderStorePath, orders);
     return Results.Created($"/api/orders/{orderNumber}", order);
 })
-.WithName("CreateOrder");
+.WithName("CreateOrder").RequireAuthorization();
 
 var summaries = new[]
 {
@@ -685,37 +712,50 @@ app.MapGet("/weatherforecast", () =>
 
 app.Run();
 
+string GenerateJwtToken(UserAccount user)
+{
+    var jwtSettings = app.Configuration.GetSection("Jwt");
+    var keyBytes = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
+
+    var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Email, user.Email),
+        new Claim(ClaimTypes.Name, user.Name),
+        new Claim(ClaimTypes.Role, user.Role)
+    };
+
+    var tokenDescriptor = new SecurityTokenDescriptor
+    {
+        Subject = new ClaimsIdentity(claims),
+        Expires = DateTime.UtcNow.AddHours(2),
+        Issuer = jwtSettings["Issuer"],
+        Audience = jwtSettings["Audience"],
+        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(keyBytes), SecurityAlgorithms.HmacSha256Signature)
+    };
+
+    var tokenHandler = new JwtSecurityTokenHandler();
+    var token = tokenHandler.CreateToken(tokenDescriptor);
+    return tokenHandler.WriteToken(token);
+}
+
 static List<Product> BuildProducts()
 {
-    var categories = new[] { "phones", "laptops", "tablets", "audio", "accessories", "smarthome" };
-    var products = new List<Product>();
-    var id = 1;
-
-    foreach (var category in categories)
+    return new List<Product>
     {
-        for (var index = 1; index <= 10; index++)
-        {
-            var price = 199 + (index * 73) + (category.Length * 11);
-            var onSale = index % 4 == 0;
-            products.Add(new Product(
-                id,
-                $"{category.ToUpperInvariant()[..3]} Pro Model {index}",
-                category,
-                price,
-                onSale ? price + 200 : price,
-                Math.Round(3.4 + (index % 6) * 0.25, 1),
-                $"{category.ToUpperInvariant()[..3]}-{index}000",
-                $"https://placehold.co/600x400/222/FFF?text={Uri.EscapeDataString(category)}+{index}",
-                index % 3 == 0,
-                onSale,
-                new[] { category, "TechPro" }
-            ));
-            id++;
-        }
-    }
-
-    return products;
+        new Product(1, "iPhone 15 Pro Max 256GB", "phones", 29990000, 34990000, 4.9, "PRD-IP15PM-256", "https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-blue-thumbnew-600x600.jpg", true, true, new[] { "Apple iPhone", "Apple", "phones", "Premium" }),
+        new Product(2, "Samsung Galaxy S24 Ultra 512GB", "phones", 31990000, 37490000, 4.8, "PRD-S24U-512", "https://cdn.tgdd.vn/Products/Images/42/319665/samsung-galaxy-s24-ultra-grey-thumbnew-600x600.jpg", true, true, new[] { "Samsung Galaxy", "Samsung", "phones", "Premium" }),
+        new Product(3, "MacBook Pro 14 inch M3 Pro", "laptops", 49990000, 52990000, 4.9, "PRD-MBP14-M3P", "https://cdn.tgdd.vn/Products/Images/44/318220/macbook-pro-14-inch-m3-pro-2023-silver-thumb-600x600.jpg", true, true, new[] { "MacBook", "Apple", "laptops", "Premium" }),
+        new Product(4, "Laptop ASUS ROG Strix G15", "laptops", 25990000, 27990000, 4.7, "PRD-ASUS-G15", "https://cdn.tgdd.vn/Products/Images/44/304700/asus-rog-strix-g15-g513rc-r7-hn038w-thumb-600x600.jpg", false, true, new[] { "ASUS ROG", "ASUS", "laptops", "Gaming" }),
+        new Product(5, "iPad Pro M4 11 inch 256GB Wifi", "tablets", 28990000, 28990000, 4.9, "PRD-IPADM4-11", "https://cdn.tgdd.vn/Products/Images/52/325066/ipad-pro-m4-11-inch-wifi-space-black-thumb-600x600.jpg", true, false, new[] { "Apple iPad", "Apple", "tablets", "Premium" }),
+        new Product(6, "Tai nghe Bluetooth AirPods Pro 2", "audio", 6190000, 6990000, 4.8, "PRD-AP-PRO2", "https://cdn.tgdd.vn/Products/Images/54/289781/samsung-galaxy-buds-2-pro-den-thumb-600x600.jpeg", false, true, new[] { "Earbuds", "Apple", "audio" }),
+        new Product(7, "Loa Harman Kardon Onyx 8", "audio", 6990000, 7590000, 4.7, "PRD-HK-ONYX8", "https://cdn.tgdd.vn/Products/Images/54/290047/loa-bluetooth-harman-kardon-onyx-studio-8-thumb-600x600.jpeg", false, true, new[] { "Speakers", "Harman Kardon", "audio" }),
+        new Product(8, "Bàn phím cơ Logitech G Pro X", "accessories", 3990000, 4290000, 4.8, "PRD-LOGI-GPROX", "https://cdn.tgdd.vn/Products/Images/86/313626/ban-phim-co-gaming-logitech-g-pro-x-tkl-lightspeed-thumb-600x600.jpg", true, true, new[] { "Keyboards", "Logitech", "accessories" }),
+        new Product(9, "Chuột Không Dây Logitech MX 3S", "accessories", 2590000, 2990000, 4.9, "PRD-LOGI-MX3S", "https://cdn.tgdd.vn/Products/Images/86/282864/chuot-khong-day-logitech-mx-master-3s-thumb-600x600.jpg", false, true, new[] { "Mice", "Logitech", "accessories" }),
+        new Product(10, "Camera IP 360 Xiaomi Mi Home", "smarthome", 690000, 890000, 4.6, "PRD-XIAOMI-CAM", "https://cdn.tgdd.vn/Products/Images/4728/238804/camera-ip-360-do-1080p-xiaomi-mi-home-bhr4885gl-thumb-600x600.jpg", false, true, new[] { "Security Cameras", "Xiaomi", "smarthome" }),
+    };
 }
+
 
 static List<UserAccount> BuildUsers() => new()
 {
@@ -1011,3 +1051,6 @@ record Order(
     string ShippingMethod,
     string PaymentMethod
 );
+
+public partial class Program { }
+

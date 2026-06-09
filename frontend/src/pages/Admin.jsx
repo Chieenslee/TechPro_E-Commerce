@@ -17,7 +17,7 @@ const emptyProductForm = {
   tags: ['TechPro']
 };
 
-const formatMoney = (value) => Number(value || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+const formatMoney = (value) => Number(value || 0).toLocaleString('vi-VN') + ' ₫';
 const orderStatusOptions = ['Processing', 'Paid', 'Packed', 'Shipped', 'Delivered', 'Cancelled'];
 const userRoleOptions = ['Admin', 'Customer'];
 const userStatusOptions = ['Active', 'Suspended'];

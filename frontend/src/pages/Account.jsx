@@ -7,7 +7,7 @@ import productApi from '../api/productApi';
 import userApi from '../api/userApi';
 
 const formatCurrency = (value) => {
-  return Number(value || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  return Number(value || 0).toLocaleString('vi-VN') + ' ₫';
 };
 
 const formatDate = (value) => {

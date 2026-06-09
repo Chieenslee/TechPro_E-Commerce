@@ -360,7 +360,7 @@ const Checkout = () => {
                        </div>
                        <div className="flex justify-between items-center mt-1">
                          <span className="font-label-sm text-on-surface-variant">Qty: {item.quantity}</span>
-                         <span className="font-label-md text-primary font-bold">${item.price.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                         <span className="font-label-md text-primary font-bold">{item.price.toLocaleString('vi-VN')} ₫</span>
                        </div>
                      </div>
                    </div>
@@ -383,7 +383,7 @@ const Checkout = () => {
               <div className="space-y-3 mb-lg">
                 <div className="flex justify-between items-center">
                   <span className="font-body-md text-on-surface-variant">Subtotal</span>
-                  <span className="font-body-md text-on-surface font-semibold">${subtotal.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                  <span className="font-body-md text-on-surface font-semibold">{subtotal.toLocaleString('vi-VN')} ₫</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="font-body-md text-on-surface-variant">Shipping Fee</span>
@@ -398,7 +398,7 @@ const Checkout = () => {
               {/* Total */}
               <div className="border-t border-outline-variant/30 pt-sm mb-lg flex justify-between items-end">
                 <span className="font-headline-md text-on-surface">Total</span>
-                <span className="font-headline-lg text-primary text-glow font-bold">${total.toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                <span className="font-headline-lg text-primary text-glow font-bold">{total.toLocaleString('vi-VN')} ₫</span>
               </div>
 
               {/* CTA */}

@@ -158,12 +158,12 @@ const Home = () => {
             <div className="absolute inset-0 bg-gradient-to-b from-transparent to-surface/50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
             <div className="relative aspect-square bg-surface-container-low rounded-lg mb-4 overflow-hidden flex items-center justify-center">
               <span className="absolute top-2 left-2 bg-error text-on-error px-2 py-1 rounded text-[10px] font-bold z-20 shadow-[0_0_10px_rgba(255,180,171,0.3)]">-30%</span>
-              <img alt="Smartwatch" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJicIh6kVkdCVMu_T0ui_UTd3QeFAJpIDrSiBiyKntNup6G7vFxuCzLRy5ErNj5oVWsrBU8I7Ptie5e__EVRktOxF8EsJm1jITncgajY3tfnbITyUkmMACZmJomTYoHahSkNCkuDaFepYlgLjxF2Sg_29GnslKn--rvVFKtLug2iNScmwdPC1wH1Hfx0YyW0TZneBdSElRscUESsqWQGnXsMPmA48djERC2uu6SBVpXMozplKr9zrX-i2CyBkYyM12z3lVRxpW5tPX" />
+              <img alt="Smartwatch" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&q=80&w=800" />
             </div>
-            <h3 className="font-label-md text-on-surface line-clamp-1 mb-1 group-hover:text-primary transition-colors">Precision Pro Smartwatch</h3>
+            <h3 className="font-label-md text-on-surface line-clamp-1 mb-1 group-hover:text-primary transition-colors">iPhone 15 Pro Max 256GB</h3>
             <div className="flex items-center gap-2 mb-3">
-              <span className="font-headline-md text-primary">$199.99</span>
-              <span className="font-label-sm text-outline line-through">$285.00</span>
+              <span className="font-headline-md text-primary">29.990.000 ₫</span>
+              <span className="font-label-sm text-outline line-through">34.990.000 ₫</span>
             </div>
             <div className="mb-4">
               <div className="flex justify-between text-[10px] text-on-surface-variant mb-1">
@@ -176,7 +176,7 @@ const Home = () => {
                 </div>
               </div>
             </div>
-            <button className="w-full py-2 bg-surface-container hover:bg-primary hover:text-on-primary text-primary border border-primary/30 rounded-md font-label-md transition-all duration-300 flex justify-center items-center gap-2 btn-ripple relative z-20" onClick={(e) => { e.preventDefault(); addToCart({id: 101, name: 'Precision Pro Smartwatch', price: 199.99, image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDJicIh6kVkdCVMu_T0ui_UTd3QeFAJpIDrSiBiyKntNup6G7vFxuCzLRy5ErNj5oVWsrBU8I7Ptie5e__EVRktOxF8EsJm1jITncgajY3tfnbITyUkmMACZmJomTYoHahSkNCkuDaFepYlgLjxF2Sg_29GnslKn--rvVFKtLug2iNScmwdPC1wH1Hfx0YyW0TZneBdSElRscUESsqWQGnXsMPmA48djERC2uu6SBVpXMozplKr9zrX-i2CyBkYyM12z3lVRxpW5tPX'}, 1); }}>
+            <button className="w-full py-2 bg-surface-container hover:bg-primary hover:text-on-primary text-primary border border-primary/30 rounded-md font-label-md transition-all duration-300 flex justify-center items-center gap-2 btn-ripple relative z-20" onClick={(e) => { e.preventDefault(); addToCart({id: 1, name: 'iPhone 15 Pro Max 256GB', price: 29990000, image: 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?auto=format&fit=crop&q=80&w=800'}, 1); }}>
               <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span> Add to Cart
             </button>
           </Link>
@@ -185,12 +185,12 @@ const Home = () => {
           <Link to="/products/2" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift relative overflow-hidden block">
             <div className="relative aspect-square bg-surface-container-low rounded-lg mb-4 overflow-hidden flex items-center justify-center">
               <span className="absolute top-2 left-2 bg-error text-on-error px-2 py-1 rounded text-[10px] font-bold z-20 shadow-[0_0_10px_rgba(255,180,171,0.3)]">-15%</span>
-              <img alt="Earbuds" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBK4CWF1jfcn2Egt2Icl31S3f_bTEhxACm90CobmicAmgndSVCc1Fkfn5rwrNGJJve1N6tIVLifpEVY5B4FQLK-ydTS5LwFyrQK5L6WP2UZJjLxSy_5kXxWIJ8uerAhppdRbMQvOX6kJu0cBgZTuFRzJwfLiV5PtSzkCJS4YbDovuqtGhWJfI75joGjcR9_hZTFHzhYmCxPPUEsUNM6pAIMyHtNxvdt7HIZ3RxAZPw7K6sNpAcTnUdct0a3jDTtHhV1S3Di4JGY7LvF" />
+              <img alt="Earbuds" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://images.unsplash.com/photo-1588423771073-b8903fbb85b5?auto=format&fit=crop&q=80&w=800" />
             </div>
-            <h3 className="font-label-md text-on-surface line-clamp-1 mb-1 group-hover:text-primary transition-colors">Sonic Edge Wireless Earbuds</h3>
+            <h3 className="font-label-md text-on-surface line-clamp-1 mb-1 group-hover:text-primary transition-colors">Tai nghe AirPods Pro 2</h3>
             <div className="flex items-center gap-2 mb-3">
-              <span className="font-headline-md text-primary">$89.99</span>
-              <span className="font-label-sm text-outline line-through">$105.00</span>
+              <span className="font-headline-md text-primary">6.190.000 ₫</span>
+              <span className="font-label-sm text-outline line-through">6.990.000 ₫</span>
             </div>
             <div className="mb-4">
               <div className="flex justify-between text-[10px] text-on-surface-variant mb-1">
@@ -201,7 +201,7 @@ const Home = () => {
                 <div className="h-full bg-primary rounded-full w-[40%]"></div>
               </div>
             </div>
-            <button className="w-full py-2 bg-surface-container hover:bg-primary hover:text-on-primary text-primary border border-primary/30 rounded-md font-label-md transition-all duration-300 flex justify-center items-center gap-2 btn-ripple relative z-20" onClick={(e) => { e.preventDefault(); addToCart({id: 102, name: 'Sonic Edge Wireless Earbuds', price: 89.99, image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBK4CWF1jfcn2Egt2Icl31S3f_bTEhxACm90CobmicAmgndSVCc1Fkfn5rwrNGJJve1N6tIVLifpEVY5B4FQLK-ydTS5LwFyrQK5L6WP2UZJjLxSy_5kXxWIJ8uerAhppdRbMQvOX6kJu0cBgZTuFRzJwfLiV5PtSzkCJS4YbDovuqtGhWJfI75joGjcR9_hZTFHzhYmCxPPUEsUNM6pAIMyHtNxvdt7HIZ3RxAZPw7K6sNpAcTnUdct0a3jDTtHhV1S3Di4JGY7LvF'}, 1); }}>
+            <button className="w-full py-2 bg-surface-container hover:bg-primary hover:text-on-primary text-primary border border-primary/30 rounded-md font-label-md transition-all duration-300 flex justify-center items-center gap-2 btn-ripple relative z-20" onClick={(e) => { e.preventDefault(); addToCart({id: 6, name: 'Tai nghe AirPods Pro 2', price: 6190000, image: 'https://images.unsplash.com/photo-1588423771073-b8903fbb85b5?auto=format&fit=crop&q=80&w=800'}, 1); }}>
               <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span> Add to Cart
             </button>
           </Link>
@@ -210,12 +210,12 @@ const Home = () => {
           <Link to="/products/3" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift relative overflow-hidden hidden sm:block">
             <div className="relative aspect-square bg-surface-container-low rounded-lg mb-4 overflow-hidden flex items-center justify-center">
               <span className="absolute top-2 left-2 bg-error text-on-error px-2 py-1 rounded text-[10px] font-bold z-20 shadow-[0_0_10px_rgba(255,180,171,0.3)]">-20%</span>
-              <img alt="Headphones" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5AQ5RU3WPbIu6xb-cxmIrDwJcFgy-8qlWlKoFUEtEx2OvKOZZZXUplLLGNXFVc7lnd-svVQVPws5jlMxgohMVs-3bdPK3_dxNx1LlNYcnHjddamHwtFzrOgRSblUbD5rS07yinaBMMRvtcWeW6VAtY9PJDP3wxn8fgNX3HtT2DWF3CU22yPxWSsKv4mmPkRaTOeoPp7ox48wc-0QxYtMYMIcPAe2a95JZ9IisFFhDdyGLtM4c0208L3HK6yU33P3guOB6ZJNLL2Ps" />
+              <img alt="Headphones" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=800" />
             </div>
-            <h3 className="font-label-md text-on-surface line-clamp-1 mb-1 group-hover:text-primary transition-colors">Aura Over-Ear Headphones</h3>
+            <h3 className="font-label-md text-on-surface line-clamp-1 mb-1 group-hover:text-primary transition-colors">MacBook Pro 14 M3 Pro</h3>
             <div className="flex items-center gap-2 mb-3">
-              <span className="font-headline-md text-primary">$240.00</span>
-              <span className="font-label-sm text-outline line-through">$300.00</span>
+              <span className="font-headline-md text-primary">49.990.000 ₫</span>
+              <span className="font-label-sm text-outline line-through">55.990.000 ₫</span>
             </div>
             <div className="mb-4">
               <div className="flex justify-between text-[10px] text-on-surface-variant mb-1">
@@ -226,7 +226,7 @@ const Home = () => {
                 <div className="h-full bg-error rounded-full w-[95%]"></div>
               </div>
             </div>
-            <button className="w-full py-2 bg-surface-container hover:bg-primary hover:text-on-primary text-primary border border-primary/30 rounded-md font-label-md transition-all duration-300 flex justify-center items-center gap-2 btn-ripple relative z-20" onClick={(e) => { e.preventDefault(); addToCart({id: 103, name: 'Aura Over-Ear Headphones', price: 240.00, image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD5AQ5RU3WPbIu6xb-cxmIrDwJcFgy-8qlWlKoFUEtEx2OvKOZZZXUplLLGNXFVc7lnd-svVQVPws5jlMxgohMVs-3bdPK3_dxNx1LlNYcnHjddamHwtFzrOgRSblUbD5rS07yinaBMMRvtcWeW6VAtY9PJDP3wxn8fgNX3HtT2DWF3CU22yPxWSsKv4mmPkRaTOeoPp7ox48wc-0QxYtMYMIcPAe2a95JZ9IisFFhDdyGLtM4c0208L3HK6yU33P3guOB6ZJNLL2Ps'}, 1); }}>
+            <button className="w-full py-2 bg-surface-container hover:bg-primary hover:text-on-primary text-primary border border-primary/30 rounded-md font-label-md transition-all duration-300 flex justify-center items-center gap-2 btn-ripple relative z-20" onClick={(e) => { e.preventDefault(); addToCart({id: 3, name: 'MacBook Pro 14 M3 Pro', price: 49990000, image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&q=80&w=800'}, 1); }}>
               <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span> Add to Cart
             </button>
           </Link>
@@ -235,12 +235,12 @@ const Home = () => {
           <Link to="/products/4" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift relative overflow-hidden hidden lg:block">
             <div className="relative aspect-square bg-surface-container-low rounded-lg mb-4 overflow-hidden flex items-center justify-center">
               <span className="absolute top-2 left-2 bg-error text-on-error px-2 py-1 rounded text-[10px] font-bold z-20 shadow-[0_0_10px_rgba(255,180,171,0.3)]">-50%</span>
-              <img alt="Speaker" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBejdZgzBTqpAvuuwE00vSQ-B-6FWgwB9dbavCJP6rtQIbIBhNKTEapO6cj_lrSOXZ3g_Oam52oYcNU7CN3xe-BDkFl3ITE75JBu-y8k7DSi3lBYrF6txev5-FVYNBOV7E81T3zP-Tsf2m432cLcy4kM3UhBmAPuAwOQrhKiZ6nMN9wgVKmpxGDywdP4HgMZ4-VSMSJfejc089ZzDwqo1Cc02Al9JX_Nm2lPdw4Zu5rZgrc9mtToaV_Deze_10hrCPjDF9bSjPmvvSF" />
+              <img alt="Speaker" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&q=80&w=800" />
             </div>
-            <h3 className="font-label-md text-on-surface line-clamp-1 mb-1 group-hover:text-primary transition-colors">BassBox Portable Speaker</h3>
+            <h3 className="font-label-md text-on-surface line-clamp-1 mb-1 group-hover:text-primary transition-colors">Loa Harman Kardon Onyx 8</h3>
             <div className="flex items-center gap-2 mb-3">
-              <span className="font-headline-md text-primary">$49.99</span>
-              <span className="font-label-sm text-outline line-through">$100.00</span>
+              <span className="font-headline-md text-primary">6.990.000 ₫</span>
+              <span className="font-label-sm text-outline line-through">7.990.000 ₫</span>
             </div>
             <div className="mb-4">
               <div className="flex justify-between text-[10px] text-on-surface-variant mb-1">
@@ -251,7 +251,7 @@ const Home = () => {
                 <div className="h-full bg-primary rounded-full w-[60%]"></div>
               </div>
             </div>
-            <button className="w-full py-2 bg-surface-container hover:bg-primary hover:text-on-primary text-primary border border-primary/30 rounded-md font-label-md transition-all duration-300 flex justify-center items-center gap-2 btn-ripple relative z-20" onClick={(e) => { e.preventDefault(); addToCart({id: 104, name: 'BassBox Portable Speaker', price: 49.99, image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBejdZgzBTqpAvuuwE00vSQ-B-6FWgwB9dbavCJP6rtQIbIBhNKTEapO6cj_lrSOXZ3g_Oam52oYcNU7CN3xe-BDkFl3ITE75JBu-y8k7DSi3lBYrF6txev5-FVYNBOV7E81T3zP-Tsf2m432cLcy4kM3UhBmAPuAwOQrhKiZ6nMN9wgVKmpxGDywdP4HgMZ4-VSMSJfejc089ZzDwqo1Cc02Al9JX_Nm2lPdw4Zu5rZgrc9mtToaV_Deze_10hrCPjDF9bSjPmvvSF'}, 1); }}>
+            <button className="w-full py-2 bg-surface-container hover:bg-primary hover:text-on-primary text-primary border border-primary/30 rounded-md font-label-md transition-all duration-300 flex justify-center items-center gap-2 btn-ripple relative z-20" onClick={(e) => { e.preventDefault(); addToCart({id: 7, name: 'Loa Harman Kardon Onyx 8', price: 6990000, image: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&q=80&w=800'}, 1); }}>
               <span className="material-symbols-outlined text-[18px]">add_shopping_cart</span> Add to Cart
             </button>
           </Link>
@@ -329,14 +329,14 @@ const Home = () => {
           {/* Standard Product Cards */}
           <Link to="/products/1" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift block">
             <div className="relative aspect-square bg-surface-container-low rounded-lg mb-4 overflow-hidden flex items-center justify-center">
-              <img alt="Phone" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDq7O5_4xg6d8z77u4Zi75DrC0P9yjp25ci6lmrnKWVFLVDJnvYj_eLnUtChkXvWdurEYfV_KPl-mOAgxaFi2HaHZnaJV6unTG8t92fkjWC-7LqxmUKyjWPaeO_r9wi5MAsx8CdRoFpP1jO9BJ-n46n25_1e3tNv9HAxNENIctDTGhdxWo_1gUa22P3mB-th8JNFaVpa1L8ghrYYQn-nxeqoeulEqgn76n8Ewi84zDsjzcWttaOAiMARrgkbnzah4R7CZu3oS7u2Krx" />
+              <img alt="Phone" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&q=80&w=800" />
               <div className="absolute inset-0 bg-surface/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
                 <button className="bg-primary text-on-primary w-10 h-10 rounded-full flex items-center justify-center hover:bg-primary-fixed shadow-[0_0_15px_rgba(185,199,228,0.4)] mx-1 hover:scale-110 transition-transform" onClick={(e) => { e.preventDefault(); }}><span className="material-symbols-outlined">visibility</span></button>
                 <button className="bg-primary text-on-primary w-10 h-10 rounded-full flex items-center justify-center hover:bg-primary-fixed shadow-[0_0_15px_rgba(185,199,228,0.4)] mx-1 hover:scale-110 transition-transform" onClick={(e) => { e.preventDefault(); }}><span className="material-symbols-outlined">favorite</span></button>
               </div>
             </div>
             <div className="flex justify-between items-start mb-1">
-              <h3 className="font-label-md text-on-surface line-clamp-2 group-hover:text-primary transition-colors">Nexus Z Fold Smartphone 256GB</h3>
+              <h3 className="font-label-md text-on-surface line-clamp-2 group-hover:text-primary transition-colors">Samsung Galaxy S24 Ultra</h3>
             </div>
             <div className="flex items-center gap-1 mb-2">
               <span className="material-symbols-outlined text-[14px] text-[#FFB400] filled">star</span>
@@ -347,21 +347,21 @@ const Home = () => {
               <span className="text-[10px] text-on-surface-variant ml-1">(124)</span>
             </div>
             <div className="flex items-center justify-between mt-auto">
-              <span className="font-headline-md text-primary">$1,299.00</span>
-              <button className="text-on-surface-variant hover:text-primary hover:bg-primary/10 p-2 rounded-full transition-colors" onClick={(e) => { e.preventDefault(); addToCart({id: 105, name: 'Nexus Z Fold Smartphone 256GB', price: 1299.00, image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDq7O5_4xg6d8z77u4Zi75DrC0P9yjp25ci6lmrnKWVFLVDJnvYj_eLnUtChkXvWdurEYfV_KPl-mOAgxaFi2HaHZnaJV6unTG8t92fkjWC-7LqxmUKyjWPaeO_r9wi5MAsx8CdRoFpP1jO9BJ-n46n25_1e3tNv9HAxNENIctDTGhdxWo_1gUa22P3mB-th8JNFaVpa1L8ghrYYQn-nxeqoeulEqgn76n8Ewi84zDsjzcWttaOAiMARrgkbnzah4R7CZu3oS7u2Krx'}, 1); }}><span className="material-symbols-outlined">add_shopping_cart</span></button>
+              <span className="font-headline-md text-primary">31.990.000 ₫</span>
+              <button className="text-on-surface-variant hover:text-primary hover:bg-primary/10 p-2 rounded-full transition-colors" onClick={(e) => { e.preventDefault(); addToCart({id: 2, name: 'Samsung Galaxy S24 Ultra', price: 31990000, image: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&q=80&w=800'}, 1); }}><span className="material-symbols-outlined">add_shopping_cart</span></button>
             </div>
           </Link>
           
           <Link to="/products/2" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift block">
             <div className="relative aspect-square bg-surface-container-low rounded-lg mb-4 overflow-hidden flex items-center justify-center">
-              <img alt="Laptop" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCatrCA_U54emDO95njFXPUr8q7s2mvLu7QksKIN2No0UZN6jaRcIDnfgJ-ytNi34YPEa02b02uX9wAR1ls3h4SoUGT-UfygV8jlHCuTzv_MnOexpS6KByqjXKPqtGL5ivDMaR7ZVzdfXPyR7PSaV0ozq3uXKhYBPzKL_vzhwz_p3T_kweZ2ZnhG1AzRmOC7qhxxXUNRbp2a5Bp7SupwKqakn2OKh-R-989qmeBa-bbLLLGdNcOfiYSGtGnGTCQLPTjLvFQM7dfjROs" />
+              <img alt="Laptop" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&q=80&w=800" />
               <div className="absolute inset-0 bg-surface/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
                 <button className="bg-primary text-on-primary w-10 h-10 rounded-full flex items-center justify-center hover:bg-primary-fixed shadow-[0_0_15px_rgba(185,199,228,0.4)] mx-1 hover:scale-110 transition-transform" onClick={(e) => { e.preventDefault(); }}><span className="material-symbols-outlined">visibility</span></button>
                 <button className="bg-primary text-on-primary w-10 h-10 rounded-full flex items-center justify-center hover:bg-primary-fixed shadow-[0_0_15px_rgba(185,199,228,0.4)] mx-1 hover:scale-110 transition-transform" onClick={(e) => { e.preventDefault(); }}><span className="material-symbols-outlined">favorite</span></button>
               </div>
             </div>
             <div className="flex justify-between items-start mb-1">
-              <h3 className="font-label-md text-on-surface line-clamp-2 group-hover:text-primary transition-colors">PrecisionBook Pro 16" M2</h3>
+              <h3 className="font-label-md text-on-surface line-clamp-2 group-hover:text-primary transition-colors">Laptop ASUS ROG Strix G15</h3>
             </div>
             <div className="flex items-center gap-1 mb-2">
               <span className="material-symbols-outlined text-[14px] text-[#FFB400] filled">star</span>
@@ -372,21 +372,21 @@ const Home = () => {
               <span className="text-[10px] text-on-surface-variant ml-1">(56)</span>
             </div>
             <div className="flex items-center justify-between mt-auto">
-              <span className="font-headline-md text-primary">$2,499.00</span>
-              <button className="text-on-surface-variant hover:text-primary hover:bg-primary/10 p-2 rounded-full transition-colors" onClick={(e) => { e.preventDefault(); addToCart({id: 106, name: 'PrecisionBook Pro 16" M2', price: 2499.00, image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCatrCA_U54emDO95njFXPUr8q7s2mvLu7QksKIN2No0UZN6jaRcIDnfgJ-ytNi34YPEa02b02uX9wAR1ls3h4SoUGT-UfygV8jlHCuTzv_MnOexpS6KByqjXKPqtGL5ivDMaR7ZVzdfXPyR7PSaV0ozq3uXKhYBPzKL_vzhwz_p3T_kweZ2ZnhG1AzRmOC7qhxxXUNRbp2a5Bp7SupwKqakn2OKh-R-989qmeBa-bbLLLGdNcOfiYSGtGnGTCQLPTjLvFQM7dfjROs'}, 1); }}><span className="material-symbols-outlined">add_shopping_cart</span></button>
+              <span className="font-headline-md text-primary">25.990.000 ₫</span>
+              <button className="text-on-surface-variant hover:text-primary hover:bg-primary/10 p-2 rounded-full transition-colors" onClick={(e) => { e.preventDefault(); addToCart({id: 4, name: 'Laptop ASUS ROG Strix G15', price: 25990000, image: 'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?auto=format&fit=crop&q=80&w=800'}, 1); }}><span className="material-symbols-outlined">add_shopping_cart</span></button>
             </div>
           </Link>
           
           <Link to="/products/3" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift hidden sm:block">
             <div className="relative aspect-square bg-surface-container-low rounded-lg mb-4 overflow-hidden flex items-center justify-center">
-              <img alt="Tablet" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHtjCyIscwqL9tDJJ87YgTl5OGiPU_YKMvIoh4HkIyrNKpwggXvo0FauUXfnNsck2r96YHXEfHU07uOxDP9fLA5uF1Znll6oJqdK1pIafi7sxiqB12wPk5YfOIqnGKsj_FK-SJ3T8Q8jd0PQw-Lc7-4QjxljdiTd6MLjGtbgvUvnstEoOgC5rZ9DO11RrcNKk9BVOnLHdllvY92YxOu2NNyhXQeeBGph2_q-ImlOP5mpEjEwGroe021GUFtRRgJi56bh8rMyWdylA_" />
+              <img alt="Tablet" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&q=80&w=800" />
               <div className="absolute inset-0 bg-surface/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
                 <button className="bg-primary text-on-primary w-10 h-10 rounded-full flex items-center justify-center hover:bg-primary-fixed shadow-[0_0_15px_rgba(185,199,228,0.4)] mx-1 hover:scale-110 transition-transform" onClick={(e) => { e.preventDefault(); }}><span className="material-symbols-outlined">visibility</span></button>
                 <button className="bg-primary text-on-primary w-10 h-10 rounded-full flex items-center justify-center hover:bg-primary-fixed shadow-[0_0_15px_rgba(185,199,228,0.4)] mx-1 hover:scale-110 transition-transform" onClick={(e) => { e.preventDefault(); }}><span className="material-symbols-outlined">favorite</span></button>
               </div>
             </div>
             <div className="flex justify-between items-start mb-1">
-              <h3 className="font-label-md text-on-surface line-clamp-2 group-hover:text-primary transition-colors">TabTech Ultra 12.9"</h3>
+              <h3 className="font-label-md text-on-surface line-clamp-2 group-hover:text-primary transition-colors">iPad Pro M4 11 inch 256GB</h3>
             </div>
             <div className="flex items-center gap-1 mb-2">
               <span className="material-symbols-outlined text-[14px] text-[#FFB400] filled">star</span>
@@ -397,21 +397,21 @@ const Home = () => {
               <span className="text-[10px] text-on-surface-variant ml-1">(89)</span>
             </div>
             <div className="flex items-center justify-between mt-auto">
-              <span className="font-headline-md text-primary">$899.00</span>
-              <button className="text-on-surface-variant hover:text-primary hover:bg-primary/10 p-2 rounded-full transition-colors" onClick={(e) => { e.preventDefault(); addToCart({id: 107, name: 'TabTech Ultra 12.9"', price: 899.00, image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCHtjCyIscwqL9tDJJ87YgTl5OGiPU_YKMvIoh4HkIyrNKpwggXvo0FauUXfnNsck2r96YHXEfHU07uOxDP9fLA5uF1Znll6oJqdK1pIafi7sxiqB12wPk5YfOIqnGKsj_FK-SJ3T8Q8jd0PQw-Lc7-4QjxljdiTd6MLjGtbgvUvnstEoOgC5rZ9DO11RrcNKk9BVOnLHdllvY92YxOu2NNyhXQeeBGph2_q-ImlOP5mpEjEwGroe021GUFtRRgJi56bh8rMyWdylA_'}, 1); }}><span className="material-symbols-outlined">add_shopping_cart</span></button>
+              <span className="font-headline-md text-primary">28.990.000 ₫</span>
+              <button className="text-on-surface-variant hover:text-primary hover:bg-primary/10 p-2 rounded-full transition-colors" onClick={(e) => { e.preventDefault(); addToCart({id: 5, name: 'iPad Pro M4 11 inch 256GB', price: 28990000, image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?auto=format&fit=crop&q=80&w=800'}, 1); }}><span className="material-symbols-outlined">add_shopping_cart</span></button>
             </div>
           </Link>
           
           <Link to="/products/4" className="bg-surface border border-outline-variant rounded-xl p-4 hover:border-primary transition-colors group hover-lift hidden lg:block">
             <div className="relative aspect-square bg-surface-container-low rounded-lg mb-4 overflow-hidden flex items-center justify-center">
-              <img alt="Camera" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMYhWMfTylUMseLEvQzto7kHr7RMV4i7CQKQIYHsMSq8jtj7b-gvOJO-0g_QTyGcXcMxb4YjF1IL4UzBWWDFHN5h7A9nF2aLPX7RhpGvEJMBMl_pHDX8roHupo5ihtDtlKGt7qpsstXSaWJte9clnNjW9xadZRggfdXp5RBwtb8SNMm4LS4HLi7n56TynK11u65aehKTldR6IqPTa0pYf5htY2iit77LnpapUWe3gRwobQLow09jjSfwmyOGGxgGbgjJ-CkGz-g1VV" />
+              <img alt="Camera" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" src="https://images.unsplash.com/photo-1516681100242-7eb69ced17a6?auto=format&fit=crop&q=80&w=800" />
               <div className="absolute inset-0 bg-surface/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
                 <button className="bg-primary text-on-primary w-10 h-10 rounded-full flex items-center justify-center hover:bg-primary-fixed shadow-[0_0_15px_rgba(185,199,228,0.4)] mx-1 hover:scale-110 transition-transform" onClick={(e) => { e.preventDefault(); }}><span className="material-symbols-outlined">visibility</span></button>
                 <button className="bg-primary text-on-primary w-10 h-10 rounded-full flex items-center justify-center hover:bg-primary-fixed shadow-[0_0_15px_rgba(185,199,228,0.4)] mx-1 hover:scale-110 transition-transform" onClick={(e) => { e.preventDefault(); }}><span className="material-symbols-outlined">favorite</span></button>
               </div>
             </div>
             <div className="flex justify-between items-start mb-1">
-              <h3 className="font-label-md text-on-surface line-clamp-2 group-hover:text-primary transition-colors">OpticPro Mirrorless Camera</h3>
+              <h3 className="font-label-md text-on-surface line-clamp-2 group-hover:text-primary transition-colors">Camera IP 360 Xiaomi Mi Home</h3>
             </div>
             <div className="flex items-center gap-1 mb-2">
               <span className="material-symbols-outlined text-[14px] text-[#FFB400] filled">star</span>
@@ -422,8 +422,8 @@ const Home = () => {
               <span className="text-[10px] text-on-surface-variant ml-1">(42)</span>
             </div>
             <div className="flex items-center justify-between mt-auto">
-              <span className="font-headline-md text-primary">$1,599.00</span>
-              <button className="text-on-surface-variant hover:text-primary hover:bg-primary/10 p-2 rounded-full transition-colors" onClick={(e) => { e.preventDefault(); addToCart({id: 108, name: 'OpticPro Mirrorless Camera', price: 1599.00, image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAMYhWMfTylUMseLEvQzto7kHr7RMV4i7CQKQIYHsMSq8jtj7b-gvOJO-0g_QTyGcXcMxb4YjF1IL4UzBWWDFHN5h7A9nF2aLPX7RhpGvEJMBMl_pHDX8roHupo5ihtDtlKGt7qpsstXSaWJte9clnNjW9xadZRggfdXp5RBwtb8SNMm4LS4HLi7n56TynK11u65aehKTldR6IqPTa0pYf5htY2iit77LnpapUWe3gRwobQLow09jjSfwmyOGGxgGbgjJ-CkGz-g1VV'}, 1); }}><span className="material-symbols-outlined">add_shopping_cart</span></button>
+              <span className="font-headline-md text-primary">690.000 ₫</span>
+              <button className="text-on-surface-variant hover:text-primary hover:bg-primary/10 p-2 rounded-full transition-colors" onClick={(e) => { e.preventDefault(); addToCart({id: 10, name: 'Camera IP 360 Xiaomi Mi Home', price: 690000, image: 'https://images.unsplash.com/photo-1516681100242-7eb69ced17a6?auto=format&fit=crop&q=80&w=800'}, 1); }}><span className="material-symbols-outlined">add_shopping_cart</span></button>
             </div>
           </Link>
         </div>

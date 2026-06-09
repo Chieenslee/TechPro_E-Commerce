@@ -1,978 +1,177 @@
 [
   {
     "id": 1,
-    "name": "PHO Pro Model 1",
+    "name": "iPhone 15 Pro Max 256GB",
     "category": "phones",
-    "price": 338,
-    "originalPrice": 338,
-    "rating": 3.6,
-    "sku": "PHO-1000",
-    "image": "https://placehold.co/600x400/222/FFF?text=phones\u002B1",
-    "isNew": false,
-    "onSale": false,
+    "price": 29990000,
+    "originalPrice": 34990000,
+    "rating": 4.9,
+    "sku": "PRD-IP15PM-256",
+    "image": "https://cdn.tgdd.vn/Products/Images/42/305658/iphone-15-pro-max-blue-thumbnew-600x600.jpg",
+    "isNew": true,
+    "onSale": true,
     "tags": [
+      "Apple iPhone",
+      "Apple",
       "phones",
-      "TechPro"
+      "Premium"
     ]
   },
   {
     "id": 2,
-    "name": "PHO Pro Model 2",
+    "name": "Samsung Galaxy S24 Ultra 512GB",
     "category": "phones",
-    "price": 411,
-    "originalPrice": 411,
-    "rating": 3.9,
-    "sku": "PHO-2000",
-    "image": "https://placehold.co/600x400/222/FFF?text=phones\u002B2",
-    "isNew": false,
-    "onSale": false,
+    "price": 31990000,
+    "originalPrice": 37490000,
+    "rating": 4.8,
+    "sku": "PRD-S24U-512",
+    "image": "https://cdn.tgdd.vn/Products/Images/42/319665/samsung-galaxy-s24-ultra-grey-thumbnew-600x600.jpg",
+    "isNew": true,
+    "onSale": true,
     "tags": [
+      "Samsung Galaxy",
+      "Samsung",
       "phones",
-      "TechPro"
+      "Premium"
     ]
   },
   {
     "id": 3,
-    "name": "PHO Pro Model 3",
-    "category": "phones",
-    "price": 484,
-    "originalPrice": 484,
-    "rating": 4.2,
-    "sku": "PHO-3000",
-    "image": "https://placehold.co/600x400/222/FFF?text=phones\u002B3",
+    "name": "MacBook Pro 14 inch M3 Pro",
+    "category": "laptops",
+    "price": 49990000,
+    "originalPrice": 52990000,
+    "rating": 4.9,
+    "sku": "PRD-MBP14-M3P",
+    "image": "https://cdn.tgdd.vn/Products/Images/44/318220/macbook-pro-14-inch-m3-pro-2023-silver-thumb-600x600.jpg",
     "isNew": true,
-    "onSale": false,
+    "onSale": true,
     "tags": [
-      "phones",
-      "TechPro"
+      "MacBook",
+      "Apple",
+      "laptops",
+      "Premium"
     ]
   },
   {
     "id": 4,
-    "name": "PHO Pro Model 4",
-    "category": "phones",
-    "price": 557,
-    "originalPrice": 757,
-    "rating": 4.4,
-    "sku": "PHO-4000",
-    "image": "https://placehold.co/600x400/222/FFF?text=phones\u002B4",
+    "name": "Laptop ASUS ROG Strix G15",
+    "category": "laptops",
+    "price": 25990000,
+    "originalPrice": 27990000,
+    "rating": 4.7,
+    "sku": "PRD-ASUS-G15",
+    "image": "https://cdn.tgdd.vn/Products/Images/44/304700/asus-rog-strix-g15-g513rc-r7-hn038w-thumb-600x600.jpg",
     "isNew": false,
     "onSale": true,
     "tags": [
-      "phones",
-      "TechPro"
+      "ASUS ROG",
+      "ASUS",
+      "laptops",
+      "Gaming"
     ]
   },
   {
     "id": 5,
-    "name": "PHO Pro Model 5",
-    "category": "phones",
-    "price": 630,
-    "originalPrice": 630,
-    "rating": 4.6,
-    "sku": "PHO-5000",
-    "image": "https://placehold.co/600x400/222/FFF?text=phones\u002B5",
-    "isNew": false,
+    "name": "iPad Pro M4 11 inch 256GB Wifi",
+    "category": "tablets",
+    "price": 28990000,
+    "originalPrice": 28990000,
+    "rating": 4.9,
+    "sku": "PRD-IPADM4-11",
+    "image": "https://cdn.tgdd.vn/Products/Images/52/325066/ipad-pro-m4-11-inch-wifi-space-black-thumb-600x600.jpg",
+    "isNew": true,
     "onSale": false,
     "tags": [
-      "phones",
-      "TechPro"
+      "Apple iPad",
+      "Apple",
+      "tablets",
+      "Premium"
     ]
   },
   {
     "id": 6,
-    "name": "PHO Pro Model 6",
-    "category": "phones",
-    "price": 703,
-    "originalPrice": 703,
-    "rating": 3.4,
-    "sku": "PHO-6000",
-    "image": "https://placehold.co/600x400/222/FFF?text=phones\u002B6",
-    "isNew": true,
-    "onSale": false,
+    "name": "Tai nghe Bluetooth AirPods Pro 2",
+    "category": "audio",
+    "price": 6190000,
+    "originalPrice": 6990000,
+    "rating": 4.8,
+    "sku": "PRD-AP-PRO2",
+    "image": "https://cdn.tgdd.vn/Products/Images/54/289781/samsung-galaxy-buds-2-pro-den-thumb-600x600.jpeg",
+    "isNew": false,
+    "onSale": true,
     "tags": [
-      "phones",
-      "TechPro"
+      "Earbuds",
+      "Apple",
+      "audio"
     ]
   },
   {
     "id": 7,
-    "name": "PHO Pro Model 7",
-    "category": "phones",
-    "price": 776,
-    "originalPrice": 776,
-    "rating": 3.6,
-    "sku": "PHO-7000",
-    "image": "https://placehold.co/600x400/222/FFF?text=phones\u002B7",
+    "name": "Loa Harman Kardon Onyx 8",
+    "category": "audio",
+    "price": 6990000,
+    "originalPrice": 7590000,
+    "rating": 4.7,
+    "sku": "PRD-HK-ONYX8",
+    "image": "https://cdn.tgdd.vn/Products/Images/54/290047/loa-bluetooth-harman-kardon-onyx-studio-8-thumb-600x600.jpeg",
     "isNew": false,
-    "onSale": false,
+    "onSale": true,
     "tags": [
-      "phones",
-      "TechPro"
+      "Speakers",
+      "Harman Kardon",
+      "audio"
     ]
   },
   {
     "id": 8,
-    "name": "PHO Pro Model 8",
-    "category": "phones",
-    "price": 849,
-    "originalPrice": 1049,
-    "rating": 3.9,
-    "sku": "PHO-8000",
-    "image": "https://placehold.co/600x400/222/FFF?text=phones\u002B8",
-    "isNew": false,
+    "name": "B\u00E0n ph\u00EDm c\u01A1 Logitech G Pro X",
+    "category": "accessories",
+    "price": 3990000,
+    "originalPrice": 4290000,
+    "rating": 4.8,
+    "sku": "PRD-LOGI-GPROX",
+    "image": "https://cdn.tgdd.vn/Products/Images/86/313626/ban-phim-co-gaming-logitech-g-pro-x-tkl-lightspeed-thumb-600x600.jpg",
+    "isNew": true,
     "onSale": true,
     "tags": [
-      "phones",
-      "TechPro"
+      "Keyboards",
+      "Logitech",
+      "accessories"
     ]
   },
   {
     "id": 9,
-    "name": "PHO Pro Model 9",
-    "category": "phones",
-    "price": 922,
-    "originalPrice": 922,
-    "rating": 4.2,
-    "sku": "PHO-9000",
-    "image": "https://placehold.co/600x400/222/FFF?text=phones\u002B9",
-    "isNew": true,
-    "onSale": false,
+    "name": "Chu\u1ED9t Kh\u00F4ng D\u00E2y Logitech MX 3S",
+    "category": "accessories",
+    "price": 2590000,
+    "originalPrice": 2990000,
+    "rating": 4.9,
+    "sku": "PRD-LOGI-MX3S",
+    "image": "https://cdn.tgdd.vn/Products/Images/86/282864/chuot-khong-day-logitech-mx-master-3s-thumb-600x600.jpg",
+    "isNew": false,
+    "onSale": true,
     "tags": [
-      "phones",
-      "TechPro"
+      "Mice",
+      "Logitech",
+      "accessories"
     ]
   },
   {
     "id": 10,
-    "name": "PHO Pro Model 10",
-    "category": "phones",
-    "price": 995,
-    "originalPrice": 995,
-    "rating": 4.4,
-    "sku": "PHO-10000",
-    "image": "https://placehold.co/600x400/222/FFF?text=phones\u002B10",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "phones",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 11,
-    "name": "LAP Pro Model 1",
-    "category": "laptops",
-    "price": 349,
-    "originalPrice": 349,
-    "rating": 3.6,
-    "sku": "LAP-1000",
-    "image": "https://placehold.co/600x400/222/FFF?text=laptops\u002B1",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "laptops",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 12,
-    "name": "LAP Pro Model 2",
-    "category": "laptops",
-    "price": 422,
-    "originalPrice": 422,
-    "rating": 3.9,
-    "sku": "LAP-2000",
-    "image": "https://placehold.co/600x400/222/FFF?text=laptops\u002B2",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "laptops",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 13,
-    "name": "LAP Pro Model 3",
-    "category": "laptops",
-    "price": 495,
-    "originalPrice": 495,
-    "rating": 4.2,
-    "sku": "LAP-3000",
-    "image": "https://placehold.co/600x400/222/FFF?text=laptops\u002B3",
-    "isNew": true,
-    "onSale": false,
-    "tags": [
-      "laptops",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 14,
-    "name": "LAP Pro Model 4",
-    "category": "laptops",
-    "price": 568,
-    "originalPrice": 768,
-    "rating": 4.4,
-    "sku": "LAP-4000",
-    "image": "https://placehold.co/600x400/222/FFF?text=laptops\u002B4",
-    "isNew": false,
-    "onSale": true,
-    "tags": [
-      "laptops",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 15,
-    "name": "LAP Pro Model 5",
-    "category": "laptops",
-    "price": 641,
-    "originalPrice": 641,
+    "name": "Camera IP 360 Xiaomi Mi Home",
+    "category": "smarthome",
+    "price": 690000,
+    "originalPrice": 890000,
     "rating": 4.6,
-    "sku": "LAP-5000",
-    "image": "https://placehold.co/600x400/222/FFF?text=laptops\u002B5",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "laptops",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 16,
-    "name": "LAP Pro Model 6",
-    "category": "laptops",
-    "price": 714,
-    "originalPrice": 714,
-    "rating": 3.4,
-    "sku": "LAP-6000",
-    "image": "https://placehold.co/600x400/222/FFF?text=laptops\u002B6",
-    "isNew": true,
-    "onSale": false,
-    "tags": [
-      "laptops",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 17,
-    "name": "LAP Pro Model 7",
-    "category": "laptops",
-    "price": 787,
-    "originalPrice": 787,
-    "rating": 3.6,
-    "sku": "LAP-7000",
-    "image": "https://placehold.co/600x400/222/FFF?text=laptops\u002B7",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "laptops",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 18,
-    "name": "LAP Pro Model 8",
-    "category": "laptops",
-    "price": 860,
-    "originalPrice": 1060,
-    "rating": 3.9,
-    "sku": "LAP-8000",
-    "image": "https://placehold.co/600x400/222/FFF?text=laptops\u002B8",
+    "sku": "PRD-XIAOMI-CAM",
+    "image": "https://cdn.tgdd.vn/Products/Images/4728/238804/camera-ip-360-do-1080p-xiaomi-mi-home-bhr4885gl-thumb-600x600.jpg",
     "isNew": false,
     "onSale": true,
     "tags": [
-      "laptops",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 19,
-    "name": "LAP Pro Model 9",
-    "category": "laptops",
-    "price": 933,
-    "originalPrice": 933,
-    "rating": 4.2,
-    "sku": "LAP-9000",
-    "image": "https://placehold.co/600x400/222/FFF?text=laptops\u002B9",
-    "isNew": true,
-    "onSale": false,
-    "tags": [
-      "laptops",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 20,
-    "name": "LAP Pro Model 10",
-    "category": "laptops",
-    "price": 1006,
-    "originalPrice": 1006,
-    "rating": 4.4,
-    "sku": "LAP-10000",
-    "image": "https://placehold.co/600x400/222/FFF?text=laptops\u002B10",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "laptops",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 21,
-    "name": "TAB Pro Model 1",
-    "category": "tablets",
-    "price": 349,
-    "originalPrice": 349,
-    "rating": 3.6,
-    "sku": "TAB-1000",
-    "image": "https://placehold.co/600x400/222/FFF?text=tablets\u002B1",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "tablets",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 22,
-    "name": "TAB Pro Model 2",
-    "category": "tablets",
-    "price": 422,
-    "originalPrice": 422,
-    "rating": 3.9,
-    "sku": "TAB-2000",
-    "image": "https://placehold.co/600x400/222/FFF?text=tablets\u002B2",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "tablets",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 23,
-    "name": "TAB Pro Model 3",
-    "category": "tablets",
-    "price": 495,
-    "originalPrice": 495,
-    "rating": 4.2,
-    "sku": "TAB-3000",
-    "image": "https://placehold.co/600x400/222/FFF?text=tablets\u002B3",
-    "isNew": true,
-    "onSale": false,
-    "tags": [
-      "tablets",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 24,
-    "name": "TAB Pro Model 4",
-    "category": "tablets",
-    "price": 568,
-    "originalPrice": 768,
-    "rating": 4.4,
-    "sku": "TAB-4000",
-    "image": "https://placehold.co/600x400/222/FFF?text=tablets\u002B4",
-    "isNew": false,
-    "onSale": true,
-    "tags": [
-      "tablets",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 25,
-    "name": "TAB Pro Model 5",
-    "category": "tablets",
-    "price": 641,
-    "originalPrice": 641,
-    "rating": 4.6,
-    "sku": "TAB-5000",
-    "image": "https://placehold.co/600x400/222/FFF?text=tablets\u002B5",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "tablets",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 26,
-    "name": "TAB Pro Model 6",
-    "category": "tablets",
-    "price": 714,
-    "originalPrice": 714,
-    "rating": 3.4,
-    "sku": "TAB-6000",
-    "image": "https://placehold.co/600x400/222/FFF?text=tablets\u002B6",
-    "isNew": true,
-    "onSale": false,
-    "tags": [
-      "tablets",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 27,
-    "name": "TAB Pro Model 7",
-    "category": "tablets",
-    "price": 787,
-    "originalPrice": 787,
-    "rating": 3.6,
-    "sku": "TAB-7000",
-    "image": "https://placehold.co/600x400/222/FFF?text=tablets\u002B7",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "tablets",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 28,
-    "name": "TAB Pro Model 8",
-    "category": "tablets",
-    "price": 860,
-    "originalPrice": 1060,
-    "rating": 3.9,
-    "sku": "TAB-8000",
-    "image": "https://placehold.co/600x400/222/FFF?text=tablets\u002B8",
-    "isNew": false,
-    "onSale": true,
-    "tags": [
-      "tablets",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 29,
-    "name": "TAB Pro Model 9",
-    "category": "tablets",
-    "price": 933,
-    "originalPrice": 933,
-    "rating": 4.2,
-    "sku": "TAB-9000",
-    "image": "https://placehold.co/600x400/222/FFF?text=tablets\u002B9",
-    "isNew": true,
-    "onSale": false,
-    "tags": [
-      "tablets",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 30,
-    "name": "TAB Pro Model 10",
-    "category": "tablets",
-    "price": 1006,
-    "originalPrice": 1006,
-    "rating": 4.4,
-    "sku": "TAB-10000",
-    "image": "https://placehold.co/600x400/222/FFF?text=tablets\u002B10",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "tablets",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 31,
-    "name": "AUD Pro Model 1",
-    "category": "audio",
-    "price": 327,
-    "originalPrice": 327,
-    "rating": 3.6,
-    "sku": "AUD-1000",
-    "image": "https://placehold.co/600x400/222/FFF?text=audio\u002B1",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "audio",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 32,
-    "name": "AUD Pro Model 2",
-    "category": "audio",
-    "price": 400,
-    "originalPrice": 400,
-    "rating": 3.9,
-    "sku": "AUD-2000",
-    "image": "https://placehold.co/600x400/222/FFF?text=audio\u002B2",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "audio",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 33,
-    "name": "AUD Pro Model 3",
-    "category": "audio",
-    "price": 473,
-    "originalPrice": 473,
-    "rating": 4.2,
-    "sku": "AUD-3000",
-    "image": "https://placehold.co/600x400/222/FFF?text=audio\u002B3",
-    "isNew": true,
-    "onSale": false,
-    "tags": [
-      "audio",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 34,
-    "name": "AUD Pro Model 4",
-    "category": "audio",
-    "price": 546,
-    "originalPrice": 746,
-    "rating": 4.4,
-    "sku": "AUD-4000",
-    "image": "https://placehold.co/600x400/222/FFF?text=audio\u002B4",
-    "isNew": false,
-    "onSale": true,
-    "tags": [
-      "audio",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 35,
-    "name": "AUD Pro Model 5",
-    "category": "audio",
-    "price": 619,
-    "originalPrice": 619,
-    "rating": 4.6,
-    "sku": "AUD-5000",
-    "image": "https://placehold.co/600x400/222/FFF?text=audio\u002B5",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "audio",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 36,
-    "name": "AUD Pro Model 6",
-    "category": "audio",
-    "price": 692,
-    "originalPrice": 692,
-    "rating": 3.4,
-    "sku": "AUD-6000",
-    "image": "https://placehold.co/600x400/222/FFF?text=audio\u002B6",
-    "isNew": true,
-    "onSale": false,
-    "tags": [
-      "audio",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 37,
-    "name": "AUD Pro Model 7",
-    "category": "audio",
-    "price": 765,
-    "originalPrice": 765,
-    "rating": 3.6,
-    "sku": "AUD-7000",
-    "image": "https://placehold.co/600x400/222/FFF?text=audio\u002B7",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "audio",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 38,
-    "name": "AUD Pro Model 8",
-    "category": "audio",
-    "price": 838,
-    "originalPrice": 1038,
-    "rating": 3.9,
-    "sku": "AUD-8000",
-    "image": "https://placehold.co/600x400/222/FFF?text=audio\u002B8",
-    "isNew": false,
-    "onSale": true,
-    "tags": [
-      "audio",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 39,
-    "name": "AUD Pro Model 9",
-    "category": "audio",
-    "price": 911,
-    "originalPrice": 911,
-    "rating": 4.2,
-    "sku": "AUD-9000",
-    "image": "https://placehold.co/600x400/222/FFF?text=audio\u002B9",
-    "isNew": true,
-    "onSale": false,
-    "tags": [
-      "audio",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 40,
-    "name": "AUD Pro Model 10",
-    "category": "audio",
-    "price": 984,
-    "originalPrice": 984,
-    "rating": 4.4,
-    "sku": "AUD-10000",
-    "image": "https://placehold.co/600x400/222/FFF?text=audio\u002B10",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "audio",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 41,
-    "name": "ACC Pro Model 1",
-    "category": "accessories",
-    "price": 393,
-    "originalPrice": 393,
-    "rating": 3.6,
-    "sku": "ACC-1000",
-    "image": "https://placehold.co/600x400/222/FFF?text=accessories\u002B1",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "accessories",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 42,
-    "name": "ACC Pro Model 2",
-    "category": "accessories",
-    "price": 466,
-    "originalPrice": 466,
-    "rating": 3.9,
-    "sku": "ACC-2000",
-    "image": "https://placehold.co/600x400/222/FFF?text=accessories\u002B2",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "accessories",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 43,
-    "name": "ACC Pro Model 3",
-    "category": "accessories",
-    "price": 539,
-    "originalPrice": 539,
-    "rating": 4.2,
-    "sku": "ACC-3000",
-    "image": "https://placehold.co/600x400/222/FFF?text=accessories\u002B3",
-    "isNew": true,
-    "onSale": false,
-    "tags": [
-      "accessories",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 44,
-    "name": "ACC Pro Model 4",
-    "category": "accessories",
-    "price": 612,
-    "originalPrice": 812,
-    "rating": 4.4,
-    "sku": "ACC-4000",
-    "image": "https://placehold.co/600x400/222/FFF?text=accessories\u002B4",
-    "isNew": false,
-    "onSale": true,
-    "tags": [
-      "accessories",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 45,
-    "name": "ACC Pro Model 5",
-    "category": "accessories",
-    "price": 685,
-    "originalPrice": 685,
-    "rating": 4.6,
-    "sku": "ACC-5000",
-    "image": "https://placehold.co/600x400/222/FFF?text=accessories\u002B5",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "accessories",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 46,
-    "name": "ACC Pro Model 6",
-    "category": "accessories",
-    "price": 758,
-    "originalPrice": 758,
-    "rating": 3.4,
-    "sku": "ACC-6000",
-    "image": "https://placehold.co/600x400/222/FFF?text=accessories\u002B6",
-    "isNew": true,
-    "onSale": false,
-    "tags": [
-      "accessories",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 47,
-    "name": "ACC Pro Model 7",
-    "category": "accessories",
-    "price": 831,
-    "originalPrice": 831,
-    "rating": 3.6,
-    "sku": "ACC-7000",
-    "image": "https://placehold.co/600x400/222/FFF?text=accessories\u002B7",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "accessories",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 48,
-    "name": "ACC Pro Model 8",
-    "category": "accessories",
-    "price": 904,
-    "originalPrice": 1104,
-    "rating": 3.9,
-    "sku": "ACC-8000",
-    "image": "https://placehold.co/600x400/222/FFF?text=accessories\u002B8",
-    "isNew": false,
-    "onSale": true,
-    "tags": [
-      "accessories",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 49,
-    "name": "ACC Pro Model 9",
-    "category": "accessories",
-    "price": 977,
-    "originalPrice": 977,
-    "rating": 4.2,
-    "sku": "ACC-9000",
-    "image": "https://placehold.co/600x400/222/FFF?text=accessories\u002B9",
-    "isNew": true,
-    "onSale": false,
-    "tags": [
-      "accessories",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 50,
-    "name": "ACC Pro Model 10",
-    "category": "accessories",
-    "price": 1050,
-    "originalPrice": 1050,
-    "rating": 4.4,
-    "sku": "ACC-10000",
-    "image": "https://placehold.co/600x400/222/FFF?text=accessories\u002B10",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "accessories",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 51,
-    "name": "SMA Pro Model 1",
-    "category": "smarthome",
-    "price": 371,
-    "originalPrice": 371,
-    "rating": 3.6,
-    "sku": "SMA-1000",
-    "image": "https://placehold.co/600x400/222/FFF?text=smarthome\u002B1",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "smarthome",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 52,
-    "name": "SMA Pro Model 2",
-    "category": "smarthome",
-    "price": 444,
-    "originalPrice": 444,
-    "rating": 3.9,
-    "sku": "SMA-2000",
-    "image": "https://placehold.co/600x400/222/FFF?text=smarthome\u002B2",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "smarthome",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 53,
-    "name": "SMA Pro Model 3",
-    "category": "smarthome",
-    "price": 517,
-    "originalPrice": 517,
-    "rating": 4.2,
-    "sku": "SMA-3000",
-    "image": "https://placehold.co/600x400/222/FFF?text=smarthome\u002B3",
-    "isNew": true,
-    "onSale": false,
-    "tags": [
-      "smarthome",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 54,
-    "name": "SMA Pro Model 4",
-    "category": "smarthome",
-    "price": 590,
-    "originalPrice": 790,
-    "rating": 4.4,
-    "sku": "SMA-4000",
-    "image": "https://placehold.co/600x400/222/FFF?text=smarthome\u002B4",
-    "isNew": false,
-    "onSale": true,
-    "tags": [
-      "smarthome",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 55,
-    "name": "SMA Pro Model 5",
-    "category": "smarthome",
-    "price": 663,
-    "originalPrice": 663,
-    "rating": 4.6,
-    "sku": "SMA-5000",
-    "image": "https://placehold.co/600x400/222/FFF?text=smarthome\u002B5",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "smarthome",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 56,
-    "name": "SMA Pro Model 6",
-    "category": "smarthome",
-    "price": 736,
-    "originalPrice": 736,
-    "rating": 3.4,
-    "sku": "SMA-6000",
-    "image": "https://placehold.co/600x400/222/FFF?text=smarthome\u002B6",
-    "isNew": true,
-    "onSale": false,
-    "tags": [
-      "smarthome",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 57,
-    "name": "SMA Pro Model 7",
-    "category": "smarthome",
-    "price": 809,
-    "originalPrice": 809,
-    "rating": 3.6,
-    "sku": "SMA-7000",
-    "image": "https://placehold.co/600x400/222/FFF?text=smarthome\u002B7",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "smarthome",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 58,
-    "name": "SMA Pro Model 8",
-    "category": "smarthome",
-    "price": 882,
-    "originalPrice": 1082,
-    "rating": 3.9,
-    "sku": "SMA-8000",
-    "image": "https://placehold.co/600x400/222/FFF?text=smarthome\u002B8",
-    "isNew": false,
-    "onSale": true,
-    "tags": [
-      "smarthome",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 59,
-    "name": "SMA Pro Model 9",
-    "category": "smarthome",
-    "price": 955,
-    "originalPrice": 955,
-    "rating": 4.2,
-    "sku": "SMA-9000",
-    "image": "https://placehold.co/600x400/222/FFF?text=smarthome\u002B9",
-    "isNew": true,
-    "onSale": false,
-    "tags": [
-      "smarthome",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 60,
-    "name": "SMA Pro Model 10",
-    "category": "smarthome",
-    "price": 1028,
-    "originalPrice": 1028,
-    "rating": 4.4,
-    "sku": "SMA-10000",
-    "image": "https://placehold.co/600x400/222/FFF?text=smarthome\u002B10",
-    "isNew": false,
-    "onSale": false,
-    "tags": [
-      "smarthome",
-      "TechPro"
-    ]
-  },
-  {
-    "id": 61,
-    "name": "Persistent Codex Product",
-    "category": "accessories",
-    "price": 777,
-    "originalPrice": 888,
-    "rating": 4.9,
-    "sku": "PERSIST-192514",
-    "image": "https://placehold.co/600x400/222/FFF?text=Persistent",
-    "isNew": true,
-    "onSale": true,
-    "tags": [
-      "accessories",
-      "TechPro"
+      "Security Cameras",
+      "Xiaomi",
+      "smarthome"
     ]
   }
 ]
