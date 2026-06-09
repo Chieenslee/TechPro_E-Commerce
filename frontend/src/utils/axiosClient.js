@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an Axios instance
 const axiosClient = axios.create({
-  baseURL: 'https://localhost:7099/api', // Backend ASP.NET Core URL
+  baseURL: import.meta.env.VITE_API_URL || 'https://localhost:7099/api', // Dùng biến môi trường hoặc fallback về localhost
   headers: {
     'Content-Type': 'application/json',
   },
